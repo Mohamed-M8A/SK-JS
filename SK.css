@@ -474,7 +474,7 @@
 }
 
 .divider {
-  font-size: 68px !important;
+  font-size: 18px !important;
   margin: 0 6px;
   color: #000;
 }
@@ -1058,6 +1058,7 @@ i, .fa, [class^="fa-"], [class*=" fa-"] {
   font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
   font-weight: 900 !important;
 }
+
 
 
 
