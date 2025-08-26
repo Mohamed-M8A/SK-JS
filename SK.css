@@ -460,6 +460,12 @@
   -webkit-text-fill-color: transparent;
 }
 
+.star.empty {
+  background: #e0e0e0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .rating-value {
   font-size: 14px !important;
   font-weight: bold;
@@ -1052,3 +1058,4 @@ i, .fa, [class^="fa-"], [class*=" fa-"] {
   font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
   font-weight: 900 !important;
 }
+
