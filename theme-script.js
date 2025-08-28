@@ -1,98 +1,12 @@
-/* =======================================================
-   🌐 Blogger Variables (dynamic from template)
-   ======================================================= */
-const siteUrl = "<data:blog.canonicalHomepageUrl/>";
-const blogId = "<data:blog.blogId/>";
-const blogTitle = "<data:blog.title.jsEscaped/>";
-const titleSeparator = "<b:eval expr='data:skin.vars.separator'/>";
-const autoTOC = "<b:eval expr='data:skin.vars.autoTOC'/>";
-const positionTOC = "<b:eval expr='data:skin.vars.positionTOC'/>";
-const isPreview = "<b:eval expr='data:view.isPreview'/>";
-const analyticId = "<b:eval expr='data:skin.vars.analyticId  != '' ? data:skin.vars.analyticId : data:blog.analyticsAccountNumber'/>";
-const caPubAdsense = "<b:eval expr='data:skin.vars.caPubAdsense != '' ? data:skin.vars.caPubAdsense : data:blog.adsenseClientId'/>";
+/* -------------------------------------------------
+   ThemeScript.js
+   - Lazyload
+   - Dark Mode Toggle
+   - Back To Top
+   - Google Ads Loader
+   - instant.page (Prefetch Links)
+------------------------------------------------- */
 
-
-/* =======================================================
-   ⚡ Load Defer.js (from CDN)
-   ======================================================= */
-(function(){
-  var s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/@shinsenter/defer.js@2.5.0/dist/defer.min.js";
-  s.async = true;
-  document.head.appendChild(s);
-})();
-
-
-/* =======================================================
-   📑 Sitemap (accordion categories + posts)
-   ======================================================= */
-function sitemap_temp(e) {
-  return "<div class='accordion'>" + e.categories.map(function (data, i) {
-    return "<div class='accordion-item'>"
-      + "<input " + (i == 0 ? "checked" : "") + " id='sitemap-list-" + i + "' name='sitemap' type='radio' class='d-none'/>"
-      + "<label for='sitemap-list-" + i + "' class='accordion-header accordion-button collapsed'>" + data.term + "</label>"
-      + "<div class='accordion-collapse collapse border-top border-light d-block-check'>"
-      + "<div class='accordion-body'>"
-      + "<div class='sitemap-list' data-label='" + data.term + "' data-func='sitemap_list_temp' data-items='9999'>"
-      + "<div class='text-center'><div class='spinner-grow text-light' role='status'><span class='visually-hidden'>Loading...</span></div></div>"
-      + "</div></div></div></div>";
-  }).join("") + "</div>";
-}
-
-function sitemap_list_temp(e) {
-  return "<ul class='list-unstyled fs-7'>" + e.posts.map(function (data) {
-    return "<li class='mb-2'><a href='" + data.url + "'>" + data.title + "</a></li>";
-  }).join("") + "</ul>";
-}
-
-function sitemap_cb() {
-  var sm = ".sitemap-list";
-  if (document.querySelector(sm) !== null) {
-    Defer.dom(sm, 100, "loaded", jo.loadCustomPosts);
-  }
-}
-
-
-/* =======================================================
-   🎥 Lazy Loading for YouTube Embeds
-   ======================================================= */
-function Callback() {
-  (function() {
-    var youtube = document.querySelectorAll(".lazyYoutube");
-    for (var i = 0; i < youtube.length; i++) {
-      var source = "https://img.youtube.com/vi/" + youtube[i].dataset.embed + "/sddefault.jpg";
-      var image = new Image();
-
-      image.setAttribute("class", "lazyload");
-      image.setAttribute("data-src", source);
-      image.setAttribute("src", "data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=");
-      image.setAttribute("alt", "Youtube video");
-
-      // ✅ Fix closure issue with i
-      (function(el, img) {
-        img.addEventListener("load", function() {
-          el.appendChild(img);
-        });
-      })(youtube[i], image);
-
-      // ▶ Load iframe on click
-      youtube[i].addEventListener("click", function() {
-        var iframe = document.createElement("iframe");
-        iframe.setAttribute("frameborder", "0");
-        iframe.setAttribute("allowfullscreen", "");
-        iframe.setAttribute("src", "https://www.youtube.com/embed/" + this.dataset.embed + "?rel=0&showinfo=0&autoplay=1");
-        this.innerHTML = "";
-        this.appendChild(iframe);
-      });
-    }
-  })();
-}
-
-
-/* =======================================================
-   🎨 ThemeScript
-   (Lazyload, Darkmode, BackToTop, Ads)
-   ======================================================= */
 (function ThemeScript(){
     var M = window,
         doc = document,
@@ -101,7 +15,7 @@ function Callback() {
         undefinedType = "undefined";
 
     /* ------------------------
-       Helper Functions
+       Helpers
     ------------------------ */
     function hasClass(el, cls){ return (" "+el.className+" ").indexOf(" "+cls+" ") > -1 }
     function addClass(el, cls){ if(!hasClass(el,cls)) el.className += (el.className ? " " : "")+cls }
@@ -109,7 +23,7 @@ function Callback() {
     function toggleClass(el, cls){ hasClass(el,cls)? removeClass(el,cls) : addClass(el,cls) }
 
     /* ------------------------
-       Lazyload image handler
+       Lazyload for images
     ------------------------ */
     var lazyFlag = store !== null && 1 == store.getItem("lazy");
     var lazyHandler = function(img){
@@ -139,7 +53,7 @@ function Callback() {
     }
 
     /* ------------------------
-       Back To Top Button
+       Back To Top
     ------------------------ */
     var backTop = doc.getElementById("back-to-top");
     M.addEventListener("scroll",function(){
@@ -147,7 +61,7 @@ function Callback() {
     },false);
 
     /* ------------------------
-       Google Ads (AdSense)
+       Google Ads Loader
     ------------------------ */
     var adsId = typeof caPubAdsense!==undefinedType ? caPubAdsense.replace(/^\D+/g,"") : false,
         clientId = adsId ? "ca-pub-"+adsId : false;
@@ -159,24 +73,20 @@ function Callback() {
     })();
 
     /* ------------------------
-       Lazyload trigger
+       Lazyload Handler
     ------------------------ */
     Defer.dom(".lazyload",1,"loaded",lazyHandler);
 
 })();
 
-
-/* =======================================================
-   ⚡ instant.page v5.2.0 (Prefetch Links on hover/touch)
-   ======================================================= */
+/* -------------------------------------------------
+   instant.page v5.2.0 (Prefetch Links)
+------------------------------------------------- */
 (function(){
   let allowQuery, allowExternal, whitelist, lastEvent, hoverTimer, chromeVer = null,
       hoverDelay = 65, prefetched = new Set;
   const threshold = 1111;
 
-  /* ------------------------
-     Event Handlers
-  ------------------------ */
   function onTouchStart(ev) {
     lastEvent = performance.now();
     const link = ev.target.closest("a");
@@ -221,9 +131,6 @@ function Callback() {
     link.dispatchEvent(fake);
   }
 
-  /* ------------------------
-     Validation & Prefetch
-  ------------------------ */
   function isValid(link) {
     if (link && link.href && (!whitelist || "instant" in link.dataset)) {
       if (link.origin != location.origin) {
@@ -252,9 +159,6 @@ function Callback() {
     prefetched.add(href);
   }
 
-  /* ------------------------
-     Init
-  ------------------------ */
   !function init() {
     if (!document.createElement("link").relList.supports("prefetch")) return;
 
