@@ -692,8 +692,33 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   }
 });
 
+  // ==============================
+  // ✅ وظيفة نسخ الرابط
+  // ==============================
+
+
+  function copyPostLink(el) {
+    var link = el.getAttribute("data-url");
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(function() {
+        alert("تم نسخ الرابط بنجاح");
+      }).catch(function() {
+        alert("حدث خطأ أثناء النسخ");
+      });
+    } else {
+      // fallback للمتصفحات القديمة
+      var temp = document.createElement("input");
+      document.body.appendChild(temp);
+      temp.value = link;
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      alert("تم نسخ الرابط بنجاح");
+    }
+  }
+
 
   // ==============================
   // ✅ نهاية الإسكربت
-
   // ==============================
+
