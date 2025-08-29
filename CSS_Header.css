@@ -1,5 +1,5 @@
 /* ===========================
-   Cart Widget
+   ✅ Cart Widget (شكل فقط)
 =========================== */
 #cart-widget-header {
   display: flex;
@@ -9,11 +9,9 @@
   color: #f0f0f0;
   position: relative;
   transition: color 0.3s ease;
-  margin-left: 10px;
 }
-#cart-widget-header:hover {
-  color: #a0a0a0;
-}
+#cart-widget-header:hover { color: #a0a0a0; }
+
 #cart-widget-header .cart-icon svg {
   width: 28px;
   height: 28px;
@@ -22,9 +20,8 @@
   stroke-width: 2;
   transition: stroke 0.3s ease;
 }
-#cart-widget-header:hover .cart-icon svg {
-  stroke: #a0a0a0;
-}
+#cart-widget-header:hover .cart-icon svg { stroke: #a0a0a0; }
+
 #cart-count {
   font-weight: bold;
   font-size: 14px;
@@ -42,27 +39,22 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-#cart-count.active {
-  opacity: 1;
-}
+#cart-count.active { opacity: 1; }
 
 /* ===========================
-   Search Box
+   ✅ Search Box (شكل فقط)
 =========================== */
 .search-container {
-  padding: 0 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+  flex: 1; /* ياخد مساحة متاحة */
   direction: rtl;
 }
+
 .search-box-form {
   display: flex;
   align-items: center;
-  max-width: none;
   width: 100%;
 }
+
 .input-wrapper {
   flex: 1;
   padding: 2.5px;
@@ -70,11 +62,13 @@
   background-size: 600% 600%;
   animation: gradientShift 8s ease infinite;
 }
+
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
 .search-box-input {
   width: 100%;
   padding: 12px 20px;
@@ -88,8 +82,9 @@
 .search-box-input::placeholder {
   color: #444;
 }
+
 .search-box-button {
-  margin-left: -10px;
+  margin-left: -10px; /* علشان يركب على الـ wrapper */
   padding: 12px 20px;
   background: linear-gradient(135deg, #ffc107, #ff9800);
   color: white;
