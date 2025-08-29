@@ -1,4 +1,3 @@
-<script>
   document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("searchInput");
     if (!input) return; // لو الصفحة مافيهاش سيرش ما يعملش حاجة
@@ -58,4 +57,3 @@
       }
     });
   });
-</script>
