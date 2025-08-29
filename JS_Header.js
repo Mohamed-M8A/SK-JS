@@ -1,4 +1,3 @@
-<script>
 document.addEventListener("DOMContentLoaded", function () {
   // =================== 🛒 تحديث عربة التسوق ===================
   function updateCartWidget() {
@@ -82,4 +81,3 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(rotatePlaceholder, 45000);
   }
 });
-</script>
