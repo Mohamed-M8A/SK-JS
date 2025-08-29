@@ -1,4 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
   // =================== 🛒 تحديث عربة التسوق ===================
   function updateCartWidget() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
