@@ -95,31 +95,44 @@
   gap: 15px;
 }
 
-.social-icons a {
-  display: inline-flex;
+/* الحاوية */
+.social-icons {
+  display: flex;
+  gap: 5px; /* المسافة بين الأيقونات */
   align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* شكل الدواير */
+.social-icons a {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;   
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+/* تأثير hover */
 .social-icons a:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffd700;
 }
 
-.social-icons a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
+/* الأيقونات كلها موحدة */
+.social-icons i,
+.social-icons svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  line-height: 1;
+  flex-shrink: 0;
+  fill: currentColor; /* يخلي لون SVG نفس النص */
 }
-
-
 /* زر الوضع الداكن */
 #dark-header label {
   cursor: pointer;
