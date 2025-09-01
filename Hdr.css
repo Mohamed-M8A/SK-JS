@@ -99,22 +99,23 @@
 .social-icons {
   display: flex;
   gap: 10px; /* مسافة بين الأيقونات */
+  align-items: center; /* يضمن إن كله على نفس الخط */
 }
 
-/* كل دايرة */
+/* شكل الدائرة لكل أيقونة */
 .social-icons a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 36px;
   height: 36px;
   border-radius: 50%;
   background: transparent;
   color: #fff;
-  font-size: 20px;  /* أيقونات Font Awesome */
-  line-height: 0;   /* يمنع أي فراغ غلس تحت الأيقونة */
-  transition: background 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  font-size: 20px;   /* لـ Font Awesome */
+  line-height: 0;    /* يمنع أي فراغ تحت الأيقونات */
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* تأثير hover */
@@ -128,18 +129,19 @@
 .social-icons svg {
   width: 22px;
   height: 22px;
-  flex-shrink: 0;
   display: block;
+  flex-shrink: 0;
   line-height: 1;
-  vertical-align: middle; /* يمنع ارتفاع الـ SVG */
+  vertical-align: middle; /* يمنع SVG يطلع فوق */
 }
 
 /* SVG زيادة أمان */
 .social-icons svg {
   fill: currentColor;
   position: relative;
-  top: 0; /* لو حسيت SVG لسه مش مضبوط ممكن تزود top: 1px */
+  top: 0; /* لو SVG لسه طالع فوق زوّدها top: 1px */
 }
+
 
 /* زر الوضع الداكن */
 #dark-header label {
