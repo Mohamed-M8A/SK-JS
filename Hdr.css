@@ -95,10 +95,10 @@
   gap: 15px;
 }
 
-/* الحاوية */
+/* الحاوية الرئيسية للأيقونات */
 .social-icons {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* مسافة بين الأيقونات */
 }
 
 /* كل دايرة */
@@ -111,9 +111,10 @@
   border-radius: 50%;
   background: transparent;
   color: #fff;
-  font-size: 20px;  /* لـ Font Awesome */
-  line-height: 0;   /* يمنع أي فراغ تحت الأيقونة */
+  font-size: 20px;  /* أيقونات Font Awesome */
+  line-height: 0;   /* يمنع أي فراغ غلس تحت الأيقونة */
   transition: background 0.3s ease, color 0.3s ease;
+  text-decoration: none;
 }
 
 /* تأثير hover */
@@ -122,7 +123,7 @@
   color: #ffd700;
 }
 
-/* توحيد ستايل الأيقونات */
+/* توحيد شكل الأيقونات */
 .social-icons i,
 .social-icons svg {
   width: 22px;
@@ -130,13 +131,15 @@
   flex-shrink: 0;
   display: block;
   line-height: 1;
+  vertical-align: middle; /* يمنع ارتفاع الـ SVG */
 }
 
-/* لو SVG جاي فيه fill غلس */
+/* SVG زيادة أمان */
 .social-icons svg {
   fill: currentColor;
+  position: relative;
+  top: 0; /* لو حسيت SVG لسه مش مضبوط ممكن تزود top: 1px */
 }
-
 
 /* زر الوضع الداكن */
 #dark-header label {
