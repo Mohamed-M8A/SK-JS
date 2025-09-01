@@ -139,7 +139,7 @@
 .social-icons svg {
   fill: currentColor;
   position: relative;
-  top: 0; /* لو SVG لسه طالع فوق زوّدها top: 1px */
+  top: 2px; /* 👈 جرّب 1px أو 2px حسب اللي يريح عينك */
 }
 
 
