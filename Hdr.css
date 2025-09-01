@@ -95,6 +95,7 @@
   gap: 15px;
 }
 
+
 /* الحاوية */
 .social-icons {
   display: flex;
@@ -133,6 +134,8 @@
   flex-shrink: 0;
   fill: currentColor; /* يخلي لون SVG نفس النص */
 }
+
+
 /* زر الوضع الداكن */
 #dark-header label {
   cursor: pointer;
