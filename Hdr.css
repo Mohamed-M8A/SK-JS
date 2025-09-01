@@ -95,7 +95,6 @@
   gap: 15px;
 }
 
-You said:
 .social-icons a {
   display: inline-flex;
   align-items: center;
@@ -111,12 +110,15 @@ You said:
 .social-icons a:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffd700;
-}  .social-icons a {
-  display: inline-flex;       
-  align-items: center;        
+}
+
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   vertical-align: middle;
 }
+
 
 /* زر الوضع الداكن */
 #dark-header label {
