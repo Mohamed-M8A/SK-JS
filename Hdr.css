@@ -120,6 +120,23 @@
   display: block;
 }
 
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffd700;
+}
+
 
 /* زر الوضع الداكن */
 #dark-header label {
