@@ -95,53 +95,28 @@
   gap: 15px;
 }
 
-/* الحاوية الرئيسية للأيقونات */
-.social-icons {
-  display: flex;
-  gap: 10px; /* مسافة بين الأيقونات */
-  align-items: center; /* يضمن إن كله على نفس الخط */
-}
-
-/* شكل الدائرة لكل أيقونة */
+You said:
 .social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: transparent;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 20px;   /* لـ Font Awesome */
-  line-height: 0;    /* يمنع أي فراغ تحت الأيقونات */
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* تأثير hover */
 .social-icons a:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffd700;
+}  .social-icons a {
+  display: inline-flex;       
+  align-items: center;        
+  justify-content: center;
+  vertical-align: middle;
 }
-
-/* توحيد شكل الأيقونات */
-.social-icons i,
-.social-icons svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-  flex-shrink: 0;
-  line-height: 1;
-  vertical-align: middle; /* يمنع SVG يطلع فوق */
-}
-
-/* SVG زيادة أمان */
-.social-icons svg {
-  fill: currentColor;
-  position: relative;
-  top: 7px; /* 👈 جرّب 1px أو 2px حسب اللي يريح عينك */
-}
-
 
 /* زر الوضع الداكن */
 #dark-header label {
@@ -226,10 +201,6 @@
 
   .search-box-form { max-width: 100%; }
 }
-
-
-
-
 
 /* ===========================
    🌙☀️ Dark Mode Toggle
