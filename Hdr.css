@@ -99,7 +99,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: middle;
   color: #fff;
   font-size: 20px;
   width: 36px;
@@ -111,13 +110,6 @@
 .social-icons a:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffd700;
-}
-
-.social-icons i,
-.social-icons svg {
-  width: 22px;
-  height: 22px;
-  display: block;            
 }
 
 /* زر الوضع الداكن */
