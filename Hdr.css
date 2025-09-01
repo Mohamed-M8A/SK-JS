@@ -95,22 +95,48 @@
   gap: 15px;
 }
 
+/* الحاوية */
+.social-icons {
+  display: flex;
+  gap: 10px;
+}
+
+/* كل دايرة */
 .social-icons a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 20px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;  /* لـ Font Awesome */
+  line-height: 0;   /* يمنع أي فراغ تحت الأيقونة */
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* تأثير hover */
 .social-icons a:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffd700;
 }
+
+/* توحيد ستايل الأيقونات */
+.social-icons i,
+.social-icons svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: block;
+  line-height: 1;
+}
+
+/* لو SVG جاي فيه fill غلس */
+.social-icons svg {
+  fill: currentColor;
+}
+
 
 /* زر الوضع الداكن */
 #dark-header label {
