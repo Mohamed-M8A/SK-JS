@@ -1,7 +1,7 @@
 /* -------------------------------------------------
    ThemeScript.js
    - Lazyload
-   - Dark Mode Toggle (فوري + أيقونات بالكلاسات)
+   - Dark Mode Toggle (فوري + أيقونة تتبدل)
    - Back To Top
    - Google Ads Loader
    - instant.page (Prefetch Links)
@@ -28,34 +28,44 @@
      Dark Mode Toggle
   ------------------------ */
   var htmlEl = doc.documentElement,
-      bodyEl = doc.body,
-      darkBtn = doc.getElementById("dark-toggler");
+      darkBtn = doc.getElementById("dark-toggler"),
+      iconUse = darkBtn ? darkBtn.querySelector("use") : null;
+
+  function switchIcon(theme){
+    if(!iconUse) return;
+    if(theme === "dark"){
+      iconUse.setAttribute("xlink:href","#i-sun");
+      iconUse.setAttribute("href","#i-sun");
+    } else {
+      iconUse.setAttribute("xlink:href","#i-moon");
+      iconUse.setAttribute("href","#i-moon");
+    }
+  }
 
   function applyTheme(theme, persist){
     if(theme === "dark"){
-      addClass(bodyEl,"dark");
+      addClass(htmlEl,"dark-mode");
       htmlEl.setAttribute("data-theme","dark");
-      if(darkBtn) darkBtn.classList.add("is-dark"); // 👈 لتبديل الأيقونات
     } else {
-      removeClass(bodyEl,"dark");
+      removeClass(htmlEl,"dark-mode");
       htmlEl.setAttribute("data-theme","light");
-      if(darkBtn) darkBtn.classList.remove("is-dark");
     }
+    switchIcon(theme);
     if(persist) stSet("theme", theme);
   }
 
-  // أول تحميل → استرجاع الثيم
+  // استرجاع الثيم عند أول تحميل
   var savedTheme = stGet("theme");
   if(!savedTheme){
     savedTheme = M.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   applyTheme(savedTheme,false);
 
-  // عند الضغط → تبديل فوري
+  // الضغط على الزر
   if(darkBtn){
     darkBtn.addEventListener("click",function(e){
       e.preventDefault();
-      var isDark = hasClass(bodyEl,"dark");
+      var isDark = htmlEl.classList.contains("dark-mode");
       applyTheme(isDark ? "light" : "dark", true);
     });
   }
@@ -136,7 +146,7 @@
   function onMouseDown(ev) { const link = ev.target.closest("a"); if (isValid(link)) prefetch(link.href,"high"); }
 
   function isValid(link) {
-    return link && link.href && ["http:","https:"].includes(link.protocol) && link.origin===location.origin;
+    return link && link.href && ["http:","https:"].includes(link.protocol);
   }
   function prefetch(href, priority = "auto") {
     if (prefetched.has(href)) return;
