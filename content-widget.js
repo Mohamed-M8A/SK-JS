@@ -15,7 +15,7 @@ let orderedFeed = [];
 let displayPointer = 0;
 let currentStartIndex = 1;
 let displayedPosts = new Set(JSON.parse(sessionStorage.getItem("displayedPosts")) || []);
-const olderPostsElement = document.getElementById("older-posts");
+const productpostsElement = document.getElementById("product-posts");
 const loadMoreButton = document.getElementById("load-more");
 const loaderElement = document.getElementById("loader");
 
@@ -234,7 +234,7 @@ function displayBatch() {
     }
 
     if (batch.length > 0) {
-      olderPostsElement.insertAdjacentHTML('beforeend', batch.map(p => {
+      productpostsElement.insertAdjacentHTML('beforeend', batch.map(p => {
         const html = generatePostHTML(p);
         if (p.lazy) {
           return html.replace(
@@ -345,7 +345,7 @@ function loadMorePosts() {
 
 loadMoreButton.addEventListener("click", loadMorePosts);
 
-olderPostsElement.addEventListener("click", function(e) {
+productpostsElement.addEventListener("click", function(e) {
   const postCard = e.target.closest(".post-card");
   if (!postCard) return;
   
@@ -379,3 +379,4 @@ window.onload = function() {
   sessionStorage.setItem("displayedPosts", JSON.stringify([]));
   fetchAllPosts(); // ✅ أول تحميل يجيب أول دفعة ويفعل النظام الجديد
 };
+
