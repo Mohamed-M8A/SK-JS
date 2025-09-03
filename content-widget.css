@@ -11,14 +11,31 @@
 }
 
 /* 🔹 الحاوية العامة */
+/* 🎨 حاوية الجريد */
 #product-posts {
-  max-width: 100px; /* أو أي مقاس يناسبك */
-  margin: 0 auto; /* علشان يبقى في النص */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(5, 1fr); /* 5 أعمدة للديسكتوب */
   gap: 20px;
   padding: 20px;
+  max-width: 1200px; /* أقصى عرض */
+  margin: 0 auto; /* في النص */
+  box-sizing: border-box;
 }
+
+/* 📱 استجابة للشاشات */
+@media (max-width: 1024px) {
+  #product-posts {
+    grid-template-columns: repeat(3, 1fr); /* تابلت */
+  }
+}
+@media (max-width: 768px) {
+  #product-posts {
+    grid-template-columns: repeat(2, 1fr); /* موبايل */
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
 
 /* 🔹 بطاقة المنتج */
 .post-card {
