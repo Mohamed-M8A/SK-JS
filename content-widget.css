@@ -175,7 +175,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  #product-posts {
+  #older-posts {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 12px;
