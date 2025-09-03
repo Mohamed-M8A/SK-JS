@@ -12,11 +12,12 @@
 
 /* 🔹 الحاوية العامة */
 #product-posts {
+  max-width: 1200px; /* أو أي مقاس يناسبك */
+  margin: 0 auto; /* علشان يبقى في النص */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
   padding: 20px;
-  font-family: var(--font-family);
 }
 
 /* 🔹 بطاقة المنتج */
