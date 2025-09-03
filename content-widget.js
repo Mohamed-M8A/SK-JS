@@ -379,4 +379,3 @@ window.onload = function() {
   sessionStorage.setItem("displayedPosts", JSON.stringify([]));
   fetchAllPosts(); // ✅ أول تحميل يجيب أول دفعة ويفعل النظام الجديد
 };
-
