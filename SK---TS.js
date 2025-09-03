@@ -1,7 +1,7 @@
 /* -------------------------------------------------
    ThemeScript.js
    - Lazyload
-   - Dark Mode Toggle (فوري + أيقونات)
+   - Dark Mode Toggle (فوري + أيقونات بالكلاسات)
    - Back To Top
    - Google Ads Loader
    - instant.page (Prefetch Links)
@@ -29,33 +29,29 @@
   ------------------------ */
   var htmlEl = doc.documentElement,
       bodyEl = doc.body,
-      darkBtn = doc.getElementById("dark-toggler"),
-      iconMoon = doc.querySelector(".icon-moon"),
-      iconSun  = doc.querySelector(".icon-sun");
+      darkBtn = doc.getElementById("dark-toggler");
 
   function applyTheme(theme, persist){
     if(theme === "dark"){
       addClass(bodyEl,"dark");
       htmlEl.setAttribute("data-theme","dark");
-      if(iconMoon) iconMoon.style.display = "none";
-      if(iconSun)  iconSun.style.display  = "inline";
+      if(darkBtn) darkBtn.classList.add("is-dark"); // 👈 لتبديل الأيقونات
     } else {
       removeClass(bodyEl,"dark");
       htmlEl.setAttribute("data-theme","light");
-      if(iconMoon) iconMoon.style.display = "inline";
-      if(iconSun)  iconSun.style.display  = "none";
+      if(darkBtn) darkBtn.classList.remove("is-dark");
     }
     if(persist) stSet("theme", theme);
   }
 
-  // أول تحميل → طبّق الثيم المحفوظ أو تفضيل النظام
+  // أول تحميل → استرجاع الثيم
   var savedTheme = stGet("theme");
   if(!savedTheme){
     savedTheme = M.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   applyTheme(savedTheme,false);
 
-  // تغيير عند الضغط
+  // عند الضغط → تبديل فوري
   if(darkBtn){
     darkBtn.addEventListener("click",function(e){
       e.preventDefault();
@@ -117,9 +113,8 @@
    instant.page v5.2.0 (Prefetch Links)
 ------------------------------------------------- */
 (function(){
-  let lastEvent, hoverTimer, chromeVer = null,
-      hoverDelay = 65, prefetched = new Set;
-  const threshold = 1111;
+  let lastEvent, hoverTimer, prefetched = new Set;
+  const threshold = 1111, hoverDelay = 65;
 
   function onTouchStart(ev) {
     lastEvent = performance.now();
