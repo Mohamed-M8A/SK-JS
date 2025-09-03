@@ -325,66 +325,59 @@
 
 .button-container {
   display: flex;
-  justify-content: flex-start; 
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 15px;
   padding: 0;
-  margin: 10px 0;
+  margin: 20px 0;
   flex-wrap: wrap;
 }
 
-.buy-button {
+.buy-button,
+.add-to-cart {
   display: inline-block;
-  padding: 12px 30px;
-  background: linear-gradient(270deg, #db0021, #ff512f, #db0021);
-  background-size: 400% 400%;
-  color: #fff;
+  padding: 14px 35px;
   border: none;
-  border-radius: 10px;
+  border-radius: 50px;
   font-size: 18px;
   cursor: pointer;
-  margin-top: 20px;
   text-decoration: none;
   font-weight: 700;
-  transition: color 0.3s ease-in-out;
   width: 240px;
-  height: 40px;
+  height: 50px;
   text-align: center;
+  color: #fff;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background-size: 300% 300%;
+}
+
+/* زر الشراء */
+.buy-button {
+  background: linear-gradient(90deg, #ff416c, #ff4b2b, #ff416c);
 }
 
 .buy-button:hover {
-  animation: redGradientFlow 2.0s ease infinite;
-  color: #fff;
+  animation: redGradientFlow 2.5s ease infinite;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(255, 65, 108, 0.4);
 }
 
+/* زر إضافة للسلة */
+.add-to-cart {
+  background: linear-gradient(90deg, #3a7bd5, #3a6073, #3a7bd5);
+}
+
+.add-to-cart:hover {
+  animation: blueGradientFlow 2.5s ease infinite;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(58, 123, 213, 0.4);
+}
+
+/* أنيميشن الخلفية */
 @keyframes redGradientFlow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-}
-
-.add-to-cart {
-  display: inline-block;
-  padding: 12px 30px;
-  background: linear-gradient(270deg, #1a237e, #3949ab, #1a237e);
-  background-size: 400% 400%;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  text-decoration: none;
-  font-weight: 700;
-  transition: color 0.3s ease-in-out;
-  width: 240px;
-  height: 40px;
-  text-align: center;
-}
-
-.add-to-cart:hover {
-  animation: blueGradientFlow 2.0s ease infinite;
-  color: #fff ;
 }
 
 @keyframes blueGradientFlow {
@@ -393,24 +386,18 @@
   100% { background-position: 0% 50%; }
 }
 
-
-.button-container .buy-button,
-.button-container .add-to-cart {
-  margin: 0 0 0 10px !important; 
-}
-
+/* تحسينات الهواتف */
 @media (max-width: 600px) {
   .button-container {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px; /* فراغ مناسب بين الزرين */
+    gap: 15px;
   }
 
-  .button-container .buy-button,
-  .button-container .add-to-cart {
+  .buy-button,
+  .add-to-cart {
     width: 100% !important;
     max-width: 100%;
-    margin: 0 !important;
   }
 }
 
@@ -1043,6 +1030,7 @@ i, .fa, [class^="fa-"], [class*=" fa-"] {
   font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
   font-weight: 900 !important;
 }
+
 
 
 
