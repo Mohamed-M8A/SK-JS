@@ -10,29 +10,28 @@
   --font-family: "Tajawal", sans-serif;
 }
 
-/* 🔹 الحاوية العامة */
-/* 🎨 حاوية الجريد */
+/* 🎨 الحاوية */
 #product-posts {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 أعمدة للديسكتوب */
-  gap: 20px;
-  padding: 20px;
-  max-width: 1200px; /* أقصى عرض */
-  margin: 0 auto; /* في النص */
-  box-sizing: border-box;
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important; /* 5 أعمدة */
+  gap: 20px !important;
+  padding: 20px !important;
+  max-width: 1200px !important; /* أقصى عرض */
+  margin: 0 auto !important; /* توسيط */
+  box-sizing: border-box !important;
 }
 
 /* 📱 استجابة للشاشات */
 @media (max-width: 1024px) {
   #product-posts {
-    grid-template-columns: repeat(3, 1fr); /* تابلت */
+    grid-template-columns: repeat(3, 1fr) !important; /* تابلت */
   }
 }
 @media (max-width: 768px) {
   #product-posts {
-    grid-template-columns: repeat(2, 1fr); /* موبايل */
-    gap: 12px;
-    padding: 12px;
+    grid-template-columns: repeat(2, 1fr) !important; /* موبايل */
+    gap: 12px !important;
+    padding: 12px !important;
   }
 }
 
