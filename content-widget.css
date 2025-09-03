@@ -1,7 +1,7 @@
 /* CSS*/
 
 /* حاوية المنشورات */
-#older-posts {
+#product-posts {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
@@ -175,7 +175,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  #older-posts {
+  #product-posts {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 12px;
@@ -199,3 +199,4 @@
     border-radius: 4px;
   }
 }
+
