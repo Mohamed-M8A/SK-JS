@@ -40,7 +40,7 @@
     };
 
     /* ------------------------
-       Dark Mode Toggle (مطور)
+       Dark Mode Toggle
     ------------------------ */
     var darkBtn = doc.getElementById("dark-toggler"),
         bodyEl = doc.querySelector("body"),
@@ -59,12 +59,11 @@
         }
     }
 
-    if(darkBtn){
-        // تحميل أول مرة من التخزين أو الافتراضي
-        var savedTheme = store ? store.getItem("theme") : null;
-        applyTheme(savedTheme || "light");
+    // ✅ طبّق الثيم المخزن مباشرة عند التحميل
+    var savedTheme = store ? store.getItem("theme") : null;
+    applyTheme(savedTheme || "light");
 
-        // الضغط على الزر
+    if(darkBtn){
         darkBtn.addEventListener("click",function(e){
             e.preventDefault();
             if(hasClass(bodyEl,"dark")){
