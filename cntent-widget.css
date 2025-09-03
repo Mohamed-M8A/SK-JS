@@ -1,0 +1,199 @@
+/* حاوية المنشورات */
+#product-posts {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  gap: 20px !important;
+  padding: 20px !important;
+}
+
+/* بطاقة المنتج */
+.post-card {
+  background: #fff !important;
+  border-radius: 8px !important; 
+  overflow: hidden !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+  transition: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  text-decoration: none !important;
+  color: #333 !important;
+}
+
+/* حاوية الصورة */
+.image-container {
+  position: relative !important;
+  width: 100% !important;
+  padding-top: 100% !important;
+  overflow: hidden !important;
+  background: #f8f9fa !important;
+}
+.post-image {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: none !important;
+}
+
+/* شارة الخصم */
+.discount-badge {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  background: #ffc107 !important; /* أصفر */
+  color: #000 !important; /* نص أسود */
+  padding: 5px 10px !important; 
+  border-radius: 6px !important; 
+  font-size: 12px !important; 
+  font-weight: 700 !important;
+  z-index: 10 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* زر العربة */
+.external-cart-button {
+  position: absolute !important;
+  bottom: 10px !important;
+  right: 10px !important;
+  background: #fff !important;
+  color: #000 !important;
+  border-radius: 50% !important;
+  width: 46px !important;
+  height: 46px !important;
+  font-size: 18px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: background 0.3s ease, color 0.3s ease !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+  z-index: 10 !important;
+  cursor: pointer !important;
+}
+.external-cart-button:hover {
+  background: linear-gradient(135deg, #000, #444) !important;
+  color: #fff !important;
+}
+
+/* محتوى المنشور */
+.post-content {
+  padding: 12px !important; 
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.post-title {
+  font-size: 14px !important; 
+  font-weight: 600 !important;
+  color: #111 !important;
+  margin: 0 0 8px !important; 
+  height: 38px !important; 
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  line-height: 1.4 !important;
+}
+.title-link {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+/* عرض الأسعار */
+.price-display {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 6px !important; 
+  margin-top: auto !important;
+  margin-bottom: 10px !important;
+}
+.discounted-price {
+  font-size: 16px !important; 
+  font-weight: 700 !important;
+  color: #28a745 !important;
+}
+.original-price {
+  font-size: 12px !important; 
+  color: #888 !important;
+  text-decoration: line-through !important;
+}
+
+/* تفاصيل إضافية */
+.product-meta-details {
+  display: flex !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center !important;
+  padding-top: 8px !important; 
+  border-top: 1px solid #e9ecef !important;
+  margin-top: auto !important;
+  font-size: 11px !important; 
+  color: #555 !important;
+}
+.meta-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  direction: rtl !important;
+  white-space: nowrap !important;
+}
+.meta-rating,
+.meta-orders,
+.meta-shipping {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+.meta-star {
+  font-size: 13px !important;
+  color: #ffc107 !important;
+  margin-right: 2px !important;
+}
+
+/* زر "عرض المزيد" */
+#load-more {
+  background: linear-gradient(135deg, #000, #333) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 6px !important; 
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin: 30px auto !important;
+  display: block !important;
+  cursor: pointer !important;
+  transition: background 0.3s ease !important;
+}
+#load-more:hover {
+  background: linear-gradient(135deg, #222, #555) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #product-posts {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+  .post-title {
+    font-size: 10px !important;
+  }
+  .discounted-price {
+    font-size: 12px !important;
+  }
+  .original-price {
+    font-size: 10px !important;
+  }
+  .product-meta-details {
+    font-size: 8px !important; 
+    gap: 3px !important;
+  }
+  .discount-badge {
+    font-size: 10px !important; /* أصغر للجوال */
+    padding: 3px 6px !important;
+    border-radius: 4px !important;
+  }
+}
