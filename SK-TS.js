@@ -1,110 +1,180 @@
 /* -------------------------------------------------
    ThemeScript.js
    - Lazyload
-   - Dark Mode Toggle
+   - Dark Mode Toggle (no-reload, dual-target)
    - Back To Top
    - Google Ads Loader
    - instant.page (Prefetch Links)
 ------------------------------------------------- */
 
 (function ThemeScript(){
-    var M = window,
-        doc = document,
-        store = localStorage,
-        au = "-rw",
-        undefinedType = "undefined";
+  var M = window,
+      doc = document,
+      au = "-rw",
+      UNDEF = "undefined";
 
-    /* ------------------------
-       Helpers
-    ------------------------ */
-    function hasClass(el, cls){ return (" "+el.className+" ").indexOf(" "+cls+" ") > -1 }
-    function addClass(el, cls){ if(!hasClass(el,cls)) el.className += (el.className ? " " : "")+cls }
-    function removeClass(el, cls){ el.className = el.className.replace(new RegExp("(?:^|\\s)"+cls+"(?!\\S)"),"").trim() }
-    function toggleClass(el, cls){ hasClass(el,cls)? removeClass(el,cls) : addClass(el,cls) }
+  /* ------------------------
+     Helpers
+  ------------------------ */
+  function hasClass(el, cls){ return el && (" "+el.className+" ").indexOf(" "+cls+" ") > -1 }
+  function addClass(el, cls){ if(el && !hasClass(el,cls)) el.className += (el.className ? " " : "")+cls }
+  function removeClass(el, cls){ if(el) el.className = el.className.replace(new RegExp("(?:^|\\s)"+cls+"(?!\\S)","g"),"").trim() }
 
-    /* ------------------------
-       Lazyload for images
-    ------------------------ */
-    var lazyFlag = store !== null && 1 == store.getItem("lazy");
-    var lazyHandler = function(img){
-        if(img.tagName == "IMG"){
-            var dataSrc = img.getAttribute("data-src");
-            if(/(bp.blogspot|googleusercontent)/.test(dataSrc)){
-                var ratio = lazyFlag ? (M.devicePixelRatio && M.devicePixelRatio > 1 ? M.devicePixelRatio : 1.5) : 1;
-                var newWidth = (img.offsetWidth*ratio).toFixed(0);
-                var sizeStr = "s"+newWidth+au;
-                dataSrc = dataSrc.replace(/\/s\d+/, "/"+sizeStr);
-                img.setAttribute("data-src",dataSrc);
-            }
-        }
+  // localStorage safe wrappers (علشان لو متعطل)
+  var store = (function(){
+    try { return window.localStorage } catch(e){ return null }
+  })();
+  function stGet(k){ try{ return store ? store.getItem(k) : null }catch(e){ return null } }
+  function stSet(k,v){ try{ if(store) store.setItem(k,v) }catch(e){} }
+
+  /* ------------------------
+     Lazyload for images
+  ------------------------ */
+  var lazyFlag = store !== null && 1 == stGet("lazy");
+  var lazyHandler = function(img){
+    if(img.tagName == "IMG"){
+      var dataSrc = img.getAttribute("data-src") || "";
+      if(/(bp.blogspot|googleusercontent)/.test(dataSrc)){
+        var ratio = lazyFlag ? (M.devicePixelRatio && M.devicePixelRatio > 1 ? M.devicePixelRatio : 1.5) : 1;
+        var newWidth = (img.offsetWidth*ratio).toFixed(0);
+        var sizeStr = "s"+newWidth+au;
+        dataSrc = dataSrc.replace(/\/s\d+/, "/"+sizeStr);
+        img.setAttribute("data-src",dataSrc);
+      }
+    }
+  };
+
+  /* ------------------------
+     Dark Mode (dual binding)
+     - يطبّق على html[data-theme] + body.dark
+     - يبدّل الأيقونات بـ hidden لتفادي تعارض CSS
+     - يعمل فورًا بدون ريلود
+  ------------------------ */
+  var htmlEl = doc.documentElement;
+  var bodyEl = doc.body;
+
+  function queryIcons(){
+    var btn = doc.getElementById("dark-toggler");
+    // جوه الزر بنلاقي الـ <use> بحسب كلاساتها
+    return {
+      btn: btn,
+      sun: btn ? btn.querySelector(".icon-sun") : null,
+      moon: btn ? btn.querySelector(".icon-moon") : null
     };
+  }
 
-    /* ------------------------
-       Dark Mode Toggle
-    ------------------------ */
-    var darkBtn = doc.getElementById("dark-toggler"),
-        bodyEl = doc.querySelector("body"),
-        iconMoon = doc.querySelector(".icon-moon"),
-        iconSun = doc.querySelector(".icon-sun");
+  function applyIcons(theme){
+    var icons = queryIcons();
+    if(!icons.btn) return;
+    var isDark = theme === "dark";
+    if(icons.sun) icons.sun.hidden = !isDark;  // في الداكن نعرض الشمس
+    if(icons.moon) icons.moon.hidden = isDark; // وفي الفاتح نعرض القمر
+  }
 
-    function applyTheme(theme){
-        if(theme === "dark"){
-            addClass(bodyEl,"dark");
-            if(iconMoon) iconMoon.style.display = "none";
-            if(iconSun) iconSun.style.display = "inline";
-        } else {
-            removeClass(bodyEl,"dark");
-            if(iconMoon) iconMoon.style.display = "inline";
-            if(iconSun) iconSun.style.display = "none";
-        }
+  function applyTheme(theme, persist){
+    var t = (theme === "dark") ? "dark" : "light";
+    // html[data-theme]
+    htmlEl.setAttribute("data-theme", t);
+    // body.dark (توافق مع CSS قديم)
+    if(t === "dark"){ addClass(bodyEl,"dark"); } else { removeClass(bodyEl,"dark"); }
+    // أيقونات
+    applyIcons(t);
+    if(persist) stSet("theme", t);
+  }
+
+  // حدد الثيم الابتدائي فورًا
+  var initialTheme = stGet("theme");
+  if(!initialTheme){
+    // fallback لنظام المستخدم
+    initialTheme = M.matchMedia && M.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  applyTheme(initialTheme, false);
+
+  // ربط الكليك بأسلوب delegation (يشتغل حتى لو الزر اتضاف بعدين)
+  doc.addEventListener("click", function(ev){
+    var btn = ev.target.closest && ev.target.closest("#dark-toggler");
+    if(!btn) return;
+    ev.preventDefault();
+    var current = htmlEl.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    applyTheme(current === "dark" ? "light" : "dark", true);
+  }, {passive:false, capture:false});
+
+  // لو اتغيّر تفضيل النظام أثناء الجلسة ومفيش تخزين سابق، نتابعه
+  if(!stGet("theme") && M.matchMedia){
+    try{
+      var mm = M.matchMedia("(prefers-color-scheme: dark)");
+      mm.addEventListener ? mm.addEventListener("change", function(e){
+        applyTheme(e.matches ? "dark" : "light", false);
+      }) : mm.addListener && mm.addListener(function(e){
+        applyTheme(e.matches ? "dark" : "light", false);
+      });
+    }catch(e){}
+  }
+
+  /* ------------------------
+     Back To Top
+  ------------------------ */
+  var backTop = doc.getElementById("back-to-top");
+  M.addEventListener("scroll", function(){
+    if(!backTop) return;
+    // لو عايز العكس بدّل الشرط
+    if(this.pageYOffset >= 1000){
+      removeClass(backTop,"d-none");
+    } else {
+      addClass(backTop,"d-none");
     }
+  }, false);
 
-    // ✅ طبّق الثيم المخزن مباشرة عند التحميل
-    var savedTheme = store ? store.getItem("theme") : null;
-    applyTheme(savedTheme || "light");
+  /* ------------------------
+     Google Ads Loader
+  ------------------------ */
+  var caId = (typeof M.caPubAdsense !== UNDEF) ? (M.caPubAdsense || "").replace(/^\D+/g,"") : "";
+  var clientId = caId ? "ca-pub-" + caId : "";
 
-    if(darkBtn){
-        darkBtn.addEventListener("click",function(e){
-            e.preventDefault();
-            if(hasClass(bodyEl,"dark")){
-                applyTheme("light");
-                if(store) store.setItem("theme","light");
-            } else {
-                applyTheme("dark");
-                if(store) store.setItem("theme","dark");
-            }
+  (function(){
+    if(!clientId) return;
+    if(typeof M.adsbygoogle === UNDEF) M.adsbygoogle = [];
+    // استخدم محملك لو عندك (Defer.js). لو مش موجود، نضيف سكربت عادي.
+    if(typeof M.Defer !== UNDEF && M.Defer.js){
+      M.Defer.js("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+clientId, "adsbygoogle", 100);
+    } else {
+      var s = doc.createElement("script");
+      s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+clientId;
+      s.async = true;
+      s.crossOrigin = "anonymous";
+      doc.head.appendChild(s);
+    }
+  })();
+
+  /* ------------------------
+     Lazyload Handler
+     (لو عندك Defer.dom، هنستخدمه؛ وإلا هنفعل Fallback بسيط)
+  ------------------------ */
+  if(typeof M.Defer !== UNDEF && M.Defer.dom){
+    M.Defer.dom(".lazyload", 1, "loaded", lazyHandler);
+  } else {
+    // Fallback بسيط باستخدام IntersectionObserver
+    if("IntersectionObserver" in M){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            var el = entry.target;
+            lazyHandler(el);
+            var ds = el.getAttribute("data-src");
+            if(ds){ el.setAttribute("src", ds); el.removeAttribute("data-src"); }
+            io.unobserve(el);
+          }
         });
+      });
+      doc.querySelectorAll(".lazyload").forEach(function(el){ io.observe(el); });
     }
-
-    /* ------------------------
-       Back To Top
-    ------------------------ */
-    var backTop = doc.getElementById("back-to-top");
-    M.addEventListener("scroll",function(){
-        (this.pageYOffset >= 1000 && backTop !== null ? removeClass : addClass)(backTop,"d-none")
-    },false);
-
-    /* ------------------------
-       Google Ads Loader
-    ------------------------ */
-    var adsId = typeof caPubAdsense!==undefinedType ? caPubAdsense.replace(/^\D+/g,"") : false,
-        clientId = adsId ? "ca-pub-"+adsId : false;
-    (function(){
-        if(clientId){
-            if(typeof adsbygoogle===undefinedType) adsbygoogle=[];
-            Defer.js("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+clientId,"adsbygoogle",100);
-        }
-    })();
-
-    /* ------------------------
-       Lazyload Handler
-    ------------------------ */
-    Defer.dom(".lazyload",1,"loaded",lazyHandler);
+  }
 
 })();
-
+  
 /* -------------------------------------------------
    instant.page v5.2.0 (Prefetch Links)
+   (نفس الكود بتاعك، بدون لمس)
 ------------------------------------------------- */
 (function(){
   let allowQuery, allowExternal, whitelist, lastEvent, hoverTimer, chromeVer = null,
