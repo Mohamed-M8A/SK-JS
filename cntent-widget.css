@@ -12,7 +12,7 @@
 
 /* 🔹 الحاوية العامة */
 #product-posts {
-  max-width: 1200px; /* أو أي مقاس يناسبك */
+  max-width: 100px; /* أو أي مقاس يناسبك */
   margin: 0 auto; /* علشان يبقى في النص */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
