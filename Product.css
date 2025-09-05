@@ -1034,14 +1034,6 @@ display:none;
   margin-left: auto;
 }
 
-/* ================================
-   استثناء أيقونات✅Font Awesome
-================================= */
-
-i, .fa, [class^="fa-"], [class*=" fa-"] {
-  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome", sans-serif !important;
-  font-weight: 900 !important;
-}
 
 
 
