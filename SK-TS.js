@@ -1,8 +1,6 @@
 /* -------------------------------------------------
    ThemeScript.js
    - Lazyload
-   - Dark Mode Toggle (فوري + أيقونة تتبدل)
-   - Back To Top
    - Google Ads Loader
    - instant.page (Prefetch Links)
 ------------------------------------------------- */
@@ -23,65 +21,6 @@
   try{ store = window.localStorage }catch(e){ store = null }
   function stGet(k){ try{ return store ? store.getItem(k) : null }catch(e){ return null } }
   function stSet(k,v){ try{ if(store) store.setItem(k,v) }catch(e){} }
-
-  /* ------------------------
-     Dark Mode Toggle
-  ------------------------ */
-  var htmlEl = doc.documentElement,
-      darkBtn = doc.getElementById("dark-toggler"),
-      iconUse = darkBtn ? darkBtn.querySelector("use") : null;
-
-  function switchIcon(theme){
-    if(!iconUse) return;
-    if(theme === "dark"){
-      iconUse.setAttribute("xlink:href","#i-sun");
-      iconUse.setAttribute("href","#i-sun");
-    } else {
-      iconUse.setAttribute("xlink:href","#i-moon");
-      iconUse.setAttribute("href","#i-moon");
-    }
-  }
-
-  function applyTheme(theme, persist){
-    if(theme === "dark"){
-      addClass(htmlEl,"dark-mode");
-      htmlEl.setAttribute("data-theme","dark");
-    } else {
-      removeClass(htmlEl,"dark-mode");
-      htmlEl.setAttribute("data-theme","light");
-    }
-    switchIcon(theme);
-    if(persist) stSet("theme", theme);
-  }
-
-  // استرجاع الثيم عند أول تحميل
-  var savedTheme = stGet("theme");
-  if(!savedTheme){
-    savedTheme = M.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  applyTheme(savedTheme,false);
-
-  // الضغط على الزر
-  if(darkBtn){
-    darkBtn.addEventListener("click",function(e){
-      e.preventDefault();
-      var isDark = htmlEl.classList.contains("dark-mode");
-      applyTheme(isDark ? "light" : "dark", true);
-    });
-  }
-
-  /* ------------------------
-     Back To Top
-  ------------------------ */
-  var backTop = doc.getElementById("back-to-top");
-  M.addEventListener("scroll",function(){
-    if(!backTop) return;
-    if(this.pageYOffset >= 1000){
-      removeClass(backTop,"d-none");
-    } else {
-      addClass(backTop,"d-none");
-    }
-  },false);
 
   /* ------------------------
      Lazyload Handler
