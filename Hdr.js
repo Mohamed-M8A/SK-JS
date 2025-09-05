@@ -1,5 +1,14 @@
+/* -------------------------------------------------
+   ThemeScript Removed Parts + Extra Features
+   - Dark Mode Toggle
+   - Back To Top
+   - Cart Widget
+   - Search
+   - Placeholder Rotation
+------------------------------------------------- */
+
 document.addEventListener("DOMContentLoaded", function () {
-  // =================== 🛒 تحديث عربة التسوق ===================
+  // =================== ✅ تحديث عربة التسوق ===================
   function updateCartWidget() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const cartCountElement = document.getElementById("cart-count");
@@ -28,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // =================== 🔍 البحث ===================
+  // =================== ✅ البحث ===================
   const searchPageURL = "https://souq-alkul.blogspot.com/p/search.html";
   const input = document.getElementById("searchInput");
 
@@ -49,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // =================== ✨ تدوير الـ placeholder ===================
+  // =================== ✅ تدوير الـ placeholder ===================
   if (input) {
     const placeholders = [
       "خلنا نساعدك تلاقي اللي يناسبك",
@@ -80,4 +89,61 @@ document.addEventListener("DOMContentLoaded", function () {
     rotatePlaceholder();
     setInterval(rotatePlaceholder, 45000);
   }
+
+  // =================== ✅ Dark Mode Toggle ===================
+  var htmlEl = document.documentElement,
+      darkBtn = document.getElementById("dark-toggler"),
+      iconUse = darkBtn ? darkBtn.querySelector("use") : null;
+
+  function switchIcon(theme){
+    if(!iconUse) return;
+    if(theme === "dark"){
+      iconUse.setAttribute("xlink:href","#i-sun");
+      iconUse.setAttribute("href","#i-sun");
+    } else {
+      iconUse.setAttribute("xlink:href","#i-moon");
+      iconUse.setAttribute("href","#i-moon");
+    }
+  }
+
+  function applyTheme(theme, persist){
+    if(theme === "dark"){
+      htmlEl.classList.add("dark-mode");
+      htmlEl.setAttribute("data-theme","dark");
+    } else {
+      htmlEl.classList.remove("dark-mode");
+      htmlEl.setAttribute("data-theme","light");
+    }
+    switchIcon(theme);
+    if(persist) {
+      try { localStorage.setItem("theme", theme); } catch(e){}
+    }
+  }
+
+  var savedTheme;
+  try { savedTheme = localStorage.getItem("theme"); } catch(e){ savedTheme = null; }
+  if(!savedTheme){
+    savedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  applyTheme(savedTheme,false);
+
+  if(darkBtn){
+    darkBtn.addEventListener("click",function(e){
+      e.preventDefault();
+      var isDark = htmlEl.classList.contains("dark-mode");
+      applyTheme(isDark ? "light" : "dark", true);
+    });
+  }
+
+  // =================== ✅ Back To Top ===================
+  var backTop = document.getElementById("back-to-top");
+  window.addEventListener("scroll",function(){
+    if(!backTop) return;
+    if(this.pageYOffset >= 1000){
+      backTop.classList.remove("d-none");
+    } else {
+      backTop.classList.add("d-none");
+    }
+  },false);
+
 });
