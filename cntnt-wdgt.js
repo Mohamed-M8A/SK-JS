@@ -186,14 +186,17 @@ function generatePostHTML(post) {
   }
 
   return `
-    <div class="post-card" data-categories="${categories}" data-product-url="${url}">
-      <a href="${url}" target="_blank" class="image-container">
-        <img class="post-image" src="${image}" alt="${title}" loading="lazy">
-        ${discountBadge}
-        <div class="external-cart-button">
-          <i class="fa fa-shopping-cart" style="font-size:18px;"></i>
-        </div>
-      </a>
+<div class="post-card" data-categories="${categories}" data-product-url="${url}">
+  <a href="${url}" target="_blank" class="image-container">
+    <img class="post-image" src="${image}" alt="${title}" loading="lazy">
+    ${discountBadge}
+    <div class="external-cart-button">
+      <svg class="icon" width="18" height="18">
+        <use xlink:href="#i-cart"></use>
+      </svg>
+    </div>
+  </a>
+</div>
       <div class="post-content">
         <a href="${url}" target="_blank">
           <h3 class="post-title">${title}</h3>
