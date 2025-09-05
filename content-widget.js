@@ -196,15 +196,14 @@ function generatePostHTML(post) {
       </svg>
     </div>
   </a>
+  <div class="post-content">
+    <a href="${url}" target="_blank">
+      <h3 class="post-title">${title}</h3>
+    </a>
+    ${priceHtml}
+    ${extraHtml}
+  </div>
 </div>
-      <div class="post-content">
-        <a href="${url}" target="_blank">
-          <h3 class="post-title">${title}</h3>
-        </a>
-        ${priceHtml}
-        ${extraHtml}
-      </div>
-    </div>
   `;
 }
 
