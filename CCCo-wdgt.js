@@ -1,4 +1,3 @@
-<script>
 /***********************
  * إعداد المتغيرات الأساسية
  ***********************/
@@ -254,4 +253,3 @@ window.onload = function() {
   sessionStorage.setItem("displayedPosts", JSON.stringify([]));
   fetchAllPosts();
 };
-</script>
