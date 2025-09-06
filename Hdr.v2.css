@@ -104,7 +104,7 @@
 /* الحاوية */
 .social-icons {
   display: flex;
-  gap: 5px; /* المسافة بين الأيقونات */
+  gap: 5px; 
   align-items: center;
 }
 
@@ -137,7 +137,7 @@
   display: block;
   line-height: 1;
   flex-shrink: 0;
-  fill: currentColor; /* يخلي لون SVG نفس النص */
+  fill: currentColor; 
 }
 
 /* زر الوضع الداكن */
@@ -161,6 +161,7 @@
 #cart-widget-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
   color: #f0f0f0;
@@ -168,34 +169,63 @@
   transition: color 0.3s ease;
   margin-left: 10px;
 }
-#cart-widget-header:hover { color: #a0a0a0; }
+
+#cart-widget-header:hover { 
+  color: #a0a0a0; 
+}
+
+#cart-widget-header .cart-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 #cart-widget-header .cart-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   transition: stroke 0.3s ease;
+  display: block;
 }
-#cart-widget-header:hover .cart-icon svg { stroke: #a0a0a0; }
+
+#cart-widget-header:hover .cart-icon svg { 
+  stroke: #a0a0a0; 
+}
+
 #cart-count {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
   background-color: #ef4444;
   color: white;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -6px;
+  right: -6px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.2s ease;
 }
-#cart-count.active { opacity: 1; }
+
+#cart-count.active { 
+  opacity: 1; 
+  transform: scale(1); 
+}
+
+@media (max-width: 768px) {
+  #cart-count {
+    width: 16px;
+    height: 16px;
+    font-size: 11px;
+    top: -5px;
+    right: -5px;
+  }
+}
 
 /* ===========================
     متجاوب (الموبايل)
