@@ -50,8 +50,8 @@ function getPostImage(post, size = 320) {
 
   let imgUrl = imgMatch[1];
 
-  // ✅ لو الصورة من بلوجر → صغّرها للمقاس المطلوب
-  if (/blogger\.googleusercontent\.com/.test(imgUrl)) {
+  // ✅ فقط لو الصورة من بلوجر AND نوعها WebP → صغّرها
+  if (/blogger\.googleusercontent\.com/.test(imgUrl) && /\.webp$/i.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
     } else {
@@ -61,6 +61,7 @@ function getPostImage(post, size = 320) {
 
   return imgUrl;
 }
+
 
 
 
