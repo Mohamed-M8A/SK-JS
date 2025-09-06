@@ -42,7 +42,7 @@ function getPostPrice(post) {
 }
 
 function getPostImage(post, size = 320) {
-  const defaultImage = `https://via.placeholder.com/${size}x${size}`;
+  const defaultImage = `https://via.placeholder.com/${size}x${size}?text=No+Image`;
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
 
@@ -50,19 +50,23 @@ function getPostImage(post, size = 320) {
 
   let imgUrl = imgMatch[1];
 
-  // ✅ لو الصورة من بلوجر
+  // ✅ صور بلوجر → نعدل الحجم
   if (/blogger\.googleusercontent\.com/.test(imgUrl)) {
-    // ضبط الحجم
     if (/\/s\d+/.test(imgUrl)) {
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
     } else {
       imgUrl = imgUrl.replace(/\/([^/]+)$/, `/s${size}/$1`);
     }
-    // مفيش لعب في الامتداد .. تفضل زي ما هي (webp أو jpg أو png)
+  }
+
+  // ✅ fallback: لو الرابط شكله مش صورة (مقالات مثلاً)
+  if (!/\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(imgUrl)) {
+    return defaultImage;
   }
 
   return imgUrl;
 }
+
 
 function getExtraProductData(post) {
   const content = post.content?.$t || "";
