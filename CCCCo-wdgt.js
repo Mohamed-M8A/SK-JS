@@ -42,9 +42,22 @@ function getPostPrice(post) {
 }
 
 function getPostImage(post) {
+  const defaultImage = "https://via.placeholder.com/380x225";
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return imgMatch ? imgMatch[1] : "https://via.placeholder.com/380x225";
+
+  if (!imgMatch) return defaultImage;
+
+  let imgUrl = imgMatch[1];
+
+  // 🔹 لو الصورة من Google/Blogger (غالبًا فيها s1600 أو أي sXYZ)
+  if (/blogspot\.com|bp\.blogspot\.com/.test(imgUrl)) {
+    // نغير الحجم لحوالي 400px (مناسب للكروت)
+    imgUrl = imgUrl.replace(/\/s\d{2,4}/, "/s400");
+  }
+
+  // ✅ نضيف أبعاد ثابتة للصور لتقليل CLS
+  return imgUrl;
 }
 
 function getExtraProductData(post) {
