@@ -100,12 +100,19 @@ function getPostPrice(post) {
   return null;
 }
 
-function getPostImage(post) {
-  const defaultImage = "https://via.placeholder.com/380x225";
+function getPostImage(post, size = 480) {
+  const defaultImage = `https://via.placeholder.com/${size}x${size}`;
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return imgMatch ? imgMatch[1] : defaultImage;
+  
+  if (imgMatch) {
+    // استبدال أي حجم قديم (sXXX أو wXXX-hXXX) بالحجم الجديد
+    return imgMatch[1].replace(/\/s\d+(-[cw])?|\/w\d+-h\d+(-[a-z]*)?/, `/w${size}-h${size}`);
+  }
+  
+  return defaultImage;
 }
+
 
 // ✅ النسخة المصححة لاستخراج البيانات الإضافية
 function getExtraProductData(post) {
