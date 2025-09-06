@@ -1,74 +1,25 @@
-// 
 // ========================================================================
-//     منطق JavaScript
+//   النسخة CORE CLEAN - الأساسيات فقط
 // ========================================================================
-// 
 
 /***********************
  * ✅ 1. إعداد البيانات العامة والمتغيرات الأساسية
  ***********************/
-const allPostsLimit = 60;
-const batchSize = 10;
-const interactionsKey = "user_interactions";
-let allPosts = [];
-let orderedFeed = [];
-let displayPointer = 0;
-let currentStartIndex = 1;
+const allPostsLimit = 60;           // الحد الأقصى لجلب البوستات في الطلب الواحد
+const batchSize = 10;               // عدد البوستات في كل دفعة عرض
+let allPosts = [];                  // تخزين كل البوستات
+let orderedFeed = [];               // البوستات بعد الترتيب
+let displayPointer = 0;             // مؤشر العرض
+let currentStartIndex = 1;          // مؤشر البدء للـ feed
 let displayedPosts = new Set(JSON.parse(sessionStorage.getItem("displayedPosts")) || []);
-const olderPostsElement = document.getElementById("product-posts");
+
+// عناصر الـ DOM
+const productpostsElement = document.getElementById("product-posts");
 const loadMoreButton = document.getElementById("load-more");
 const loaderElement = document.getElementById("loader");
 
 /***********************
- * ✅ 2. إدارة التفاعل مع التصنيفات (LocalStorage)
- ***********************/
-const categoryLevels = {
-  "إلكترونيات": 0.5,
-  "كوبونات خصم": 0.5,
-  "مقالات": 0.5
-};
-
-function getUserInteractions() {
-  return JSON.parse(localStorage.getItem(interactionsKey) || "{}");
-}
-
-function setUserInteractions(data) {
-  localStorage.setItem(interactionsKey, JSON.stringify(data));
-}
-
-function recordCategoryInteraction(categoriesArray) {
-  let interactions = getUserInteractions();
-  let currentDate = new Date().toISOString();
-  categoriesArray.forEach(cat => {
-    if (!cat || cat.trim() === "") cat = "غير مصنف";
-    const addValue = categoryLevels.hasOwnProperty(cat) ? categoryLevels[cat] : 1;
-    if (interactions[cat]) {
-      interactions[cat].weight += addValue;
-      interactions[cat].lastInteraction = currentDate;
-    } else {
-      interactions[cat] = { weight: addValue, lastInteraction: currentDate };
-    }
-  });
-  setUserInteractions(interactions);
-}
-
-function cleanOldInteractions() {
-  let interactions = getUserInteractions();
-  const currentTime = new Date().getTime();
-  const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
-  Object.keys(interactions).forEach(cat => {
-    const lastTime = new Date(interactions[cat].lastInteraction).getTime();
-    if ((currentTime - lastTime) > thirtyDaysInMs) {
-      delete interactions[cat];
-    }
-  });
-  setUserInteractions(interactions);
-}
-
-setInterval(cleanOldInteractions, 10 * 60 * 1000);
-
-/***********************
- * ✅ 3. استخراج بيانات المنشورات (السعر - الصورة - التصنيفات)
+ * ✅ 2. استخراج بيانات المنشورات (السعر - الصورة - التصنيفات)
  ***********************/
 function getPostCategories(post) {
   return (post.category && post.category.length > 0)
@@ -100,33 +51,23 @@ function getPostPrice(post) {
   return null;
 }
 
-function getPostImage(post, size = 480) {
-  const defaultImage = `https://via.placeholder.com/${size}x${size}`;
+function getPostImage(post) {
+  const defaultImage = "https://via.placeholder.com/380x225";
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  
-  if (imgMatch) {
-    // استبدال أي حجم قديم (sXXX أو wXXX-hXXX) بالحجم الجديد
-    return imgMatch[1].replace(/\/s\d+(-[cw])?|\/w\d+-h\d+(-[a-z]*)?/, `/w${size}-h${size}`);
-  }
-  
-  return defaultImage;
+  return imgMatch ? imgMatch[1] : defaultImage;
 }
 
-
-// ✅ النسخة المصححة لاستخراج البيانات الإضافية
+// ✅ بيانات إضافية (تقييم - عدد الطلبات - الشحن)
 function getExtraProductData(post) {
   const content = post.content?.$t || "";
 
-  // ✅ التقييم (نجمة واحدة + رقم فقط)
   const ratingMatch = content.match(/<span class="rating-value"[^>]*>([^<]+)<\/span>/);
   const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
 
-  // ✅ الطلبات
   const ordersMatch = content.match(/<div class="info-box orders-info">[\s\S]*?<span class="value">([^<]+)<\/span>/);
   const orders = ordersMatch ? ordersMatch[1] : null;
 
-  // ✅ الشحن
   const shippingMatch = content.match(/<div class="info-box shipping-time">[\s\S]*?<span class="value">([^<]+)<\/span>/);
   const shipping = shippingMatch ? shippingMatch[1] : null;
 
@@ -138,7 +79,7 @@ function getExtraProductData(post) {
 }
 
 /***********************
- * ✅ 4. بناء أزرار ومنشورات HTML
+ * ✅ 3. بناء كارت HTML لكل بوست
  ***********************/
 function generatePostHTML(post) {
   const url = getPostUrl(post);
@@ -157,6 +98,7 @@ function generatePostHTML(post) {
   let discountBadge = '';
   let extraHtml = '';
 
+  // ✅ السعر والخصومات
   if (priceData) {
     const originalPrice = priceData.originalPrice ? `<span class="original-price">${priceData.originalPrice} ر.س</span>` : '';
     priceHtml = `
@@ -173,6 +115,7 @@ function generatePostHTML(post) {
     }
   }
 
+  // ✅ البيانات الإضافية (تقييم - طلبات - شحن)
   if (extraData.rating || extraData.orders || extraData.shipping) {
     extraHtml = '<div class="product-meta-details">';
     if (extraData.rating) {
@@ -214,7 +157,9 @@ function generatePostHTML(post) {
   `;
 }
 
-// ✅ النسخة الجديدة من عرض المنشورات
+/***********************
+ * ✅ 4. عرض المنشورات (دفعات + Lazy Load)
+ ***********************/
 function displayBatch() {
   let firstBatch = true;
 
@@ -260,7 +205,7 @@ function displayBatch() {
       firstBatch = false; // ✅ أول دفعة اتعرضت
     }
 
-    // ✅ خلصنا 60 → شغل تحميل الصور التدريجي
+    // ✅ لما نخلص كل البوستات
     if (displayPointer >= orderedFeed.length) {
       clearInterval(batchInterval);
       lazyLoadImages();
@@ -270,8 +215,8 @@ function displayBatch() {
   // ✅ أول دفعة مباشرة
   addNextBatch();
 
-  // ✅ بعد كدا كل 1.5 ثانية دفعة جديدة
-  const batchInterval = setInterval(addNextBatch, 500);
+  // ✅ باقي الدفعات كل 1.5 ثانية
+  const batchInterval = setInterval(addNextBatch, 1500);
 }
 
 // ✅ تحميل الصور المؤجل
@@ -288,35 +233,15 @@ function lazyLoadImages() {
     img.src = img.dataset.src;
     img.removeAttribute("data-src");
     i++;
-  }, 500); // كل 0.5 ثانية صورة
+  }, 1500); // كل 1.5 ثانية صورة
 }
 
 /***********************
- * ✅ 5. منطق جلب المنشورات والترتيب
+ * ✅ 5. منطق جلب المنشورات (ترتيب بالوقت فقط)
  ***********************/
 function computeOrderedFeed(posts) {
-  posts.sort((a, b) => new Date(b.published.$t) - new Date(a.published.$t));
-  const interactions = getUserInteractions();
-  if (Object.keys(interactions).length === 0) {
-    return posts;
-  }
-  const sortedCats = Object.keys(interactions)
-    .sort((a, b) => interactions[b].weight - interactions[a].weight)
-    .slice(0, 3);
-  const selectedPosts = [];
-  const selectedPostsUrls = new Set();
-  sortedCats.forEach(cat => {
-    const catPosts = posts.filter(post => getPostCategories(post).includes(cat));
-    catPosts.forEach(post => {
-      const url = getPostUrl(post);
-      if (url && !selectedPostsUrls.has(url) && selectedPosts.length < 18) {
-        selectedPosts.push(post);
-        selectedPostsUrls.add(url);
-      }
-    });
-  });
-  const remainingPosts = posts.filter(post => !selectedPostsUrls.has(getPostUrl(post)));
-  return selectedPosts.concat(remainingPosts);
+  // ✅ الترتيب بالأحدث → الأقدم فقط
+  return posts.sort((a, b) => new Date(b.published.$t) - new Date(a.published.$t));
 }
 
 function fetchAllPosts() {
@@ -344,23 +269,18 @@ function fetchAllPosts() {
  ***********************/
 function loadMorePosts() {
   if (displayPointer < orderedFeed.length) {
-    // ✅ فيه بوستات لسه متعرضتش
-    displayBatch();
+    displayBatch(); // ✅ فيه بوستات لسه
   } else {
-    // ✅ لو خلصنا كل البوستات الحالية → نجيب دفعة جديدة
-    fetchAllPosts();
+    fetchAllPosts(); // ✅ نجيب دفعة جديدة
   }
 }
 
 loadMoreButton.addEventListener("click", loadMorePosts);
 
+// ✅ إدارة زر العربة
 productpostsElement.addEventListener("click", function(e) {
   const postCard = e.target.closest(".post-card");
   if (!postCard) return;
-  
-  const cats = postCard.getAttribute("data-categories");
-  const catsArray = cats ? cats.split(",") : ["غير مصنف"];
-  recordCategoryInteraction(catsArray);
 
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
@@ -386,5 +306,5 @@ productpostsElement.addEventListener("click", function(e) {
 window.onload = function() {
   displayedPosts = new Set();
   sessionStorage.setItem("displayedPosts", JSON.stringify([]));
-  fetchAllPosts(); // ✅ أول تحميل يجيب أول دفعة ويفعل النظام الجديد
+  fetchAllPosts(); // ✅ تحميل أول دفعة
 };
