@@ -15,7 +15,7 @@ let orderedFeed = [];
 let displayPointer = 0;
 let currentStartIndex = 1;
 let displayedPosts = new Set(JSON.parse(sessionStorage.getItem("displayedPosts")) || []);
-const productpostsElement = document.getElementById("product-posts");
+const olderPostsElement = document.getElementById("product-posts");
 const loadMoreButton = document.getElementById("load-more");
 const loaderElement = document.getElementById("loader");
 
