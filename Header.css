@@ -86,6 +86,12 @@
   background: linear-gradient(135deg, #ff9800, #ffc107);
 }
 
+.search-box-button .icon {
+  width: 25px;   
+  height: 25px;   
+  fill: #fff;     
+}
+
 /* ===========================
     السوشال + دارك مود + كارت
 =========================== */
