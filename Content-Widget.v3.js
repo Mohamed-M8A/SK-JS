@@ -50,7 +50,7 @@ function getPostImage(post, size = 320) {
 
   let imgUrl = imgMatch[1];
 
-  // ✅ صور بلوجر → نعدل الحجم
+  // ✅ لو الصورة من بلوجر → صغّرها للمقاس المطلوب
   if (/blogger\.googleusercontent\.com/.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
@@ -59,13 +59,9 @@ function getPostImage(post, size = 320) {
     }
   }
 
-  // ✅ fallback: لو الرابط شكله مش صورة (مقالات مثلاً)
-  if (!/\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(imgUrl)) {
-    return defaultImage;
-  }
-
   return imgUrl;
 }
+
 
 
 function getExtraProductData(post) {
