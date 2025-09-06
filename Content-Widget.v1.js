@@ -41,8 +41,8 @@ function getPostPrice(post) {
   return null;
 }
 
-function getPostImage(post) {
-  const defaultImage = "https://via.placeholder.com/380x380?text=No+Image";
+function getPostImage(post, size = 320) {
+  const defaultImage = `https://via.placeholder.com/${size}x${size}`;
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
 
@@ -50,12 +50,15 @@ function getPostImage(post) {
 
   let imgUrl = imgMatch[1];
 
-  // ✅ تحسين صورة Blogger: حجم 380px + WebP + أبعاد ثابتة
-  if (/blogspot\.com|bp\.blogspot\.com/.test(imgUrl)) {
-    imgUrl = imgUrl
-      .replace(/\/s\d{2,4}/, "/s380")   // استبدال حجم الصورة
-      .replace(/=s\d{2,4}/, "=s380");   // دعم أنماط أخرى
-    imgUrl += "-rw-e365";               // قص + WebP
+  // ✅ لو الصورة من بلوجر
+  if (/blogger\.googleusercontent\.com/.test(imgUrl)) {
+    // ضبط الحجم
+    if (/\/s\d+/.test(imgUrl)) {
+      imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
+    } else {
+      imgUrl = imgUrl.replace(/\/([^/]+)$/, `/s${size}/$1`);
+    }
+    // مفيش لعب في الامتداد .. تفضل زي ما هي (webp أو jpg أو png)
   }
 
   return imgUrl;
