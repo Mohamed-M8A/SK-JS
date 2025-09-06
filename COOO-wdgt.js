@@ -42,7 +42,7 @@ function getPostPrice(post) {
 }
 
 function getPostImage(post) {
-  const defaultImage = "https://via.placeholder.com/380x225";
+  const defaultImage = "https://via.placeholder.com/380x380?text=No+Image";
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
 
@@ -50,11 +50,12 @@ function getPostImage(post) {
 
   let imgUrl = imgMatch[1];
 
+  // ✅ تحسين صورة Blogger: حجم 380px + WebP + أبعاد ثابتة
   if (/blogspot\.com|bp\.blogspot\.com/.test(imgUrl)) {
     imgUrl = imgUrl
-      .replace(/\/s\d{2,4}/, "/s380")   
-      .replace(/=s\d{2,4}/, "=s380")   
-      + "-rw-e365"; 
+      .replace(/\/s\d{2,4}/, "/s380")   // استبدال حجم الصورة
+      .replace(/=s\d{2,4}/, "=s380");   // دعم أنماط أخرى
+    imgUrl += "-rw-e365";               // قص + WebP
   }
 
   return imgUrl;
@@ -119,8 +120,8 @@ function generatePostHTML(post, lazy = false) {
   }
 
   const imgTag = lazy
-    ? `<img class="post-image lazy-img" src="https://via.placeholder.com/380x225?text=..." data-src="${image}" alt="${title}" loading="lazy">`
-    : `<img class="post-image" src="${image}" alt="${title}" loading="lazy">`;
+    ? `<img class="post-image lazy-img" src="https://via.placeholder.com/380x380?text=..." data-src="${image}" alt="${title}" width="380" height="380" loading="lazy">`
+    : `<img class="post-image" src="${image}" alt="${title}" width="380" height="380" loading="lazy">`;
 
   return `
 <div class="post-card" data-categories="${categories}" data-product-url="${url}">
@@ -217,7 +218,6 @@ function fetchAllPosts() {
       displayBatch();
       currentStartIndex += allPostsLimit;
     })
-    .catch(error => console.error("❌ خطأ في جلب المنشورات:", error))
     .finally(() => {
       loaderElement.style.display = "none";
       loadMoreButton.style.display = 'block';
@@ -255,7 +255,7 @@ productpostsElement.addEventListener("click", function(e) {
         alert("تمت إضافة المنتج إلى العربة بنجاح!");
       }
     } catch(err) {
-      console.error("خطأ في قراءة رابط المنتج:", err);
+      console.error("خطأ في إضافة المنتج للعربة:", err);
     }
     e.preventDefault();
   }
