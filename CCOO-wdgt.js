@@ -50,13 +50,13 @@ function getPostImage(post) {
 
   let imgUrl = imgMatch[1];
 
-  // 🔹 لو الصورة من Google/Blogger (غالبًا فيها s1600 أو أي sXYZ)
   if (/blogspot\.com|bp\.blogspot\.com/.test(imgUrl)) {
-    // نغير الحجم لحوالي 400px (مناسب للكروت)
-    imgUrl = imgUrl.replace(/\/s\d{2,4}/, "/s400");
+    imgUrl = imgUrl
+      .replace(/\/s\d{2,4}/, "/s380")   
+      .replace(/=s\d{2,4}/, "=s380")   
+      + "-rw-e365"; 
   }
 
-  // ✅ نضيف أبعاد ثابتة للصور لتقليل CLS
   return imgUrl;
 }
 
