@@ -41,6 +41,7 @@ function getPostPrice(post) {
   return null;
 }
 
+
 function getPostImage(post, size = 320) {
   const defaultImage = `https://via.placeholder.com/${size}x${size}?text=No+Image`;
   const content = post.content?.$t || "";
@@ -50,19 +51,22 @@ function getPostImage(post, size = 320) {
 
   let imgUrl = imgMatch[1];
 
-  // ✅ فقط لو الصورة من بلوجر AND نوعها WebP → صغّرها
+  // ✅ فقط WebP من بلوجر
   if (/blogger\.googleusercontent\.com/.test(imgUrl) && /\.webp$/i.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
+      // صيغة s###
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
+    } else if (/\/w\d+-h\d+/.test(imgUrl)) {
+      // صيغة w###-h###
+      imgUrl = imgUrl.replace(/\/w\d+-h\d+/, `/w${size}-h${size}`);
     } else {
+      // مفيش بارامترات → أضف s320
       imgUrl = imgUrl.replace(/\/([^/]+)$/, `/s${size}/$1`);
     }
   }
 
   return imgUrl;
 }
-
-
 
 
 function getExtraProductData(post) {
