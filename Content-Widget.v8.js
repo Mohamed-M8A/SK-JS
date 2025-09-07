@@ -4,13 +4,18 @@
 const allPostsLimit = 60;
 const batchSize = 10;
 let allPosts = [];
-let orderedFeed = [];
+let productFeed = [];
 let displayPointer = 0;
 let currentStartIndex = 1;
 let displayedPosts = new Set(JSON.parse(sessionStorage.getItem("displayedPosts")) || []);
 const productpostsElement = document.getElementById("product-posts");
 const loadMoreButton = document.getElementById("load-more");
 const loaderElement = document.getElementById("loader");
+
+/***********************
+ * مصفوفة التصنيفات الممنوعة
+ ***********************/
+const bannedCategories = ["مقالات", "إعلانات"];
 
 /***********************
  * دوال المساعدة لاستخراج البيانات
@@ -29,28 +34,27 @@ function getPostPrice(post) {
   const content = post.content?.$t || "";
   const discounted = content.match(/<span class="price-discounted">([^<]+)<\/span>/);
   const original = content.match(/<span class="price-original">([^<]+)<\/span>/);
+
   if (original && discounted) {
     return {
       hasDiscount: true,
-      discountedPrice: discounted[1],
-      originalPrice: original[1]
+      discountedPrice: parseFloat(discounted[1]),
+      originalPrice: parseFloat(original[1])
     };
   } else if (discounted) {
-    return { hasDiscount: false, discountedPrice: discounted[1] };
+    return { hasDiscount: false, discountedPrice: parseFloat(discounted[1]) };
   }
   return null;
 }
 
 function getPostImage(post, size = 320) {
   const defaultImage = `https://via.placeholder.com/${size}x${size}/ffffff/ffffff.png`; // أبيض
-
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
   if (!imgMatch) return defaultImage;
 
   let imgUrl = imgMatch[1];
 
-  // ✅ لو الصورة من بلوجر وبصيغة webp → صغرها لـ 320
   if (/blogger\.googleusercontent\.com/.test(imgUrl) && /\.webp$/i.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
@@ -60,7 +64,6 @@ function getPostImage(post, size = 320) {
       imgUrl = imgUrl.replace(/\/([^/]+)$/, `/s${size}/$1`);
     }
   }
-
   return imgUrl;
 }
 
@@ -92,16 +95,16 @@ function generatePostHTML(post, lazy = false) {
   let priceHtml = '';
   let discountBadge = '';
   if (priceData) {
-    const originalPrice = priceData.originalPrice ? `<span class="original-price">${priceData.originalPrice} ر.س</span>` : '';
+    const originalPrice = priceData.originalPrice ? `<span class="original-price">${priceData.originalPrice.toFixed(2)} ر.س</span>` : '';
     priceHtml = `
       <div class="price-display">
-        <span class="discounted-price">${priceData.discountedPrice} ر.س</span>
+        <span class="discounted-price">${priceData.discountedPrice.toFixed(2)} ر.س</span>
         ${originalPrice}
       </div>
     `;
     if (priceData.originalPrice) {
-      const discountedValue = parseFloat(priceData.discountedPrice.replace(/[^\d.]/g, ''));
-      const originalValue = parseFloat(priceData.originalPrice.replace(/[^\d.]/g, ''));
+      const discountedValue = priceData.discountedPrice;
+      const originalValue = priceData.originalPrice;
       const discountPercentage = originalValue > 0 ? ((originalValue - discountedValue) / originalValue) * 100 : 0;
       discountBadge = `<div class="discount-badge">خصم ${discountPercentage.toFixed(0)}%</div>`;
     }
@@ -152,13 +155,15 @@ function generatePostHTML(post, lazy = false) {
 function displayBatch() {
   const batch = [];
   let count = 0;
-  while (count < batchSize && displayPointer < orderedFeed.length) {
-    const post = orderedFeed[displayPointer];
+  while (count < batchSize && displayPointer < productFeed.length) {
+    const post = productFeed[displayPointer];
     const url = getPostUrl(post);
-    if (getPostCategories(post).includes("مقالات")) {
+
+    if (getPostCategories(post).some(cat => bannedCategories.includes(cat))) {
       displayPointer++;
       continue;
     }
+
     if (url && !displayedPosts.has(url)) {
       displayedPosts.add(url);
       batch.push(generatePostHTML(post, displayPointer >= batchSize)); 
@@ -170,28 +175,33 @@ function displayBatch() {
     productpostsElement.insertAdjacentHTML('beforeend', batch.join(""));
     sessionStorage.setItem("displayedPosts", JSON.stringify([...displayedPosts]));
   }
-  if (displayPointer >= orderedFeed.length) lazyLoadImages();
+  if (displayPointer >= productFeed.length) lazyLoadImages();
 }
 
+/***********************
+ * Lazy Loading بالـ IntersectionObserver
+ ***********************/
 function lazyLoadImages() {
   const lazyImages = document.querySelectorAll("img.lazy-img[data-src]");
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i >= lazyImages.length) {
-      clearInterval(interval);
-      return;
-    }
-    const img = lazyImages[i];
-    img.src = img.dataset.src;
-    img.removeAttribute("data-src");
-    i++;
-  }, 600);
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute("data-src");
+        img.classList.remove("lazy-img");
+        obs.unobserve(img);
+      }
+    });
+  }, { rootMargin: "100px" });
+
+  lazyImages.forEach(img => observer.observe(img));
 }
 
 /***********************
  * جلب المنشورات + كاش
  ***********************/
-function computeOrderedFeed(posts) {
+function computeProductFeed(posts) {
   return posts.sort((a, b) => new Date(b.published.$t) - new Date(a.published.$t));
 }
 
@@ -203,7 +213,7 @@ function fetchAllPosts() {
   if (cached) {
     const parsed = JSON.parse(cached);
     allPosts = parsed;
-    orderedFeed = computeOrderedFeed(allPosts);
+    productFeed = computeProductFeed(allPosts);
     displayPointer = 0;
     displayBatch();
     loaderElement.style.display = "none";
@@ -217,7 +227,7 @@ function fetchAllPosts() {
       const posts = data.feed.entry || [];
       allPosts = allPosts.concat(posts);
       sessionStorage.setItem("cachedPosts", JSON.stringify(allPosts));
-      orderedFeed = computeOrderedFeed(allPosts);
+      productFeed = computeProductFeed(allPosts);
       displayPointer = 0;
       displayBatch();
       currentStartIndex += allPostsLimit;
@@ -225,6 +235,27 @@ function fetchAllPosts() {
     .finally(() => {
       loaderElement.style.display = "none";
     });
+}
+
+/***********************
+ * إشعارات Toast
+ ***********************/
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  if (type === "error") {
+    toast.style.background = "#e74c3c";
+  } else {
+    toast.style.background = "#2ecc71";
+  }
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
 }
 
 /***********************
@@ -236,10 +267,9 @@ function loadMorePosts() {
 
 loadMoreButton.addEventListener("click", loadMorePosts);
 
-// ✅ Scroll تحميل دفعات 10/10
 window.addEventListener("scroll", function () {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
-    if (displayPointer < orderedFeed.length) {
+    if (displayPointer < productFeed.length) {
       displayBatch();
     } else {
       loadMoreButton.style.display = "block";
@@ -257,11 +287,11 @@ productpostsElement.addEventListener("click", function(e) {
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const exists = cart.some(item => item.productUrl === productUrl);
       if (exists) {
-        alert("المنتج موجود بالفعل في العربة!");
+        showToast("المنتج موجود بالفعل في العربة!", "error");
       } else {
         cart.push({ productUrl: productUrl });
         localStorage.setItem("cart", JSON.stringify(cart));
-        alert("تمت إضافة المنتج إلى العربة بنجاح!");
+        showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
       }
     } catch(err) {
       console.error("خطأ في إضافة المنتج للعربة:", err);
