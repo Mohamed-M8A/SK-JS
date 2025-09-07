@@ -41,33 +41,28 @@ function getPostPrice(post) {
   return null;
 }
 
-
 function getPostImage(post, size = 320) {
-  const defaultImage = `https://via.placeholder.com/${size}x${size}?text=No+Image`;
+  const defaultImage = `https://via.placeholder.com/${size}x${size}/ffffff/ffffff.png`; // أبيض
+
   const content = post.content?.$t || "";
   const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-
   if (!imgMatch) return defaultImage;
 
   let imgUrl = imgMatch[1];
 
-  // ✅ فقط WebP من بلوجر
+  // ✅ لو الصورة من بلوجر وبصيغة webp → صغرها لـ 320
   if (/blogger\.googleusercontent\.com/.test(imgUrl) && /\.webp$/i.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
-      // صيغة s###
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
     } else if (/\/w\d+-h\d+/.test(imgUrl)) {
-      // صيغة w###-h###
       imgUrl = imgUrl.replace(/\/w\d+-h\d+/, `/w${size}-h${size}`);
     } else {
-      // مفيش بارامترات → أضف s320
       imgUrl = imgUrl.replace(/\/([^/]+)$/, `/s${size}/$1`);
     }
   }
 
   return imgUrl;
 }
-
 
 function getExtraProductData(post) {
   const content = post.content?.$t || "";
@@ -128,23 +123,25 @@ function generatePostHTML(post, lazy = false) {
   }
 
   const imgTag = lazy
-    ? `<img class="post-image lazy-img" src="https://via.placeholder.com/380x380?text=..." data-src="${image}" alt="${title}" width="380" height="380" loading="lazy">`
-    : `<img class="post-image" src="${image}" alt="${title}" width="380" height="380" loading="lazy">`;
+    ? `<img class="post-image lazy-img" src="https://via.placeholder.com/320x320/ffffff/ffffff.png" data-src="${image}" alt="${title}" width="320" height="320" loading="lazy">`
+    : `<img class="post-image" src="${image}" alt="${title}" width="320" height="320" loading="lazy">`;
 
   return `
 <div class="post-card" data-categories="${categories}" data-product-url="${url}">
-  <a href="${url}" target="_blank" class="image-container">
-    ${imgTag}
-    ${discountBadge}
-    <div class="external-cart-button">
-      <svg class="icon" width="18" height="18"><use xlink:href="#i-cart"></use></svg>
+  <a href="${url}" target="_blank" class="post-link">
+    <div class="image-container">
+      ${imgTag}
+      ${discountBadge}
+      <div class="external-cart-button">
+        <svg class="icon" width="18" height="18"><use xlink:href="#i-cart"></use></svg>
+      </div>
+    </div>
+    <div class="post-content">
+      <h3 class="post-title">${title}</h3>
+      ${priceHtml}
+      ${extraHtml}
     </div>
   </a>
-  <div class="post-content">
-    <a href="${url}" target="_blank"><h3 class="post-title">${title}</h3></a>
-    ${priceHtml}
-    ${extraHtml}
-  </div>
 </div>
   `;
 }
@@ -188,7 +185,7 @@ function lazyLoadImages() {
     img.src = img.dataset.src;
     img.removeAttribute("data-src");
     i++;
-  }, 800);
+  }, 600);
 }
 
 /***********************
@@ -210,7 +207,6 @@ function fetchAllPosts() {
     displayPointer = 0;
     displayBatch();
     loaderElement.style.display = "none";
-    loadMoreButton.style.display = 'block';
     return;
   }
 
@@ -228,7 +224,6 @@ function fetchAllPosts() {
     })
     .finally(() => {
       loaderElement.style.display = "none";
-      loadMoreButton.style.display = 'block';
     });
 }
 
@@ -236,14 +231,21 @@ function fetchAllPosts() {
  * الأحداث
  ***********************/
 function loadMorePosts() {
-  if (displayPointer < orderedFeed.length) {
-    displayBatch();
-  } else {
-    fetchAllPosts();
-  }
+  fetchAllPosts();
 }
 
 loadMoreButton.addEventListener("click", loadMorePosts);
+
+// ✅ Scroll تحميل دفعات 10/10
+window.addEventListener("scroll", function () {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+    if (displayPointer < orderedFeed.length) {
+      displayBatch();
+    } else {
+      loadMoreButton.style.display = "block";
+    }
+  }
+});
 
 productpostsElement.addEventListener("click", function(e) {
   const postCard = e.target.closest(".post-card");
@@ -251,8 +253,7 @@ productpostsElement.addEventListener("click", function(e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     try {
-      const postLink = postCard.querySelector('.image-container');
-      const productUrl = postLink.getAttribute('href');
+      const productUrl = postCard.getAttribute("data-product-url");
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const exists = cart.some(item => item.productUrl === productUrl);
       if (exists) {
