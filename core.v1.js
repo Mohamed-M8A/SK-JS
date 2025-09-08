@@ -1,5 +1,5 @@
 /***********************
- * إعداد المتغيرات الأساسية
+ * إعدادات أساسية
  ***********************/
 const allPostsLimit = 60;
 const batchSize = 10;
@@ -18,12 +18,12 @@ const loadMoreButton = document.getElementById("load-more");
 const loaderElement = document.getElementById("loader");
 
 /***********************
- * مصفوفة التصنيفات الممنوعة
+ * التصنيفات الممنوعة
  ***********************/
 const bannedCategories = ["مقالات", "إعلانات"];
 
 /***********************
- * دوال المساعدة لاستخراج البيانات
+ * دوال استخراج البيانات
  ***********************/
 function getPostCategories(post) {
   return (post.category && post.category.length > 0)
@@ -33,6 +33,12 @@ function getPostCategories(post) {
 
 function getPostUrl(post) {
   return post.link.find(link => link.rel === "alternate")?.href;
+}
+
+function getPostTitle(post) {
+  const content = post.content?.$t || "";
+  const titleMatch = content.match(/<h2[^>]*class=["']product-title["'][^>]*>([^<]+)<\/h2>/);
+  return titleMatch ? titleMatch[1] : post.title?.$t || "بدون عنوان";
 }
 
 function getPostPrice(post) {
@@ -65,7 +71,7 @@ function getPostImage(post, size = 320) {
 
   let imgUrl = imgMatch[1];
 
-  if (/blogger\.googleusercontent\.com/.test(imgUrl) && /\.webp$/i.test(imgUrl)) {
+  if (/blogger\.googleusercontent\.com/.test(imgUrl)) {
     if (/\/s\d+/.test(imgUrl)) {
       imgUrl = imgUrl.replace(/\/s\d+/, `/s${size}`);
     } else if (/\/w\d+-h\d+/.test(imgUrl)) {
@@ -87,34 +93,36 @@ function getExtraProductData(post) {
   const orders = ordersMatch ? ordersMatch[1] : null;
 
   const shippingMatch = content.match(/<div class="info-box shipping-time">[\s\S]*?<span class="value">([^<]+)<\/span>/);
-  const shipping = shippingMatch ? shippingMatch[1] : null;
+  const shipping = shippingMatch ? shipping[1] : null;
 
   return { rating, orders, shipping };
 }
 
 /***********************
- * بناء كارت المنتج
+ * بناء بطاقة المنتج
  ***********************/
 function generatePostHTML(post, lazy = false) {
   const url = getPostUrl(post);
-  if (!url) return '';
+  if (!url) return "";
 
-  const content = post.content?.$t || "";
-  const titleMatch = content.match(/<h1[^>]*>([^<]+)<\/h1>/);
-  const title = titleMatch ? titleMatch[1] : post.title.$t;
+  // تجاهل التصنيفات الممنوعة
+  if (getPostCategories(post).some(cat => bannedCategories.includes(cat))) {
+    return "";
+  }
 
+  const title = getPostTitle(post);
   const image = getPostImage(post);
   const priceData = getPostPrice(post);
   const extraData = getExtraProductData(post);
   const categories = getPostCategories(post).join(",");
 
-  let priceHtml = '';
-  let discountBadge = '';
+  let priceHtml = "";
+  let discountBadge = "";
 
   if (priceData) {
     const originalPrice = priceData.originalPrice
       ? `<span class="original-price">${priceData.originalPrice.toFixed(2)} ر.س</span>`
-      : '';
+      : "";
 
     priceHtml = `
       <div class="price-display">
@@ -134,7 +142,7 @@ function generatePostHTML(post, lazy = false) {
     }
   }
 
-  let extraHtml = '';
+  let extraHtml = "";
   if (extraData.rating || extraData.orders || extraData.shipping) {
     extraHtml = `<div class="product-meta-details">`;
 
@@ -185,7 +193,7 @@ function generatePostHTML(post, lazy = false) {
 }
 
 /***********************
- * Lazy Loading بالـ IntersectionObserver
+ * Lazy Loading للصور
  ***********************/
 function lazyLoadImages() {
   const lazyImages = document.querySelectorAll("img.lazy-img[data-src]");
@@ -232,9 +240,9 @@ function showToast(message, type = "success") {
 }
 
 /***********************
- * الأحداث (العربة)
+ * أحداث العربة
  ***********************/
-productpostsElement.addEventListener("click", function (e) {
+document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
   if (!postCard) return;
 
