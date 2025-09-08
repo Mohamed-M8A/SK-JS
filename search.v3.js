@@ -5,17 +5,16 @@ function searchProducts(query) {
   const resultsContainer = document.getElementById("product-posts");
   if (!resultsContainer) return;
 
-  // تفريغ النتائج السابقة
   resultsContainer.innerHTML = "";
 
   if (!query || query.trim() === "") {
-    showToast("اكتب كلمة للبحث أولاً", "error");
+    resultsContainer.innerHTML = `<p style="text-align:center; padding:20px;">اكتب كلمة للبحث أولاً</p>`;
     return;
   }
 
-  // البحث في العناوين
+  // البحث في كل البوستات
   const filteredPosts = allPosts.filter(post => {
-    // منع التصنيفات الممنوعة
+    // تجاهل التصنيفات الممنوعة
     if (getPostCategories(post).some(cat => bannedCategories.includes(cat))) {
       return false;
     }
@@ -32,26 +31,19 @@ function searchProducts(query) {
   const batch = filteredPosts.map(post => generatePostHTML(post, false));
   resultsContainer.innerHTML = batch.join("");
 
-  // تشغيل lazy load للصور
   lazyLoadImages();
 }
 
 /***********************
- * ربط البحث بالإنبوت
+ * قراءة query من الرابط
  ***********************/
 document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById("search-input");
-  const searchButton = document.getElementById("search-button");
-
-  if (searchInput && searchButton) {
-    searchButton.addEventListener("click", function () {
-      searchProducts(searchInput.value);
-    });
-
-    searchInput.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        searchProducts(searchInput.value);
-      }
-    });
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get("query"); // ?query=...
+  if (query) {
+    searchProducts(query);
+  } else {
+    document.getElementById("product-posts").innerHTML =
+      `<p style="text-align:center; padding:20px;">لا توجد كلمة بحث</p>`;
   }
 });
