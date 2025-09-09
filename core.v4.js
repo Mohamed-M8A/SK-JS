@@ -74,7 +74,7 @@ function getExtraProductData(post) {
   const orders = ordersMatch ? ordersMatch[1] : null;
 
   const shippingMatch = content.match(/<div class="info-box shipping-time">[\s\S]*?<span class="value">([^<]+)<\/span>/);
-  const shipping = shippingMatch ? shipping[1] : null;
+  const shipping = shippingMatch ? shippingMatch[1] : null;
 
   return { rating, orders, shipping };
 }
