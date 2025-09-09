@@ -1,5 +1,5 @@
 /***********************
- * جلب المنشورات + كاش
+ * جلب وترتيب المنشورات
  ***********************/
 function computeProductFeed(posts) {
   return posts.sort(
@@ -7,6 +7,9 @@ function computeProductFeed(posts) {
   );
 }
 
+/***********************
+ * جلب كل البوستات
+ ***********************/
 function fetchAllPosts() {
   loaderElement.style.display = "block";
   loadMoreButton.style.display = "none";
@@ -53,7 +56,7 @@ function displayBatch() {
     const post = productFeed[displayPointer];
     const url = getPostUrl(post);
 
-    // تجاهل البوستات اللي في الكاتيجوري الممنوعة
+    // تجاهل الكاتيجوري الممنوعة
     if (getPostCategories(post).some(cat => bannedCategories.includes(cat))) {
       displayPointer++;
       continue;
@@ -70,10 +73,7 @@ function displayBatch() {
   if (batch.length > 0) {
     productpostsElement.insertAdjacentHTML("beforeend", batch.join(""));
     sessionStorage.setItem("displayedPosts", JSON.stringify([...displayedPosts]));
-  }
-
-  if (displayPointer >= productFeed.length) {
-    lazyLoadImages();
+    lazyLoadImages(); // مهم للصور
   }
 }
 
