@@ -1,3 +1,17 @@
+let allPosts = [];
+let productFeed = [];
+let displayedPosts = new Set();
+let displayPointer = 0;
+
+let currentStartIndex = 1;
+const allPostsLimit = 50;
+const batchSize = 10;
+
+const productpostsElement = document.getElementById("product-posts");
+const loadMoreButton = document.getElementById("load-more");
+const loaderElement = document.getElementById("loader");
+
+
 /***********************
  * جلب وترتيب المنشورات
  ***********************/
@@ -109,3 +123,4 @@ window.onload = function () {
   sessionStorage.setItem("displayedPosts", JSON.stringify([]));
   fetchAllPosts();
 };
+
