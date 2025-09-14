@@ -194,6 +194,60 @@
   background: linear-gradient(135deg, #222, #555);
 }
 
+/* البطاقات */
+.dark-mode .post-card {
+  background: #1e1e1e;
+  color: #e0e0e0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* العناوين */
+.dark-mode .post-title {
+  color: #f1f1f1 !important;
+}
+.dark-mode .title-link {
+  color: inherit;
+}
+
+/* الأسعار */
+.dark-mode .discounted-price {
+  color: #4caf50; 
+}
+.dark-mode .original-price {
+  color: #aaa;
+}
+
+/* تفاصيل إضافية */
+.dark-mode .product-meta-details {
+  border-top: 1px solid #333;
+  color: #bbb;
+}
+.dark-mode .meta-rating,
+.dark-mode .meta-orders,
+.dark-mode .meta-shipping {
+  color: #ddd;
+}
+.dark-mode .meta-star {
+  color: #ffc107;
+}
+
+/* شارة الخصم */
+.dark-mode .discount-badge {
+  background: #ffb300; /* أصفر داكن */
+  color: #000;
+}
+
+/* زر "عرض المزيد" */
+.dark-mode #load-more {
+  background: linear-gradient(135deg, #222, #444);
+  color: #fff;
+}
+.dark-mode #load-more:hover {
+  background: linear-gradient(135deg, #333, #666);
+}
+
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .product-grid {
