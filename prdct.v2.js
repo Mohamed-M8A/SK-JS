@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+
   // ==============================
   // ✅ إعداد السلايدر الرئيسي
   // ==============================
@@ -10,33 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const scrollAmount = 240;
 
   let currentIndex = 0;
-  let isSliding = false;
 
+  //  تغيير الصورة بدون انيميشن + دعم المربّع الأسود (1:1)
   function changeImage(index) {
-    if (index === currentIndex || isSliding) return;
-    isSliding = true;
+    if (index === currentIndex) return;
 
-    const direction = index > currentIndex ? -1 : 1;
     const currentImg = document.getElementById('mainImage');
-    const newImg = currentImg.cloneNode(true);
+    currentImg.src = thumbnails[index].src;
 
-    newImg.src = thumbnails[index].src;
-    newImg.style.transform = `translateX(${100 * direction}%)`;
-    newImg.style.transition = 'none';
-
-    container.appendChild(newImg);
-
-    requestAnimationFrame(() => {
-      newImg.style.transition = 'transform 0.3s ease';
-      currentImg.style.transform = `translateX(${-100 * direction}%)`;
-      newImg.style.transform = 'translateX(0%)';
-
-      setTimeout(() => {
-        container.removeChild(currentImg);
-        newImg.id = 'mainImage';
-        isSliding = false;
-      }, 300);
-    });
+    // ✅ ضبط الصورة داخل إطار 1:1 مع خلفية سوداء
+    currentImg.style.objectFit = 'contain';   
+    currentImg.style.backgroundColor = 'black'; 
+    currentImg.style.width = '100%';
+    currentImg.style.height = '100%';
 
     thumbnails.forEach(img => img.classList.remove('active-thumb'));
     thumbnails[index].classList.add('active-thumb');
@@ -91,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     img.addEventListener('click', () => changeImage(index));
   });
 
-  changeImage(0); // عرض أول صورة عند التحميل
+  changeImage(0); 
 
   // ==============================
   // ✅ Modal لتكبير الصورة
@@ -104,6 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modal || !modalImage) return;
     modal.style.display = "flex";
     modalImage.src = thumbnails[index].src;
+
+    //  ضبط الصورة داخل الـ Modal بنفس طريقة 1:1
+    modalImage.style.objectFit = 'contain';
+    modalImage.style.backgroundColor = 'black';
+    modalImage.style.width = '100%';
+    modalImage.style.height = '100%';
+
     currentIndex = index;
   };
 
@@ -117,23 +111,30 @@ document.addEventListener('DOMContentLoaded', () => {
       ? (currentIndex + 1) % thumbnails.length
       : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
     modalImage.src = thumbnails[currentIndex].src;
+
+    // ✅ نفس ضبط 1:1 داخل المودال
+    modalImage.style.objectFit = 'contain';
+    modalImage.style.backgroundColor = 'black';
+    modalImage.style.width = '100%';
+    modalImage.style.height = '100%';
   };
 
 
-  // ==============================
-  // ✅ إضافة المنتج إلى العربة
-  // ==============================
+// ==============================
+// ✅ إضافة المنتج إلى العربة
+// ==============================
+
 
 function addToCart(productUrl) {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const exists = cart.some(item => item.productUrl === productUrl);
 
   if (exists) {
-    alert("المنتج موجود بالفعل في العربة!");
+    showToast("المنتج موجود بالفعل في العربة!", "error");
   } else {
     cart.push({ productUrl });
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("تمت إضافة المنتج إلى العربة بنجاح!");
+    showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
   }
 }
 
@@ -147,24 +148,57 @@ document.querySelectorAll(".add-to-cart").forEach(btn => {
   btn.addEventListener("click", handleAddToCart);
 });
 
+// ==============================
+// ✅ نسخ الكوبون
+// ==============================
 
-  // ==============================
-  // ✅ نسخ الكوبون
-  // ==============================
+window.copyCoupon = function () {
+  const code = document.getElementById("couponCode")?.innerText;
+  if (!code) return;
 
-  window.copyCoupon = function () {
-    const code = document.getElementById("couponCode")?.innerText;
-    if (!code) return;
+  navigator.clipboard.writeText(code)
+    .then(() => showToast("تم نسخ الكوبون: " + code, "success"))
+    .catch(err => {
+      console.error("فشل النسخ: ", err);
+      showToast("فشل نسخ الكوبون!", "error");
+    });
+};
 
-    navigator.clipboard.writeText(code)
-      .then(() => alert("تم نسخ الكوبون: " + code))
-      .catch(err => console.error("فشل النسخ: ", err));
-  };
+// ==============================
+// ✅ إشعارات Toast 
+// ==============================
 
+// ✅ دالة توست عامة
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  // ألوان حسب النوع
+  if (type === "error") {
+    toast.style.background = "#e74c3c"; // أحمر
+  } else if (type === "success") {
+    toast.style.background = "#2ecc71"; // أخضر
+  } else {
+    toast.style.background = "#555"; // افتراضي رمادي
+  }
+
+  toast.style.color = "#fff";
+  document.body.appendChild(toast);
+
+  // إظهار
+  setTimeout(() => toast.classList.add("show"), 100);
+
+  // إخفاء
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
 
  // =======================================
  // ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
-  // =================================
+ // =================================
 
 // ✅ دالة تنسيق السعر بالفاصلة والعشرية
 function formatPrice(num) {
@@ -178,7 +212,7 @@ function formatPrice(num) {
 
 // ✅ تغيير نص زر الشراء
 const buyBtn = document.querySelector(".buy-button");
-if (buyBtn) buyBtn.textContent = "تسوق الآن";
+if (buyBtn) buyBtn.textContent = "اطلب الآن";
 
 // ✅ تغيير نص زر العربة
 const cartBtn = document.querySelector(".add-to-cart");
@@ -372,66 +406,62 @@ renderStarsFromValue();
   // ==============================
 
 document.addEventListener("DOMContentLoaded", function () {
-  const boxes = document.querySelectorAll('.info-box');
+  const boxes = document.querySelectorAll(".info-box");
 
   let shippingToSA = null;
   let availability = null;
   let shippingTimeBox = null;
 
   boxes.forEach(box => {
-    const value = box.querySelector('.value');
+    const value = box.querySelector(".value");
     if (!value) return;
 
     const text = value.textContent.trim();
 
-    // ✅ تلوين حسب القيمة
-    if (text.includes('متاح') || text.includes('متوفر')) {
-      value.style.color = '#2e7d32';
-      value.style.fontWeight = 'bold';
+    // ✅ التلوين حسب النص
+    if (/متاح|متوفر/.test(text)) {
+      Object.assign(value.style, { color: "#2e7d32", fontWeight: "bold" });
+    } else if (/غير متاح|غير متوفر/.test(text)) {
+      Object.assign(value.style, { color: "#c62828", fontWeight: "bold" });
     }
 
-    if (text.includes('غير متاح') || text.includes('غير متوفر')) {
-      value.style.color = '#c62828';
-      value.style.fontWeight = 'bold';
-    }
-
-    // ✅ تلوين مجاني (بالاعتماد على الكلاس .shipping-fee)
-    if (box.classList.contains('shipping-fee')) {
+    // ✅ تلوين مجاني (للشحن فقط)
+    if (box.classList.contains("shipping-fee")) {
       if (/مجانا|مجاناً/.test(text)) {
-        value.style.color = '#2e7d32';
-        value.style.fontWeight = 'bold';
+        Object.assign(value.style, { color: "#2e7d32", fontWeight: "bold" });
       } else {
-        value.style.color = '#222';
-        value.style.fontWeight = 'normal';
+        Object.assign(value.style, { color: "#222", fontWeight: "normal" });
       }
     }
 
     // ✅ نخزن العناصر المطلوبة
-    if (box.classList.contains('sa-shipping')) {
-      shippingToSA = text;
-    }
-
-    if (box.classList.contains('product-availability')) {
-      availability = text;
-    }
-
-    if (box.classList.contains('shipping-time')) {
-      shippingTimeBox = value;
-    }
+    if (box.classList.contains("country-shipping")) shippingToSA = text;
+    if (box.classList.contains("product-availability")) availability = text;
+    if (box.classList.contains("shipping-time")) shippingTimeBox = value;
   });
 
   // ✅ لو مفيش شحن أو المنتج غير متوفر → نحذف مدة الشحن
-  if (
-    (shippingToSA && shippingToSA.includes('غير')) ||
-    (availability && availability.includes('غير'))
-  ) {
+  if ((shippingToSA?.includes("غير")) || (availability?.includes("غير"))) {
     if (shippingTimeBox) {
-      shippingTimeBox.textContent = '-';
-      shippingTimeBox.style.color = '#000';
-      shippingTimeBox.style.fontWeight = 'normal';
+      shippingTimeBox.textContent = "-";
+      Object.assign(shippingTimeBox.style, { color: "#000", fontWeight: "normal" });
     }
   }
 });
+
+  // ==============================
+  // ✅ إضافة صور افتراضية للعملاء 
+  // ==============================
+
+  const avatarURL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwYjQ3P3sS7yC15Dqs4gAPU3sEGpftVMbqMLwaUbIk5lgxsDIxG5LseYewSYgx9ugKh5wI8ZvMZL_Oh2qZd6FD6lvHbSenXP148Iy3AHvflDx8cO6ysEGc3_nOjv4wbs9USnFA2qdgIvy-WX_ybSngrHNRqpuMSACdhRX19hoQztPYC70WNNpU8zEd/w200-h200/6VBx3io.png";
+
+  document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
+    const img = document.createElement("img");
+    img.src = avatarURL;
+    img.alt = "أفاتار";
+    img.className = "reviewer-img";
+    placeholder.appendChild(img);
+  });
 
 
   // ==============================
@@ -448,20 +478,6 @@ if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
 } else {
   if (discountEl) discountEl.textContent = '';
 }
-
-  // ==============================
-  // ✅ إضافة صور العملاء 
-  // ==============================
-
-  const avatarURL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwYjQ3P3sS7yC15Dqs4gAPU3sEGpftVMbqMLwaUbIk5lgxsDIxG5LseYewSYgx9ugKh5wI8ZvMZL_Oh2qZd6FD6lvHbSenXP148Iy3AHvflDx8cO6ysEGc3_nOjv4wbs9USnFA2qdgIvy-WX_ybSngrHNRqpuMSACdhRX19hoQztPYC70WNNpU8zEd/w200-h200/6VBx3io.png";
-
-  document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
-    const img = document.createElement("img");
-    img.src = avatarURL;
-    img.alt = "أفاتار";
-    img.className = "reviewer-img";
-    placeholder.appendChild(img);
-  });
 
   // ==============================
   // ✅ حساب التوفير
@@ -534,7 +550,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
-
 
   // ==============================
   // ✅ الرسم البياني
@@ -692,34 +707,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   }
 });
 
-  // ==============================
-  // ✅ وظيفة نسخ الرابط
-  // ==============================
-
-
-  function copyPostLink(el) {
-    var link = el.getAttribute("data-url");
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(link).then(function() {
-        alert("تم نسخ الرابط بنجاح");
-      }).catch(function() {
-        alert("حدث خطأ أثناء النسخ");
-      });
-    } else {
-      // fallback للمتصفحات القديمة
-      var temp = document.createElement("input");
-      document.body.appendChild(temp);
-      temp.value = link;
-      temp.select();
-      document.execCommand("copy");
-      document.body.removeChild(temp);
-      alert("تم نسخ الرابط بنجاح");
-    }
-  }
-
 
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
-
-
