@@ -5,6 +5,7 @@
    - Cart Widget
    - Search
    - Placeholder Rotation
+   - Remove ?m=0 / ?m=1 from URL
 ------------------------------------------------- */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -61,8 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // =================== ✅ تدوير الـ placeholder ===================
   if (input) {
     const placeholders = [
-      "خلنا نساعدك تلاقي اللي يناسبك",
-      "جاهز تلاقي شي يغير يومك",
       "ماكينة قهوة ديلونجي",
       "سماعات بلوتوث جالكسي بودز",
       "مكنسة روبوت ذكية",
@@ -76,8 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "لوح مفاتيح ميكانيكي RGB",
       "فرامة خضار يدوية",
       "ميزان ذكي للحمية",
-      "سماعات رأس للألعاب",
-      "اختر منتجك وابدأ اكتشاف الأفضل"
+      "سماعات رأس للألعاب"
     ];
 
     let currentIndex = 0;
@@ -145,5 +143,16 @@ document.addEventListener("DOMContentLoaded", function () {
       backTop.classList.add("d-none");
     }
   },false);
+
+  // =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
+  function rmurl(e,t){
+      var r=new RegExp(/\?m=0|&m=0|\?m=1|&m=1/g);
+      if(r.test(e)){
+          e = e.replace(r,"");
+          if(t) window.history.replaceState({},document.title,e);
+      }
+      return e;
+  }
+  const currentUrl = rmurl(location.toString(),!0);
 
 });
