@@ -216,7 +216,7 @@ if (buyBtn) buyBtn.textContent = "اطلب الآن";
 
 // ✅ تغيير نص زر العربة
 const cartBtn = document.querySelector(".add-to-cart");
-if (cartBtn) cartBtn.textContent = "أضف للسلة";
+if (cartBtn) cartBtn.textContent = "أضف للعربة";
 
 // ✅ تنسيق الأسعار + إضافة "ر.س"
 document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
@@ -272,48 +272,52 @@ if (shippingTime) {
   // ✅ التبويبات الذكية
   // ==============================
 
-  function showTab(id, btn) {
-    document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
-    document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
+let enableInitialScroll = false; // ✅ متغير تحكم - في البداية ممنوع السكرول
 
-    const target = document.getElementById(id);
-    if (target) {
-      target.style.display = 'block';
+function showTab(id, btn) {
+  document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
 
-      // Scroll لأعلى التاب تلقائيًا
-      const targetTop = target.getBoundingClientRect().top + window.scrollY;
-      const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
 
-      setTimeout(() => {
+    // Scroll لأعلى التاب تلقائيًا (الكود موجود لكن بيتحكم فيه المتغير)
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+
+    setTimeout(() => {
+      if (enableInitialScroll) { // ✅ الشرط هنا
         window.scrollTo({
           top: targetTop - stickyHeight - 10,
           behavior: 'smooth'
         });
-      }, 100);
-    }
-
-    if (btn) btn.classList.add('active');
+      }
+    }, 100);
   }
 
-  let tabCheck = setInterval(() => {
-    const firstBtn = document.querySelector('.tab-buttons button');
-    const firstTab = document.getElementById('tab1');
+  if (btn) btn.classList.add('active');
+}
 
-    if (firstBtn && firstTab) {
-      showTab('tab1', firstBtn);
+let tabCheck = setInterval(() => {
+  const firstBtn = document.querySelector('.tab-buttons button');
+  const firstTab = document.getElementById('tab1');
 
-      document.querySelectorAll('.tab-buttons button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
-          if (id) showTab(id, btn);
-        });
+  if (firstBtn && firstTab) {
+    showTab('tab1', firstBtn);
+
+    document.querySelectorAll('.tab-buttons button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
+        if (id) showTab(id, btn);
       });
+    });
 
-      clearInterval(tabCheck);
-    }
-  }, 100);
+    clearInterval(tabCheck);
+  }
+}, 100);
 
-  setTimeout(() => clearInterval(tabCheck), 5000);
+setTimeout(() => clearInterval(tabCheck), 5000);
 
 });
 
