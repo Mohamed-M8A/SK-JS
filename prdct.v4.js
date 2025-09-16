@@ -84,41 +84,56 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ Modal لتكبير الصورة
   // ==============================
 
-  const modal = document.getElementById("imageModal");
-  const modalImage = document.getElementById("modalImage");
+function createModal() {
+  if (document.getElementById("imageModal")) return; // لو المودال موجود مسبقًا
 
-  window.openModal = function (index) {
-    if (!modal || !modalImage) return;
-    modal.style.display = "flex";
-    modalImage.src = thumbnails[index].src;
+  const modalHTML = `
+    <div id="imageModal" class="modal">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img class="modal-content" id="modalImage" />
+      <span class="arrow left" onclick="navigateModal('prev')"></span>
+      <span class="arrow right" onclick="navigateModal('next')"></span>
+    </div>
+  `;
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
+}
 
-    //  ضبط الصورة داخل الـ Modal بنفس طريقة 1:1
-    modalImage.style.objectFit = 'contain';
-    modalImage.style.backgroundColor = 'black';
-    modalImage.style.width = '100%';
-    modalImage.style.height = '100%';
+createModal(); // 📌 استدعاء الدالة لإنشاء المودال عند تحميل الصفحة
 
-    currentIndex = index;
-  };
+const modal = document.getElementById("imageModal");
+const modalImage = document.getElementById("modalImage");
 
-  window.closeModal = function () {
-    if (modal) modal.style.display = "none";
-  };
+window.openModal = function (index) {
+  if (!modal || !modalImage) return;
+  modal.style.display = "flex";
+  modalImage.src = thumbnails[index].src;
 
-  window.navigateModal = function (direction) {
-    if (!thumbnails.length || !modalImage) return;
-    currentIndex = direction === "next"
-      ? (currentIndex + 1) % thumbnails.length
-      : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-    modalImage.src = thumbnails[currentIndex].src;
+  // ✅ ضبط الصورة داخل الـ Modal بنفس طريقة 1:1
+  modalImage.style.objectFit = 'contain';
+  modalImage.style.backgroundColor = 'black';
+  modalImage.style.width = '100%';
+  modalImage.style.height = '100%';
 
-    // ✅ نفس ضبط 1:1 داخل المودال
-    modalImage.style.objectFit = 'contain';
-    modalImage.style.backgroundColor = 'black';
-    modalImage.style.width = '100%';
-    modalImage.style.height = '100%';
-  };
+  currentIndex = index;
+};
 
+window.closeModal = function () {
+  if (modal) modal.style.display = "none";
+};
+
+window.navigateModal = function (direction) {
+  if (!thumbnails.length || !modalImage) return;
+  currentIndex = direction === "next"
+    ? (currentIndex + 1) % thumbnails.length
+    : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+  modalImage.src = thumbnails[currentIndex].src;
+
+  // ✅ نفس ضبط 1:1 داخل المودال
+  modalImage.style.objectFit = 'contain';
+  modalImage.style.backgroundColor = 'black';
+  modalImage.style.width = '100%';
+  modalImage.style.height = '100%';
+};
 
 // ==============================
 // ✅ إضافة المنتج إلى العربة
@@ -715,3 +730,4 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
