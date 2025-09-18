@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const storeLabel = labels.map(el => el.textContent.trim()).find(l => l.startsWith("store-"));
 
   if (!storeLabel) {
-    sellerBarContainer.innerHTML = "<p>⚠ لم يتم العثور على المتجر.</p>";
+    sellerBarContainer.innerHTML = "<p></p>";
     return;
   }
 
