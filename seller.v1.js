@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     return;
   }
 
-  const feedUrl = `/feeds/posts/default/-/${encodeURIComponent(storeLabel)}?alt=json&max-results=100`;
+  const feedUrl = `/feeds/posts/default/-/${encodeURIComponent(storeLabel)}?alt=json&max-results=150`;
 
   try {
     const res = await fetch(feedUrl);
