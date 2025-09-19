@@ -86,7 +86,7 @@ async function loadSellerProducts() {
     }
 
     // 🔹 إعداد الصفحات
-    const perPage = 10;
+    const perPage = 60;
     let currentPage = 1;
     const totalPages = Math.ceil(entries.length / perPage);
 
