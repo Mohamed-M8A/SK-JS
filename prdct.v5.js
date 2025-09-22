@@ -136,6 +136,38 @@ window.navigateModal = function (direction) {
 };
 
 // ==============================
+// ✅ إشعارات Toast 
+// ==============================
+
+// ✅ دالة توست عامة
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  // ألوان حسب النوع
+  if (type === "error") {
+    toast.style.background = "#e74c3c"; // أحمر
+  } else if (type === "success") {
+    toast.style.background = "#2ecc71"; // أخضر
+  } else {
+    toast.style.background = "#555"; // افتراضي رمادي
+  }
+
+  toast.style.color = "#fff";
+  document.body.appendChild(toast);
+
+  // إظهار
+  setTimeout(() => toast.classList.add("show"), 100);
+
+  // إخفاء
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+  
+// ==============================
 // ✅ إضافة المنتج إلى العربة
 // ==============================
 
@@ -177,38 +209,6 @@ window.copyCoupon = function () {
       showToast("فشل نسخ الكوبون!", "error");
     });
 };
-
-// ==============================
-// ✅ إشعارات Toast 
-// ==============================
-
-// ✅ دالة توست عامة
-function showToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
-
-  // ألوان حسب النوع
-  if (type === "error") {
-    toast.style.background = "#e74c3c"; // أحمر
-  } else if (type === "success") {
-    toast.style.background = "#2ecc71"; // أخضر
-  } else {
-    toast.style.background = "#555"; // افتراضي رمادي
-  }
-
-  toast.style.color = "#fff";
-  document.body.appendChild(toast);
-
-  // إظهار
-  setTimeout(() => toast.classList.add("show"), 100);
-
-  // إخفاء
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
 
  // =======================================
  // ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
@@ -726,4 +726,5 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
