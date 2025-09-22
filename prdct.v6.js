@@ -134,38 +134,6 @@ window.navigateModal = function (direction) {
   modalImage.style.width = '100%';
   modalImage.style.height = '100%';
 };
-
-// ==============================
-// ✅ إشعارات Toast 
-// ==============================
-
-// ✅ دالة توست عامة
-function showToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
-
-  // ألوان حسب النوع
-  if (type === "error") {
-    toast.style.background = "#e74c3c"; // أحمر
-  } else if (type === "success") {
-    toast.style.background = "#2ecc71"; // أخضر
-  } else {
-    toast.style.background = "#555"; // افتراضي رمادي
-  }
-
-  toast.style.color = "#fff";
-  document.body.appendChild(toast);
-
-  // إظهار
-  setTimeout(() => toast.classList.add("show"), 100);
-
-  // إخفاء
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
   
 // ==============================
 // ✅ إضافة المنتج إلى العربة
@@ -210,76 +178,36 @@ window.copyCoupon = function () {
     });
 };
 
- // =======================================
- // ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
- // =================================
+// ==============================
+// ✅ إشعارات Toast 
+// ==============================
 
-// ✅ دالة تنسيق السعر بالفاصلة والعشرية
-function formatPrice(num) {
-  const number = parseFloat(num.toString().replace(/,/g, ''));
-  if (isNaN(number)) return num;
-  return number.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
+// ✅ دالة توست عامة
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
 
-// ✅ تغيير نص زر الشراء
-const buyBtn = document.querySelector(".buy-button");
-if (buyBtn) buyBtn.textContent = "اطلب الآن";
-
-// ✅ تغيير نص زر العربة
-const cartBtn = document.querySelector(".add-to-cart");
-if (cartBtn) cartBtn.textContent = "أضف للعربة";
-
-// ✅ تنسيق الأسعار + إضافة "ر.س"
-document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
-  const text = el.innerText.trim();
-
-  // ✅ التوفير: "وفر: ..."
-  if (el.classList.contains("price-saving") && text.includes("وفر:")) {
-    const match = text.match(/وفر:\s*([\d.,]+)/);
-    if (match && match[1]) {
-      const formatted = formatPrice(match[1]);
-      el.innerText = `وفر: ${formatted} ر.س`;
-    }
-    return;
+  // ألوان حسب النوع
+  if (type === "error") {
+    toast.style.background = "#e74c3c"; // أحمر
+  } else if (type === "success") {
+    toast.style.background = "#2ecc71"; // أخضر
+  } else {
+    toast.style.background = "#555"; // افتراضي رمادي
   }
 
-  // ✅ السعر العادي
-  const numberOnly = text.match(/[\d.,]+/);
-  if (numberOnly) {
-    const formatted = formatPrice(numberOnly[0]);
-    el.innerText = `${formatted} ر.س`;
-  }
-});
+  toast.style.color = "#fff";
+  document.body.appendChild(toast);
 
-// ✅ عرض عدد التقييمات من data-count
-const ratingCount = document.getElementById("goToReviews");
-if (ratingCount) {
-  const count = ratingCount.getAttribute("data-count") || "0";
-  ratingCount.textContent = `${count} تقييمات`;
-}
+  // إظهار
+  setTimeout(() => toast.classList.add("show"), 100);
 
-// ✅ تنسيق تكلفة الشحن وإضافة "ر.س"
-const shippingFee = document.querySelector(".shipping-fee .value");
-if (shippingFee) {
-  const text = shippingFee.innerText.trim();
-  const match = text.match(/[\d.,\-–]+/);
-  if (match) {
-    const formatted = formatPrice(match[0]);
-    shippingFee.innerText = `${formatted} ر.س`;
-  }
-}
-
-// ✅ تنسيق مدة الشحن وإضافة "أيام"
-const shippingTime = document.querySelector(".shipping-time .value");
-if (shippingTime) {
-  const text = shippingTime.innerText.trim();
-  const match = text.match(/[\d\s\-–]+/);
-  if (match) {
-    shippingTime.innerText = `${match[0]} أيام`;
-  }
+  // إخفاء
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
 }
 
   // ==============================
@@ -417,6 +345,78 @@ setTimeout(() => clearInterval(tabCheck), 5000);
       });
     }
   });
+
+ // =======================================
+ // ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
+ // =======================================
+
+// ✅ دالة تنسيق السعر بالفاصلة والعشرية
+function formatPrice(num) {
+  const number = parseFloat(num.toString().replace(/,/g, ''));
+  if (isNaN(number)) return num;
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+// ✅ تغيير نص زر الشراء
+const buyBtn = document.querySelector(".buy-button");
+if (buyBtn) buyBtn.textContent = "اطلب الآن";
+
+// ✅ تغيير نص زر العربة
+const cartBtn = document.querySelector(".add-to-cart");
+if (cartBtn) cartBtn.textContent = "أضف للعربة";
+
+// ✅ تنسيق الأسعار + إضافة "ر.س"
+document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
+  const text = el.innerText.trim();
+
+  // ✅ التوفير: "وفر: ..."
+  if (el.classList.contains("price-saving") && text.includes("وفر:")) {
+    const match = text.match(/وفر:\s*([\d.,]+)/);
+    if (match && match[1]) {
+      const formatted = formatPrice(match[1]);
+      el.innerText = `وفر: ${formatted} ر.س`;
+    }
+    return;
+  }
+
+  // ✅ السعر العادي
+  const numberOnly = text.match(/[\d.,]+/);
+  if (numberOnly) {
+    const formatted = formatPrice(numberOnly[0]);
+    el.innerText = `${formatted} ر.س`;
+  }
+});
+
+// ✅ عرض عدد التقييمات من data-count
+const ratingCount = document.getElementById("goToReviews");
+if (ratingCount) {
+  const count = ratingCount.getAttribute("data-count") || "0";
+  ratingCount.textContent = `${count} تقييمات`;
+}
+
+// ✅ تنسيق تكلفة الشحن وإضافة "ر.س"
+const shippingFee = document.querySelector(".shipping-fee .value");
+if (shippingFee) {
+  const text = shippingFee.innerText.trim();
+  const match = text.match(/[\d.,\-–]+/);
+  if (match) {
+    const formatted = formatPrice(match[0]);
+    shippingFee.innerText = `${formatted} ر.س`;
+  }
+}
+
+// ✅ تنسيق مدة الشحن وإضافة "أيام"
+const shippingTime = document.querySelector(".shipping-time .value");
+if (shippingTime) {
+  const text = shippingTime.innerText.trim();
+  const match = text.match(/[\d\s\-–]+/);
+  if (match) {
+    shippingTime.innerText = `${match[0]} أيام`;
+  }
+}
 
   // ==============================
   // ✅ التعامل مع معلومات المنتج
@@ -726,5 +726,6 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
