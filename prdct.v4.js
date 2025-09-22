@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
 
 function createModal() {
-  if (document.getElementById("imageModal")) return; // لو المودال موجود مسبقًا
+  if (document.getElementById("imageModal")) return;
 
   const modalHTML = `
     <div id="imageModal" class="modal">
@@ -98,7 +98,7 @@ function createModal() {
   document.body.insertAdjacentHTML("beforeend", modalHTML);
 }
 
-createModal(); // 📌 استدعاء الدالة لإنشاء المودال عند تحميل الصفحة
+createModal(); 
 
 const modal = document.getElementById("imageModal");
 const modalImage = document.getElementById("modalImage");
@@ -138,7 +138,6 @@ window.navigateModal = function (direction) {
 // ==============================
 // ✅ إضافة المنتج إلى العربة
 // ==============================
-
 
 function addToCart(productUrl) {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -284,10 +283,40 @@ if (shippingTime) {
 }
 
   // ==============================
+  // ✅ إضافة نجوم التقييم
+  // ==============================
+
+function renderStarsFromValue() {
+  let rating = parseFloat(document.getElementById("ratingValue").textContent);
+
+  let fullStars = Math.floor(rating);          
+  let hasHalf = (rating % 1 !== 0) ? 1 : 0;    
+  let emptyStars = 5 - fullStars - hasHalf;   
+
+  let starsHTML = "";
+
+  for (let i = 0; i < fullStars; i++) {
+    starsHTML += `<span class="star">★</span>`; 
+  }
+
+  if (hasHalf) {
+    starsHTML += `<span class="star half">★</span>`; 
+  }
+
+  for (let i = 0; i < emptyStars; i++) {
+    starsHTML += `<span class="star empty">★</span>`; 
+  }
+
+  document.getElementById("stars").innerHTML = starsHTML;
+}
+
+renderStarsFromValue();
+  
+  // ==============================
   // ✅ التبويبات الذكية
   // ==============================
 
-let enableInitialScroll = false; // ✅ متغير تحكم - في البداية ممنوع السكرول
+let enableInitialScroll = false; 
 
 function showTab(id, btn) {
   document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
@@ -335,7 +364,6 @@ let tabCheck = setInterval(() => {
 setTimeout(() => clearInterval(tabCheck), 5000);
 
 });
-
 
   // ==================================
   // ✅ التوجيه لتاب التقييمات رقم (5)
@@ -389,36 +417,6 @@ setTimeout(() => clearInterval(tabCheck), 5000);
       });
     }
   });
-
-  // ==============================
-  // ✅ إضافة نجوم التقييم
-  // ==============================
-
-function renderStarsFromValue() {
-  let rating = parseFloat(document.getElementById("ratingValue").textContent);
-
-  let fullStars = Math.floor(rating);          
-  let hasHalf = (rating % 1 !== 0) ? 1 : 0;    
-  let emptyStars = 5 - fullStars - hasHalf;   
-
-  let starsHTML = "";
-
-  for (let i = 0; i < fullStars; i++) {
-    starsHTML += `<span class="star">★</span>`; 
-  }
-
-  if (hasHalf) {
-    starsHTML += `<span class="star half">★</span>`; 
-  }
-
-  for (let i = 0; i < emptyStars; i++) {
-    starsHTML += `<span class="star empty">★</span>`; 
-  }
-
-  document.getElementById("stars").innerHTML = starsHTML;
-}
-
-renderStarsFromValue();
 
   // ==============================
   // ✅ التعامل مع معلومات المنتج
@@ -481,7 +479,6 @@ document.addEventListener("DOMContentLoaded", function () {
     img.className = "reviewer-img";
     placeholder.appendChild(img);
   });
-
 
   // ==============================
   // ✅ حساب نسبة الخصم
@@ -729,3 +726,4 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
