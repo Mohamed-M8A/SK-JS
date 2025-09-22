@@ -360,9 +360,9 @@ setTimeout(() => clearInterval(tabCheck), 5000);
     placeholder.appendChild(img);
   });
 
- // =======================================
- // ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
- // =======================================
+// =======================================
+// ✅ تحسين عرض النصوص (أزرار + أسعار + تقييمات)
+// =======================================
 
 // ✅ دالة تنسيق السعر بالفاصلة والعشرية
 function formatPrice(num) {
@@ -382,11 +382,11 @@ if (buyBtn) buyBtn.textContent = "اطلب الآن";
 const cartBtn = document.querySelector(".add-to-cart");
 if (cartBtn) cartBtn.textContent = "أضف للعربة";
 
-// ✅ تنسيق الأسعار + إضافة "ر.س"
+// ✅ تنسيق الأسعار (عادي + الخصم + التوفير)
 document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
   const text = el.innerText.trim();
 
-  // ✅ التوفير: "وفر: ..."
+  // ✅ التوفير
   if (el.classList.contains("price-saving") && text.includes("وفر:")) {
     const match = text.match(/وفر:\s*([\d.,]+)/);
     if (match && match[1]) {
@@ -411,7 +411,7 @@ if (ratingCount) {
   ratingCount.textContent = `${count} تقييمات`;
 }
 
-// ✅ تنسيق تكلفة الشحن وإضافة "ر.س"
+// ✅ تنسيق تكلفة الشحن
 const shippingFee = document.querySelector(".shipping-fee .value");
 if (shippingFee) {
   const text = shippingFee.innerText.trim();
@@ -422,7 +422,7 @@ if (shippingFee) {
   }
 }
 
-// ✅ تنسيق مدة الشحن وإضافة "أيام"
+// ✅ تنسيق مدة الشحن
 const shippingTime = document.querySelector(".shipping-time .value");
 if (shippingTime) {
   const text = shippingTime.innerText.trim();
@@ -432,10 +432,9 @@ if (shippingTime) {
   }
 }
 
-  // ==============================
-  // ✅ التعامل مع معلومات المنتج
-  // ==============================
-
+// =======================================
+// ✅ التعامل مع معلومات المنتج
+// =======================================
 document.addEventListener("DOMContentLoaded", function () {
   const boxes = document.querySelectorAll(".info-box");
 
@@ -449,14 +448,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const text = value.textContent.trim();
 
-    // ✅ التلوين حسب النص
+    // ✅ التلوين حسب التوفر
     if (/متاح|متوفر/.test(text)) {
       Object.assign(value.style, { color: "#2e7d32", fontWeight: "bold" });
     } else if (/غير متاح|غير متوفر/.test(text)) {
       Object.assign(value.style, { color: "#c62828", fontWeight: "bold" });
     }
 
-    // ✅ تلوين مجاني (للشحن فقط)
+    // ✅ التلوين للشحن المجاني
     if (box.classList.contains("shipping-fee")) {
       if (/مجانا|مجاناً/.test(text)) {
         Object.assign(value.style, { color: "#2e7d32", fontWeight: "bold" });
@@ -471,7 +470,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (box.classList.contains("shipping-time")) shippingTimeBox = value;
   });
 
-  // ✅ لو مفيش شحن أو المنتج غير متوفر → نحذف مدة الشحن
+  // ✅ لو المنتج غير متوفر أو مفيش شحن → نخفي مدة الشحن
   if ((shippingToSA?.includes("غير")) || (availability?.includes("غير"))) {
     if (shippingTimeBox) {
       shippingTimeBox.textContent = "-";
@@ -480,10 +479,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-  // ==============================
-  // ✅ حساب نسبة الخصم
-  // ==============================
-
+// =======================================
+// ✅ حساب نسبة الخصم
+// =======================================
 const priceOriginal = parseFloat(document.querySelector('.price-original')?.textContent.trim() || 0);
 const priceDiscounted = parseFloat(document.querySelector('.price-discounted')?.textContent.trim() || 0);
 const discountEl = document.querySelector('.discount-percentage');
@@ -495,10 +493,9 @@ if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
   if (discountEl) discountEl.textContent = '';
 }
 
-  // ==============================
-  // ✅ حساب التوفير
-  // ==============================
-
+// =======================================
+// ✅ حساب التوفير
+// =======================================
 document.addEventListener("DOMContentLoaded", function () {
   const oldPriceEl = document.querySelector(".price-original");
   const newPriceEl = document.querySelector(".price-discounted");
@@ -516,29 +513,20 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         const formattedDiff = difference.toFixed(2);
 
-        // بدون أي مسافة أو margin جنب الجيف
         discountValueEl.innerHTML = `
           <span class="save-label">وفر: </span>
           <span class="save-amount">${formattedDiff} ر.س</span>
         `;
 
+        // ✅ تغيير لون النص حسب قيمة التوفير
         let color = "#2c3e50";
-
-        if (difference >= 100 && difference < 200) {
-          color = "#1abc9c";
-        } else if (difference < 400) {
-          color = "#2ecc71";
-        } else if (difference < 600) {
-          color = "#e67e22";
-        } else if (difference < 1000) {
-          color = "#c0392b";
-        } else if (difference < 1500) {
-          color = "#f5008b";
-        } else if (difference < 2000) {
-          color = "#8e44ad";
-        } else {
-          color = "#f39c12";
-        }
+        if (difference >= 100 && difference < 200) color = "#1abc9c";
+        else if (difference < 400) color = "#2ecc71";
+        else if (difference < 600) color = "#e67e22";
+        else if (difference < 1000) color = "#c0392b";
+        else if (difference < 1500) color = "#f5008b";
+        else if (difference < 2000) color = "#8e44ad";
+        else color = "#f39c12";
 
         discountValueEl.style.fontWeight = "bold";
         discountValueEl.style.color = color;
@@ -548,6 +536,7 @@ document.addEventListener("DOMContentLoaded", function () {
           `هذا المبلغ هو الفرق بين السعر القديم (${oldPrice.toFixed(2)}) والجديد (${newPrice.toFixed(2)})`
         );
 
+        // ✅ إضافة 🔥 لو التوفير كبير
         if (difference >= 500) {
           const fireGif = document.createElement("img");
           fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
@@ -557,8 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
           fireGif.style.verticalAlign = "middle";
           fireGif.style.margin = "0"; 
 
-          const saveAmountEl = discountValueEl.querySelector(".save-amount");
-          saveAmountEl.appendChild(fireGif);
+          discountValueEl.querySelector(".save-amount").appendChild(fireGif);
         }
       }
     } else {
@@ -567,13 +555,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-  // ==============================
-  // ✅ الرسم البياني
-  // ==============================
-
+// =======================================
+// ✅ الرسم البياني
+// =======================================
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof priceData === "undefined" || !Array.isArray(priceData)) return;
 
+  // ✅ دمج الأسعار حسب التاريخ
   const merged = {};
   priceData.forEach(item => {
     if (!merged[item.date]) merged[item.date] = { total: 0, count: 0 };
@@ -594,12 +582,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const endPrice = prices[prices.length - 1];
   const prevPrice = prices[prices.length - 2] || endPrice;
 
+  // ✅ الأسهم (↑↓)
   const getArrow = (value, compare) => {
     if (value > compare) return `<span class="stat-arrow arrow-up">▲</span>`;
     if (value < compare) return `<span class="stat-arrow arrow-down">▼</span>`;
     return "";
   };
 
+  // ✅ إظهار الإحصائيات أسفل الرسم
   const stats = `
     <div class="price-stats">
       <div class="stat-item current"><strong>السعر الحالي:</strong> ${endPrice} ر.س ${getArrow(endPrice, prevPrice)} <small style="font-size:12px;color:#666;">(${(endPrice - prevPrice).toFixed(2)} ر.س)</small></div>
@@ -610,6 +600,7 @@ document.addEventListener('DOMContentLoaded', function () {
   `;
   document.getElementById("priceChart")?.insertAdjacentHTML("afterend", stats);
 
+  // ✅ تولتيب خارجي للرسم
   const tooltipEl = document.createElement("div");
   tooltipEl.id = "chart-tooltip";
   document.body.appendChild(tooltipEl);
@@ -619,14 +610,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const el = tooltipEl;
 
     if (tooltip.opacity === 0) {
-  el.style.opacity = 0;
-  el.style.display = "none";
-  return;
-}
+      el.style.opacity = 0;
+      el.style.display = "none";
+      return;
+    }
 
-el.style.display = "block";
-el.style.opacity = 1;
-
+    el.style.display = "block";
+    el.style.opacity = 1;
 
     const dataIndex = tooltip.dataPoints[0].dataIndex;
     const value = tooltip.dataPoints[0].raw;
@@ -642,30 +632,30 @@ el.style.opacity = 1;
 
     const date = finalData[dataIndex].date;
 
-el.innerHTML = `
-  <div class="tooltip-line" style="font-weight:bold;">${date}</div>
-  <div class="tooltip-line">السعر: ${value} ر.س</div>
-  <div class="tooltip-line">التغير: ${arrow} ${diff} ر.س</div>
-  <div class="tooltip-line">النسبة: ${percent}%</div>
-`;
+    el.innerHTML = `
+      <div class="tooltip-line" style="font-weight:bold;">${date}</div>
+      <div class="tooltip-line">السعر: ${value} ر.س</div>
+      <div class="tooltip-line">التغير: ${arrow} ${diff} ر.س</div>
+      <div class="tooltip-line">النسبة: ${percent}%</div>
+    `;
 
     const position = chart.canvas.getBoundingClientRect();
-    el.style.opacity = 1;
-    const tooltipWidth = 160; // تقديري – حسب تصميم التولتيب
-const pageWidth = window.innerWidth;
-const chartLeft = position.left + window.pageXOffset;
-const pointX = chartLeft + tooltip.caretX;
+    const tooltipWidth = 160;
+    const pageWidth = window.innerWidth;
+    const chartLeft = position.left + window.pageXOffset;
+    const pointX = chartLeft + tooltip.caretX;
 
-// لو النقطة قربت من طرف اليمين (أبعد من 70% من الشاشة) → خليه يفتح ناحية الشمال
-if (pointX > pageWidth * 0.7) {
-  el.style.left = (pointX - tooltipWidth - 20) + 'px';
-} else {
-  el.style.left = (pointX + 10) + 'px';
-}
+    // ✅ لو النقطة قربت من يمين الشاشة → التولتيب يفتح شمال
+    if (pointX > pageWidth * 0.7) {
+      el.style.left = (pointX - tooltipWidth - 20) + 'px';
+    } else {
+      el.style.left = (pointX + 10) + 'px';
+    }
 
-el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
+    el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   };
 
+  // ✅ إنشاء الرسم البياني
   const ctx = document.getElementById("priceChart")?.getContext("2d");
   if (ctx) {
     new Chart(ctx, {
@@ -686,34 +676,16 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
       },
       options: {
         responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
-        plugins: {
-          tooltip: {
-            enabled: false,
-            external: externalTooltipHandler
-          }
-        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { tooltip: { enabled: false, external: externalTooltipHandler } },
         scales: {
           x: {
-            title: {
-              display: true,
-              text: "التاريخ",
-              color: "#333",
-              font: { size: 14 }
-            },
+            title: { display: true, text: "التاريخ", color: "#333", font: { size: 14 } },
             ticks: { color: "#333" },
             grid: { color: "rgba(0, 0, 0, 0.05)" }
           },
           y: {
-            title: {
-              display: true,
-              text: "السعر (ر.س)",
-              color: "#333",
-              font: { size: 14 }
-            },
+            title: { display: true, text: "السعر (ر.س)", color: "#333", font: { size: 14 } },
             ticks: { color: "#333" },
             grid: { color: "rgba(0, 0, 0, 0.05)" }
           }
@@ -723,9 +695,11 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   }
 });
 
-  // ==============================
-  // ✅ نهاية الإسكربت
-  // ==============================
+// =======================================
+// ✅ نهاية الإسكربت
+// =======================================
+
+
 
 
 
