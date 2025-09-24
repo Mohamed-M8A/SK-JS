@@ -5,80 +5,62 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ إعداد السلايدر الرئيسي
   // ==============================
 
-  const container = document.querySelector('.main-image-container');
-  const thumbnails = Array.from(document.querySelectorAll('.thumbnail-container img'));
-  const thumbContainer = document.querySelector('.thumbnail-container');
-  const scrollAmount = 240;
+const container = document.querySelector('.main-image-container');
+const thumbnails = [...document.querySelectorAll('.thumbnail-container img')];
+const thumbContainer = document.querySelector('.thumbnail-container');
+const scrollAmount = 240;
+let currentIndex = 0;
 
-  let currentIndex = 0;
+const mainImg = document.getElementById('mainImage');
 
-  //  تغيير الصورة بدون انيميشن + دعم المربّع الأسود (1:1)
-  function changeImage(index) {
-    if (index === currentIndex) return;
+// ✅ تغيير الصورة
+function changeImage(index) {
+  if (index === currentIndex) return;
+  currentIndex = index;
 
-    const currentImg = document.getElementById('mainImage');
-    currentImg.src = thumbnails[index].src;
+  mainImg.src = thumbnails[index].src;
+  Object.assign(mainImg.style, {
+    objectFit: 'contain',
+    backgroundColor: 'black',
+    width: '100%',
+    height: '100%'
+  });
 
-    // ✅ ضبط الصورة داخل إطار 1:1 مع خلفية سوداء
-    currentImg.style.objectFit = 'contain';   
-    currentImg.style.backgroundColor = 'black'; 
-    currentImg.style.width = '100%';
-    currentImg.style.height = '100%';
+  thumbnails.forEach(img => img.classList.toggle('active-thumb', img === thumbnails[index]));
+  scrollThumbnailIntoView(index);
+}
 
-    thumbnails.forEach(img => img.classList.remove('active-thumb'));
-    thumbnails[index].classList.add('active-thumb');
-    currentIndex = index;
+// ✅ تمرير المصغّرات
+function scrollThumbnailIntoView(index) {
+  const thumb = thumbnails[index];
+  const cRect = thumbContainer.getBoundingClientRect();
+  const tRect = thumb.getBoundingClientRect();
+  const isRTL = getComputedStyle(thumbContainer).direction === 'rtl';
 
-    scrollThumbnailIntoView(index);
+  if (isRTL) {
+    thumbContainer.scrollLeft += (tRect.left < cRect.left) 
+      ? tRect.left - cRect.left - 10 
+      : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
+  } else {
+    thumbContainer.scrollLeft += (tRect.left < cRect.left) 
+      ? -(cRect.left - tRect.left + 10) 
+      : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
   }
+}
 
-  function scrollThumbnailIntoView(index) {
-    const thumb = thumbnails[index];
-    const containerRect = thumbContainer.getBoundingClientRect();
-    const thumbRect = thumb.getBoundingClientRect();
-    const isRTL = getComputedStyle(thumbContainer).direction === 'rtl';
+// ✅ أزرار التحريك
+document.getElementById('thumbsRight')?.addEventListener('click', () => thumbContainer.scrollLeft += scrollAmount);
+document.getElementById('thumbsLeft')?.addEventListener('click', () => thumbContainer.scrollLeft -= scrollAmount);
 
-    if (isRTL) {
-      if (thumbRect.left < containerRect.left) {
-        thumbContainer.scrollLeft += thumbRect.left - containerRect.left - 10;
-      } else if (thumbRect.right > containerRect.right) {
-        thumbContainer.scrollLeft += thumbRect.right - containerRect.right + 10;
-      }
-    } else {
-      if (thumbRect.left < containerRect.left) {
-        thumbContainer.scrollLeft -= (containerRect.left - thumbRect.left + 10);
-      } else if (thumbRect.right > containerRect.right) {
-        thumbContainer.scrollLeft += (thumbRect.right - containerRect.right + 10);
-      }
-    }
-  }
+// ✅ الأسهم الكبيرة
+document.getElementById('mainImageRightArrow')?.addEventListener('click', () => changeImage((currentIndex - 1 + thumbnails.length) % thumbnails.length));
+document.getElementById('mainImageLeftArrow')?.addEventListener('click', () => changeImage((currentIndex + 1) % thumbnails.length));
 
-  // أزرار تحريك الصور المصغّرة
-  document.getElementById('thumbsRight')?.addEventListener('click', () => {
-    thumbContainer.scrollLeft += scrollAmount;
-  });
+// ✅ المصغّرات
+thumbnails.forEach((img, i) => img.addEventListener('click', () => changeImage(i)));
 
-  document.getElementById('thumbsLeft')?.addEventListener('click', () => {
-    thumbContainer.scrollLeft -= scrollAmount;
-  });
-
-  // الأسهم الكبيرة لتحريك الصورة الرئيسية
-  document.getElementById('mainImageRightArrow')?.addEventListener('click', () => {
-    const newIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-    changeImage(newIndex);
-  });
-
-  document.getElementById('mainImageLeftArrow')?.addEventListener('click', () => {
-    const newIndex = (currentIndex + 1) % thumbnails.length;
-    changeImage(newIndex);
-  });
-
-  // الصور المصغّرة
-  thumbnails.forEach((img, index) => {
-    img.addEventListener('click', () => changeImage(index));
-  });
-
-  changeImage(0); 
+// ✅ أول صورة
+changeImage(0);
 
   // ==============================
   // ✅ Modal لتكبير الصورة
@@ -742,3 +724,4 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
