@@ -47,7 +47,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAMk4xzuUqrEEy8A2JHhFDfNNa55WHNvwg",
   authDomain: "search-cc1c2.firebaseapp.com",
   projectId: "search-cc1c2",
-  storageBucket: "search-cc1c2.firebasestorage.app",
+  storageBucket: "search-cc1c2.appspot.com", // ✅ تم التعديل هنا
   messagingSenderId: "190343616699",
   appId: "1:190343616699:web:c2ff8bc77d2bb360caf19e",
   measurementId: "G-ZL4G6P35NF"
