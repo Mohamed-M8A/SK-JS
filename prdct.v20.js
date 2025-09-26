@@ -433,6 +433,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ✅ إذا المنتج غير متوفر أو لا يشحن → نخفي مدة الشحن
   const negativeKeywords = ["غير", "غير متاح", "غير متوفر", "لا يشحن"];
+
   if (
     negativeKeywords.some(word => shippingStatus?.includes(word)) ||
     negativeKeywords.some(word => availability?.includes(word))
@@ -445,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ===================================================
-// ✅ خريطة العملات + أدوات مساعدة
+// ✅ خريطة العملات
 // ===================================================
 const currencySymbols = {
   "SA": "ر.س", // السعودية
@@ -456,36 +457,10 @@ const currencySymbols = {
   "TN": "د.ت"  // تونس
 };
 
+// ✅ دالة تجيب رمز العملة حسب الدولة المخزنة
 function getCurrencySymbol() {
   const country = localStorage.getItem("Cntry") || "SA";
   return currencySymbols[country] || "ر.س";
-}
-
-function formatPrice(num) {
-  const number = parseFloat(String(num).replace(/,/g, ""));
-  if (isNaN(number)) return num;
-  return number.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-function formatPriceElement(el) {
-  if (!el) return;
-  const raw = el.textContent.trim();
-
-  // ✅ لو "مجاناً" نسيبها كما هي
-  if (/مجان/i.test(raw)) return;
-
-  // ✅ لو فيه بالفعل رمز عملة → منضيفش تاني
-  const allSymbols = Object.values(currencySymbols).join("|");
-  const hasSymbol = new RegExp(allSymbols).test(raw);
-  if (hasSymbol) return;
-
-  const num = parseFloat(raw.replace(/[^\d.]/g, ""));
-  if (isNaN(num)) return;
-
-  el.textContent = `${formatPrice(num)} ${getCurrencySymbol()}`;
 }
 
 // ===================================================
@@ -494,16 +469,16 @@ function formatPriceElement(el) {
 const shippingFee = document.querySelector(".shipping-fee .value");
 if (shippingFee) {
   const text = shippingFee.innerText.trim();
-  if (/مجان/i.test(text)) {
-    Object.assign(shippingFee.style, { color: "#2e7d32", fontWeight: "bold" });
-  } else {
-    formatPriceElement(shippingFee);
+  const match = text.match(/[\d.,\-–]+/);
+  if (match) {
+    const formatted = formatPrice(match[0]);
+    shippingFee.innerText = `${formatted} ${getCurrencySymbol()}`;
   }
 }
 
-// ===================================================
+// ==============================
 // ✅ حساب نسبة الخصم والتوفير
-// ===================================================
+// ==============================
 window.updateDiscount = function () {
   const originalEl = document.querySelector(".price-original");
   const discountedEl = document.querySelector(".price-discounted");
@@ -512,8 +487,8 @@ window.updateDiscount = function () {
 
   if (!originalEl || !discountedEl) return;
 
-  const original = parseFloat(originalEl.textContent.replace(/[^\d.]/g, "")) || 0;
-  const discounted = parseFloat(discountedEl.textContent.replace(/[^\d.]/g, "")) || 0;
+  const original = parseFloat(originalEl.textContent.trim()) || 0;
+  const discounted = parseFloat(discountedEl.textContent.trim()) || 0;
 
   if (original > 0 && discounted > 0 && discounted < original) {
     // ✅ نسبة الخصم
@@ -524,19 +499,65 @@ window.updateDiscount = function () {
 
     // ✅ قيمة التوفير
     if (savingEl) {
-      const difference = original - discounted;
+      const difference = (original - discounted).toFixed(2);
+      savingEl.textContent = `وفر: ${difference}`;
+    }
+  } else {
+    if (discountEl) discountEl.textContent = "";
+    if (savingEl) savingEl.textContent = "";
+  }
+};
+
+// ===================================================
+// ✅ تنسيق الأسعار (مع العملة حسب الدولة)
+// ===================================================
+document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
+  const text = el.innerText.trim();
+
+  // ✅ حالة التوفير: "وفر: ..."
+  if (el.classList.contains("price-saving") && text.includes("وفر:")) {
+    const match = text.match(/وفر:\s*([\d.,]+)/);
+    if (match && match[1]) {
+      const formatted = formatPrice(match[1]);
+      el.innerText = `وفر: ${formatted} ${getCurrencySymbol()}`;
+    }
+    return;
+  }
+
+  // ✅ الأسعار العادية
+  const numberOnly = text.match(/[\d.,]+/);
+  if (numberOnly) {
+    const formatted = formatPrice(numberOnly[0]);
+    el.innerText = `${formatted} ${getCurrencySymbol()}`;
+  }
+});
+
+// ==============================
+// ✅ حساب التوفير
+// ==============================
+document.addEventListener("DOMContentLoaded", function () {
+  const oldPriceEl = document.querySelector(".price-original");
+  const newPriceEl = document.querySelector(".price-discounted");
+  const discountValueEl = document.querySelector(".price-saving");
+
+  if (oldPriceEl && newPriceEl && discountValueEl) {
+    const oldPrice = parseFloat(oldPriceEl.textContent.replace(/[^\d.]/g, ""));
+    const newPrice = parseFloat(newPriceEl.textContent.replace(/[^\d.]/g, ""));
+
+    if (!isNaN(oldPrice) && !isNaN(newPrice) && oldPrice > newPrice) {
+      const difference = oldPrice - newPrice;
 
       if (difference < 50) {
-        savingEl.textContent = "";
+        discountValueEl.textContent = "";
       } else {
-        const formattedDiff = formatPrice(difference);
+        const formattedDiff = difference.toFixed(2);
 
-        savingEl.innerHTML = `
+        // بدون أي مسافة أو margin جنب الجيف
+        discountValueEl.innerHTML = `
           <span class="save-label">وفر: </span>
           <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
         `;
 
-        // 🎨 سلم الألوان
         let color = "#2c3e50";
         if (difference >= 100 && difference < 200) {
           color = "#1abc9c";
@@ -554,15 +575,14 @@ window.updateDiscount = function () {
           color = "#f39c12";
         }
 
-        savingEl.style.fontWeight = "bold";
-        savingEl.style.color = color;
+        discountValueEl.style.fontWeight = "bold";
+        discountValueEl.style.color = color;
 
-        savingEl.setAttribute(
+        discountValueEl.setAttribute(
           "title",
-          `هذا المبلغ هو الفرق بين السعر القديم (${formatPrice(original)} ${getCurrencySymbol()}) والجديد (${formatPrice(discounted)} ${getCurrencySymbol()})`
+          `هذا المبلغ هو الفرق بين السعر القديم (${oldPrice.toFixed(2)}) والجديد (${newPrice.toFixed(2)})`
         );
 
-        // 🔥 إضافة الجيف لو التوفير ≥ 500
         if (difference >= 500) {
           const fireGif = document.createElement("img");
           fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
@@ -570,26 +590,17 @@ window.updateDiscount = function () {
           fireGif.style.width = "25px";
           fireGif.style.height = "25px";
           fireGif.style.verticalAlign = "middle";
-          fireGif.style.margin = "0";
+          fireGif.style.margin = "0"; 
 
-          const saveAmountEl = savingEl.querySelector(".save-amount");
+          const saveAmountEl = discountValueEl.querySelector(".save-amount");
           saveAmountEl.appendChild(fireGif);
         }
       }
+    } else {
+      discountValueEl.textContent = "";
     }
-  } else {
-    if (discountEl) discountEl.textContent = "";
-    if (savingEl) savingEl.textContent = "";
   }
-};
-
-// ===================================================
-// ✅ تنسيق الأسعار (مع العملة حسب الدولة)
-// ===================================================
-document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
-  formatPriceElement(el);
 });
-
 
   // ==============================
   // ✅ الرسم البياني
@@ -750,7 +761,4 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
-
-
-
 
