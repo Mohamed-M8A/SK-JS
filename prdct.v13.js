@@ -399,21 +399,6 @@ if (shippingBox) {
   }
 }
 
-  // ==============================
-  // ✅ حساب نسبة الخصم
-  // ==============================
-
-const priceOriginal = parseFloat(document.querySelector('.price-original')?.textContent.trim() || 0);
-const priceDiscounted = parseFloat(document.querySelector('.price-discounted')?.textContent.trim() || 0);
-const discountEl = document.querySelector('.discount-percentage');
-
-if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
-  const percentage = Math.round(((priceOriginal - priceDiscounted) / priceOriginal) * 100);
-  if (discountEl) discountEl.textContent = `${percentage}%`;
-} else {
-  if (discountEl) discountEl.textContent = '';
-}
-
 // ===================================================
 // ✅ عند تحميل الصفحة: معالجة معلومات المنتج
 //    - تلوين حالة التوفر (متاح/غير متاح)
@@ -461,8 +446,52 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ===================================================
-// ✅ تنسيق الأسعار: استخراج الأرقام وتنسيقها
-//    مع إضافة كلمة "ر.س" بجانبها
+// ✅ خريطة العملات
+// ===================================================
+const currencySymbols = {
+  "SA": "ر.س", // السعودية
+  "AE": "د.إ", // الإمارات
+  "OM": "ر.ع", // عُمان
+  "MA": "د.م", // المغرب
+  "DZ": "د.ج", // الجزائر
+  "TN": "د.ت"  // تونس
+};
+
+// ✅ دالة تجيب رمز العملة حسب الدولة المخزنة
+function getCurrencySymbol() {
+  const country = localStorage.getItem("Cntry") || "SA";
+  return currencySymbols[country] || "ر.س";
+}
+
+// ===================================================
+// ✅ تنسيق تكلفة الشحن
+// ===================================================
+const shippingFee = document.querySelector(".shipping-fee .value");
+if (shippingFee) {
+  const text = shippingFee.innerText.trim();
+  const match = text.match(/[\d.,\-–]+/);
+  if (match) {
+    const formatted = formatPrice(match[0]);
+    shippingFee.innerText = `${formatted} ${getCurrencySymbol()}`;
+  }
+}
+
+// ==============================
+// ✅ حساب نسبة الخصم
+// ==============================
+const priceOriginal = parseFloat(document.querySelector('.price-original')?.textContent.trim() || 0);
+const priceDiscounted = parseFloat(document.querySelector('.price-discounted')?.textContent.trim() || 0);
+const discountEl = document.querySelector('.discount-percentage');
+
+if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
+  const percentage = Math.round(((priceOriginal - priceDiscounted) / priceOriginal) * 100);
+  if (discountEl) discountEl.textContent = `${percentage}%`;
+} else {
+  if (discountEl) discountEl.textContent = '';
+}
+
+// ===================================================
+// ✅ تنسيق الأسعار (مع العملة حسب الدولة)
 // ===================================================
 document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
   const text = el.innerText.trim();
@@ -472,7 +501,7 @@ document.querySelectorAll(".price-original, .price-discounted, .price-saving").f
     const match = text.match(/وفر:\s*([\d.,]+)/);
     if (match && match[1]) {
       const formatted = formatPrice(match[1]);
-      el.innerText = `وفر: ${formatted} ر.س`;
+      el.innerText = `وفر: ${formatted} ${getCurrencySymbol()}`;
     }
     return;
   }
@@ -481,27 +510,13 @@ document.querySelectorAll(".price-original, .price-discounted, .price-saving").f
   const numberOnly = text.match(/[\d.,]+/);
   if (numberOnly) {
     const formatted = formatPrice(numberOnly[0]);
-    el.innerText = `${formatted} ر.س`;
+    el.innerText = `${formatted} ${getCurrencySymbol()}`;
   }
 });
 
-// ===================================================
-// ✅ تنسيق تكلفة الشحن: استخراج الرقم وإضافة "ر.س"
-// ===================================================
-const shippingFee = document.querySelector(".shipping-fee .value");
-if (shippingFee) {
-  const text = shippingFee.innerText.trim();
-  const match = text.match(/[\d.,\-–]+/);
-  if (match) {
-    const formatted = formatPrice(match[0]);
-    shippingFee.innerText = `${formatted} ر.س`;
-  }
-}
-
-  // ==============================
-  // ✅ حساب التوفير
-  // ==============================
-
+// ==============================
+// ✅ حساب التوفير
+// ==============================
 document.addEventListener("DOMContentLoaded", function () {
   const oldPriceEl = document.querySelector(".price-original");
   const newPriceEl = document.querySelector(".price-discounted");
@@ -522,11 +537,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // بدون أي مسافة أو margin جنب الجيف
         discountValueEl.innerHTML = `
           <span class="save-label">وفر: </span>
-          <span class="save-amount">${formattedDiff} ر.س</span>
+          <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
         `;
 
         let color = "#2c3e50";
-
         if (difference >= 100 && difference < 200) {
           color = "#1abc9c";
         } else if (difference < 400) {
@@ -729,3 +743,4 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
