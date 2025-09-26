@@ -464,15 +464,32 @@ function getCurrencySymbol() {
 }
 
 // ===================================================
+// ✅ دالة لتنسيق الرقم (إضافة فواصل عشرية)
+// ===================================================
+function formatPrice(num) {
+  const number = parseFloat(String(num).replace(/,/g, ''));
+  if (isNaN(number)) return num;
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+// ===================================================
 // ✅ تنسيق تكلفة الشحن
 // ===================================================
 const shippingFee = document.querySelector(".shipping-fee .value");
 if (shippingFee) {
   const text = shippingFee.innerText.trim();
-  const match = text.match(/[\d.,\-–]+/);
-  if (match) {
-    const formatted = formatPrice(match[0]);
-    shippingFee.innerText = `${formatted} ${getCurrencySymbol()}`;
+  if (/مجان/i.test(text)) {
+    // تلوين "مجاناً" باللون الأخضر
+    Object.assign(shippingFee.style, { color: "#2e7d32", fontWeight: "bold" });
+  } else {
+    const match = text.match(/[\d.,\-–]+/);
+    if (match) {
+      const formatted = formatPrice(match[0]);
+      shippingFee.innerText = `${formatted} ${getCurrencySymbol()}`;
+    }
   }
 }
 
@@ -487,8 +504,8 @@ window.updateDiscount = function () {
 
   if (!originalEl || !discountedEl) return;
 
-  const original = parseFloat(originalEl.textContent.trim()) || 0;
-  const discounted = parseFloat(discountedEl.textContent.trim()) || 0;
+  const original = parseFloat(originalEl.textContent.replace(/[^\d.]/g, "")) || 0;
+  const discounted = parseFloat(discountedEl.textContent.replace(/[^\d.]/g, "")) || 0;
 
   if (original > 0 && discounted > 0 && discounted < original) {
     // ✅ نسبة الخصم
@@ -499,8 +516,58 @@ window.updateDiscount = function () {
 
     // ✅ قيمة التوفير
     if (savingEl) {
-      const difference = (original - discounted).toFixed(2);
-      savingEl.textContent = `وفر: ${difference}`;
+      const difference = original - discounted;
+
+      if (difference < 50) {
+        savingEl.textContent = "";
+      } else {
+        const formattedDiff = formatPrice(difference);
+
+        savingEl.innerHTML = `
+          <span class="save-label">وفر: </span>
+          <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
+        `;
+
+        // 🎨 سلم الألوان
+        let color = "#2c3e50";
+        if (difference >= 100 && difference < 200) {
+          color = "#1abc9c";
+        } else if (difference < 400) {
+          color = "#2ecc71";
+        } else if (difference < 600) {
+          color = "#e67e22";
+        } else if (difference < 1000) {
+          color = "#c0392b";
+        } else if (difference < 1500) {
+          color = "#f5008b";
+        } else if (difference < 2000) {
+          color = "#8e44ad";
+        } else {
+          color = "#f39c12";
+        }
+
+        savingEl.style.fontWeight = "bold";
+        savingEl.style.color = color;
+
+        savingEl.setAttribute(
+          "title",
+          `هذا المبلغ هو الفرق بين السعر القديم (${formatPrice(original)}) والجديد (${formatPrice(discounted)})`
+        );
+
+        // 🔥 إضافة الجيف لو التوفير ≥ 500
+        if (difference >= 500) {
+          const fireGif = document.createElement("img");
+          fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
+          fireGif.alt = "🔥🔥🔥";
+          fireGif.style.width = "25px";
+          fireGif.style.height = "25px";
+          fireGif.style.verticalAlign = "middle";
+          fireGif.style.margin = "0";
+
+          const saveAmountEl = savingEl.querySelector(".save-amount");
+          saveAmountEl.appendChild(fireGif);
+        }
+      }
     }
   } else {
     if (discountEl) discountEl.textContent = "";
@@ -532,75 +599,17 @@ document.querySelectorAll(".price-original, .price-discounted, .price-saving").f
   }
 });
 
-// ==============================
-// ✅ حساب التوفير
-// ==============================
-document.addEventListener("DOMContentLoaded", function () {
-  const oldPriceEl = document.querySelector(".price-original");
-  const newPriceEl = document.querySelector(".price-discounted");
-  const discountValueEl = document.querySelector(".price-saving");
-
-  if (oldPriceEl && newPriceEl && discountValueEl) {
-    const oldPrice = parseFloat(oldPriceEl.textContent.replace(/[^\d.]/g, ""));
-    const newPrice = parseFloat(newPriceEl.textContent.replace(/[^\d.]/g, ""));
-
-    if (!isNaN(oldPrice) && !isNaN(newPrice) && oldPrice > newPrice) {
-      const difference = oldPrice - newPrice;
-
-      if (difference < 50) {
-        discountValueEl.textContent = "";
-      } else {
-        const formattedDiff = difference.toFixed(2);
-
-        // بدون أي مسافة أو margin جنب الجيف
-        discountValueEl.innerHTML = `
-          <span class="save-label">وفر: </span>
-          <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
-        `;
-
-        let color = "#2c3e50";
-        if (difference >= 100 && difference < 200) {
-          color = "#1abc9c";
-        } else if (difference < 400) {
-          color = "#2ecc71";
-        } else if (difference < 600) {
-          color = "#e67e22";
-        } else if (difference < 1000) {
-          color = "#c0392b";
-        } else if (difference < 1500) {
-          color = "#f5008b";
-        } else if (difference < 2000) {
-          color = "#8e44ad";
-        } else {
-          color = "#f39c12";
-        }
-
-        discountValueEl.style.fontWeight = "bold";
-        discountValueEl.style.color = color;
-
-        discountValueEl.setAttribute(
-          "title",
-          `هذا المبلغ هو الفرق بين السعر القديم (${oldPrice.toFixed(2)}) والجديد (${newPrice.toFixed(2)})`
-        );
-
-        if (difference >= 500) {
-          const fireGif = document.createElement("img");
-          fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
-          fireGif.alt = "🔥🔥🔥";
-          fireGif.style.width = "25px";
-          fireGif.style.height = "25px";
-          fireGif.style.verticalAlign = "middle";
-          fireGif.style.margin = "0"; 
-
-          const saveAmountEl = discountValueEl.querySelector(".save-amount");
-          saveAmountEl.appendChild(fireGif);
-        }
-      }
-    } else {
-      discountValueEl.textContent = "";
-    }
+// ===================================================
+// ✅ تلوين حالة التوفر
+// ===================================================
+const availEl = document.querySelector(".product-availability .value");
+if (availEl) {
+  if (/متاح|متوفر/i.test(availEl.textContent)) {
+    Object.assign(availEl.style, { color: "#2e7d32", fontWeight: "bold" });
+  } else if (/غير/i.test(availEl.textContent)) {
+    Object.assign(availEl.style, { color: "#c62828", fontWeight: "bold" });
   }
-});
+}
 
   // ==============================
   // ✅ الرسم البياني
@@ -761,4 +770,5 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
