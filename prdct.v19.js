@@ -433,7 +433,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ✅ إذا المنتج غير متوفر أو لا يشحن → نخفي مدة الشحن
   const negativeKeywords = ["غير", "غير متاح", "غير متوفر", "لا يشحن"];
-
   if (
     negativeKeywords.some(word => shippingStatus?.includes(word)) ||
     negativeKeywords.some(word => availability?.includes(word))
@@ -446,7 +445,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ===================================================
-// ✅ خريطة العملات
+// ✅ خريطة العملات + أدوات مساعدة
 // ===================================================
 const currencySymbols = {
   "SA": "ر.س", // السعودية
@@ -457,20 +456,36 @@ const currencySymbols = {
   "TN": "د.ت"  // تونس
 };
 
-// ✅ دالة تجيب رمز العملة حسب الدولة المخزنة
 function getCurrencySymbol() {
   const country = localStorage.getItem("Cntry") || "SA";
   return currencySymbols[country] || "ر.س";
 }
 
-// ✅ دالة لتنسيق الرقم (إضافة فواصل عشرية)
 function formatPrice(num) {
-  const number = parseFloat(String(num).replace(/,/g, ''));
+  const number = parseFloat(String(num).replace(/,/g, ""));
   if (isNaN(number)) return num;
-  return number.toLocaleString('en-US', {
+  return number.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
+}
+
+function formatPriceElement(el) {
+  if (!el) return;
+  const raw = el.textContent.trim();
+
+  // ✅ لو "مجاناً" نسيبها كما هي
+  if (/مجان/i.test(raw)) return;
+
+  // ✅ لو فيه بالفعل رمز عملة → منضيفش تاني
+  const allSymbols = Object.values(currencySymbols).join("|");
+  const hasSymbol = new RegExp(allSymbols).test(raw);
+  if (hasSymbol) return;
+
+  const num = parseFloat(raw.replace(/[^\d.]/g, ""));
+  if (isNaN(num)) return;
+
+  el.textContent = `${formatPrice(num)} ${getCurrencySymbol()}`;
 }
 
 // ===================================================
@@ -482,17 +497,13 @@ if (shippingFee) {
   if (/مجان/i.test(text)) {
     Object.assign(shippingFee.style, { color: "#2e7d32", fontWeight: "bold" });
   } else {
-    const match = text.match(/[\d.,\-–]+/);
-    if (match) {
-      const formatted = formatPrice(match[0]);
-      shippingFee.innerText = `${formatted} ${getCurrencySymbol()}`;
-    }
+    formatPriceElement(shippingFee);
   }
 }
 
-// ==============================
+// ===================================================
 // ✅ حساب نسبة الخصم والتوفير
-// ==============================
+// ===================================================
 window.updateDiscount = function () {
   const originalEl = document.querySelector(".price-original");
   const discountedEl = document.querySelector(".price-discounted");
@@ -576,37 +587,8 @@ window.updateDiscount = function () {
 // ✅ تنسيق الأسعار (مع العملة حسب الدولة)
 // ===================================================
 document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
-  const text = el.innerText.trim();
-
-  // ✅ حالة التوفير: "وفر: ..."
-  if (el.classList.contains("price-saving") && text.includes("وفر:")) {
-    const match = text.match(/وفر:\s*([\d.,]+)/);
-    if (match && match[1]) {
-      const formatted = formatPrice(match[1]);
-      el.innerText = `وفر: ${formatted} ${getCurrencySymbol()}`;
-    }
-    return;
-  }
-
-  // ✅ الأسعار العادية
-  const numberOnly = text.match(/[\d.,]+/);
-  if (numberOnly) {
-    const formatted = formatPrice(numberOnly[0]);
-    el.innerText = `${formatted} ${getCurrencySymbol()}`;
-  }
+  formatPriceElement(el);
 });
-
-// ===================================================
-// ✅ تلوين حالة التوفر
-// ===================================================
-const availEl = document.querySelector(".product-availability .value");
-if (availEl) {
-  if (/متاح|متوفر/i.test(availEl.textContent)) {
-    Object.assign(availEl.style, { color: "#2e7d32", fontWeight: "bold" });
-  } else if (/غير/i.test(availEl.textContent)) {
-    Object.assign(availEl.style, { color: "#c62828", fontWeight: "bold" });
-  }
-}
 
 
   // ==============================
@@ -768,6 +750,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
 
