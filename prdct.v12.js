@@ -423,7 +423,7 @@ if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
 document.addEventListener("DOMContentLoaded", function () {
   const boxes = document.querySelectorAll(".info-box");
 
-  let shippingToSA = null;
+  let shippingStatus = null;
   let availability = null;
   let shippingTimeBox = null;
 
@@ -441,13 +441,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ✅ تخزين العناصر المستخدمة لاحقًا
-    if (box.classList.contains("country-shipping")) shippingToSA = text;
+    if (box.classList.contains("shipping-status")) shippingStatus = text;
     if (box.classList.contains("product-availability")) availability = text;
     if (box.classList.contains("shipping-time")) shippingTimeBox = value;
   });
 
   // ✅ إذا المنتج غير متوفر أو لا يشحن → نخفي مدة الشحن
-  if ((shippingToSA?.includes("غير")) || (availability?.includes("غير"))) {
+  const negativeKeywords = ["غير", "غير متاح", "غير متوفر", "لا يشحن"];
+
+  if (
+    negativeKeywords.some(word => shippingStatus?.includes(word)) ||
+    negativeKeywords.some(word => availability?.includes(word))
+  ) {
     if (shippingTimeBox) {
       shippingTimeBox.textContent = "-";
       Object.assign(shippingTimeBox.style, { color: "#000", fontWeight: "normal" });
@@ -724,4 +729,3 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
-
