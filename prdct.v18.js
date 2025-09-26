@@ -463,9 +463,7 @@ function getCurrencySymbol() {
   return currencySymbols[country] || "ر.س";
 }
 
-// ===================================================
 // ✅ دالة لتنسيق الرقم (إضافة فواصل عشرية)
-// ===================================================
 function formatPrice(num) {
   const number = parseFloat(String(num).replace(/,/g, ''));
   if (isNaN(number)) return num;
@@ -482,7 +480,6 @@ const shippingFee = document.querySelector(".shipping-fee .value");
 if (shippingFee) {
   const text = shippingFee.innerText.trim();
   if (/مجان/i.test(text)) {
-    // تلوين "مجاناً" باللون الأخضر
     Object.assign(shippingFee.style, { color: "#2e7d32", fontWeight: "bold" });
   } else {
     const match = text.match(/[\d.,\-–]+/);
@@ -551,7 +548,7 @@ window.updateDiscount = function () {
 
         savingEl.setAttribute(
           "title",
-          `هذا المبلغ هو الفرق بين السعر القديم (${formatPrice(original)}) والجديد (${formatPrice(discounted)})`
+          `هذا المبلغ هو الفرق بين السعر القديم (${formatPrice(original)} ${getCurrencySymbol()}) والجديد (${formatPrice(discounted)} ${getCurrencySymbol()})`
         );
 
         // 🔥 إضافة الجيف لو التوفير ≥ 500
@@ -610,6 +607,7 @@ if (availEl) {
     Object.assign(availEl.style, { color: "#c62828", fontWeight: "bold" });
   }
 }
+
 
   // ==============================
   // ✅ الرسم البياني
@@ -770,5 +768,6 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
