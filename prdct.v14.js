@@ -477,18 +477,36 @@ if (shippingFee) {
 }
 
 // ==============================
-// ✅ حساب نسبة الخصم
+// ✅ حساب نسبة الخصم والتوفير
 // ==============================
-const priceOriginal = parseFloat(document.querySelector('.price-original')?.textContent.trim() || 0);
-const priceDiscounted = parseFloat(document.querySelector('.price-discounted')?.textContent.trim() || 0);
-const discountEl = document.querySelector('.discount-percentage');
+window.updateDiscount = function () {
+  const originalEl = document.querySelector(".price-original");
+  const discountedEl = document.querySelector(".price-discounted");
+  const discountEl = document.querySelector(".discount-percentage");
+  const savingEl = document.querySelector(".price-saving");
 
-if (priceOriginal && priceDiscounted && priceDiscounted < priceOriginal) {
-  const percentage = Math.round(((priceOriginal - priceDiscounted) / priceOriginal) * 100);
-  if (discountEl) discountEl.textContent = `${percentage}%`;
-} else {
-  if (discountEl) discountEl.textContent = '';
-}
+  if (!originalEl || !discountedEl) return;
+
+  const original = parseFloat(originalEl.textContent.trim()) || 0;
+  const discounted = parseFloat(discountedEl.textContent.trim()) || 0;
+
+  if (original > 0 && discounted > 0 && discounted < original) {
+    // ✅ نسبة الخصم
+    if (discountEl) {
+      const percentage = Math.round(((original - discounted) / original) * 100);
+      discountEl.textContent = `${percentage}%`;
+    }
+
+    // ✅ قيمة التوفير
+    if (savingEl) {
+      const difference = (original - discounted).toFixed(2);
+      savingEl.textContent = `وفر: ${difference}`;
+    }
+  } else {
+    if (discountEl) discountEl.textContent = "";
+    if (savingEl) savingEl.textContent = "";
+  }
+};
 
 // ===================================================
 // ✅ تنسيق الأسعار (مع العملة حسب الدولة)
@@ -743,4 +761,5 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
