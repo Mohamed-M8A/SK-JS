@@ -1,198 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-
-
-  // ==============================
-  // ✅ إعداد السلايدر الرئيسي
-  // ==============================
-
-const container = document.querySelector('.main-image-container');
-const thumbnails = [...document.querySelectorAll('.thumbnail-container img')];
-const thumbContainer = document.querySelector('.thumbnail-container');
-const scrollAmount = 240;
-let currentIndex = 0;
-
-const mainImg = document.getElementById('mainImage');
-
-// ✅ تغيير الصورة
-function changeImage(index) {
-  if (index === currentIndex) return;
-  currentIndex = index;
-
-  mainImg.src = thumbnails[index].src;
-  Object.assign(mainImg.style, {
-    objectFit: 'contain',
-    backgroundColor: 'black',
-    width: '100%',
-    height: '100%'
-  });
-
-  thumbnails.forEach(img => img.classList.toggle('active-thumb', img === thumbnails[index]));
-  scrollThumbnailIntoView(index);
-}
-
-// ✅ تمرير المصغّرات
-function scrollThumbnailIntoView(index) {
-  const thumb = thumbnails[index];
-  const cRect = thumbContainer.getBoundingClientRect();
-  const tRect = thumb.getBoundingClientRect();
-  const isRTL = getComputedStyle(thumbContainer).direction === 'rtl';
-
-  if (isRTL) {
-    thumbContainer.scrollLeft += (tRect.left < cRect.left) 
-      ? tRect.left - cRect.left - 10 
-      : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
-  } else {
-    thumbContainer.scrollLeft += (tRect.left < cRect.left) 
-      ? -(cRect.left - tRect.left + 10) 
-      : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
-  }
-}
-
-// ✅ أزرار التحريك
-document.getElementById('thumbsRight')?.addEventListener('click', () => thumbContainer.scrollLeft += scrollAmount);
-document.getElementById('thumbsLeft')?.addEventListener('click', () => thumbContainer.scrollLeft -= scrollAmount);
-
-// ✅ الأسهم الكبيرة
-document.getElementById('mainImageRightArrow')?.addEventListener('click', () => changeImage((currentIndex - 1 + thumbnails.length) % thumbnails.length));
-document.getElementById('mainImageLeftArrow')?.addEventListener('click', () => changeImage((currentIndex + 1) % thumbnails.length));
-
-// ✅ المصغّرات
-thumbnails.forEach((img, i) => img.addEventListener('click', () => changeImage(i)));
-
-// ✅ أول صورة
-changeImage(0);
-
-  // ==============================
-  // ✅ Modal لتكبير الصورة
-  // ==============================
-
-function createModal() {
-  if (document.getElementById("imageModal")) return;
-
-  const modalHTML = `
-    <div id="imageModal" class="modal">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <img class="modal-content" id="modalImage" />
-      <span class="arrow left" onclick="navigateModal('prev')"></span>
-      <span class="arrow right" onclick="navigateModal('next')"></span>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", modalHTML);
-}
-
-createModal(); 
-
-const modal = document.getElementById("imageModal");
-const modalImage = document.getElementById("modalImage");
-
-window.openModal = function (index) {
-  if (!modal || !modalImage) return;
-  modal.style.display = "flex";
-  modalImage.src = thumbnails[index].src;
-
-  // ✅ ضبط الصورة داخل الـ Modal بنفس طريقة 1:1
-  modalImage.style.objectFit = 'contain';
-  modalImage.style.backgroundColor = 'black';
-  modalImage.style.width = '100%';
-  modalImage.style.height = '100%';
-
-  currentIndex = index;
-};
-
-window.closeModal = function () {
-  if (modal) modal.style.display = "none";
-};
-
-window.navigateModal = function (direction) {
-  if (!thumbnails.length || !modalImage) return;
-  currentIndex = direction === "next"
-    ? (currentIndex + 1) % thumbnails.length
-    : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-  modalImage.src = thumbnails[currentIndex].src;
-
-  // ✅ نفس ضبط 1:1 داخل المودال
-  modalImage.style.objectFit = 'contain';
-  modalImage.style.backgroundColor = 'black';
-  modalImage.style.width = '100%';
-  modalImage.style.height = '100%';
-};
-  
 // ==============================
-// ✅ إضافة المنتج إلى العربة
-// ==============================
-
-function addToCart(productUrl) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const exists = cart.some(item => item.productUrl === productUrl);
-
-  if (exists) {
-    showToast("المنتج موجود بالفعل في العربة!", "error");
-  } else {
-    cart.push({ productUrl });
-    localStorage.setItem("cart", JSON.stringify(cart));
-    showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
-  }
-}
-
-function handleAddToCart(event) {
-  const productUrl = window.location.href;
-  addToCart(productUrl);
-}
-
-document.querySelectorAll(".add-to-cart").forEach(btn => {
-  btn.removeEventListener("click", handleAddToCart);
-  btn.addEventListener("click", handleAddToCart);
-});
-
-// ==============================
-// ✅ نسخ الكوبون
-// ==============================
-
-window.copyCoupon = function () {
-  const code = document.getElementById("couponCode")?.innerText;
-  if (!code) return;
-
-  navigator.clipboard.writeText(code)
-    .then(() => showToast("تم نسخ الكوبون: " + code, "success"))
-    .catch(err => {
-      console.error("فشل النسخ: ", err);
-      showToast("فشل نسخ الكوبون!", "error");
-    });
-};
-
-// ==============================
-// ✅ إشعارات Toast 
-// ==============================
-
-// ✅ دالة توست عامة
-function showToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
-
-  // ألوان حسب النوع
-  if (type === "error") {
-    toast.style.background = "#e74c3c"; // أحمر
-  } else if (type === "success") {
-    toast.style.background = "#2ecc71"; // أخضر
-  } else {
-    toast.style.background = "#555"; // افتراضي رمادي
-  }
-
-  toast.style.color = "#fff";
-  document.body.appendChild(toast);
-
-  // إظهار
-  setTimeout(() => toast.classList.add("show"), 100);
-
-  // إخفاء
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
-
-  // ==============================
   // ✅ إضافة نجوم التقييم
   // ==============================
 
@@ -653,130 +459,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const stats = `
     <div class="price-stats">
-      <div class="stat-item current"><strong>السعر الحالي:</strong> ${endPrice} ر.س ${getArrow(endPrice, prevPrice)} <small style="font-size:12px;color:#666;">(${(endPrice - prevPrice).toFixed(2)} ر.س)</small></div>
-      <div class="stat-item"><strong>المتوسط:</strong> ${avg} ر.س ${getArrow(avg, endPrice)}</div>
-      <div class="stat-item"><strong>أقل سعر:</strong> ${min} ر.س ${getArrow(min, endPrice)}</div>
-      <div class="stat-item"><strong>أعلى سعر:</strong> ${max} ر.س ${getArrow(max, endPrice)}</div>
+      <div class="stat-item current"><strong>السعر الحالي:</strong> ${endPrice} ر.س ${getArrow(endPrice, prevPrice)} <small style="font-size:12px;color:#666;">(${dates[dates.length-1]})</small></div>
+      <div class="stat-item avg"><strong>المتوسط:</strong> ${avg} ر.س</div>
+      <div class="stat-item min"><strong>الأقل:</strong> ${min} ر.س <small style="font-size:12px;color:#666;">(${dates[prices.indexOf(min)]})</small></div>
+      <div class="stat-item max"><strong>الأعلى:</strong> ${max} ر.س <small style="font-size:12px;color:#666;">(${dates[prices.indexOf(max)]})</small></div>
     </div>
   `;
-  document.getElementById("priceChart")?.insertAdjacentHTML("afterend", stats);
 
-  const tooltipEl = document.createElement("div");
-  tooltipEl.id = "chart-tooltip";
-  document.body.appendChild(tooltipEl);
+  document.getElementById("price-stats").innerHTML = stats;
 
-  const externalTooltipHandler = (context) => {
-    const { chart, tooltip } = context;
-    const el = tooltipEl;
+  Highcharts.chart('price-chart', {
+    chart: { type: 'area', backgroundColor: '#fff' },
+    title: { text: '' },
+    xAxis: { categories: dates, tickInterval: Math.ceil(dates.length / 6), title: { text: '' } },
+    yAxis: { title: { text: 'السعر (ر.س)' } },
+    tooltip: {
+      formatter: function() {
+        const pointPrice = this.y;
+        const pointDate = this.x;
 
-    if (tooltip.opacity === 0) {
-  el.style.opacity = 0;
-  el.style.display = "none";
-  return;
-}
+        const avgDiff = pointPrice - avg;
+        const minDiff = pointPrice - min;
+        const maxDiff = pointPrice - max;
 
-el.style.display = "block";
-el.style.opacity = 1;
-
-
-    const dataIndex = tooltip.dataPoints[0].dataIndex;
-    const value = tooltip.dataPoints[0].raw;
-    const prev = dataIndex > 0 ? finalData[dataIndex - 1].price : value;
-    const diff = +(value - prev).toFixed(2);
-    const percent = prev !== 0 ? ((diff / prev) * 100).toFixed(1) : 0;
-
-    const arrow = diff > 0
-      ? `<span class="stat-arrow arrow-up">▲</span>`
-      : diff < 0
-        ? `<span class="stat-arrow arrow-down">▼</span>`
-        : `<span class="stat-arrow">-</span>`;
-
-    const date = finalData[dataIndex].date;
-
-el.innerHTML = `
-  <div class="tooltip-line" style="font-weight:bold;">${date}</div>
-  <div class="tooltip-line">السعر: ${value} ر.س</div>
-  <div class="tooltip-line">التغير: ${arrow} ${diff} ر.س</div>
-  <div class="tooltip-line">النسبة: ${percent}%</div>
-`;
-
-    const position = chart.canvas.getBoundingClientRect();
-    el.style.opacity = 1;
-    const tooltipWidth = 160; // تقديري – حسب تصميم التولتيب
-const pageWidth = window.innerWidth;
-const chartLeft = position.left + window.pageXOffset;
-const pointX = chartLeft + tooltip.caretX;
-
-// لو النقطة قربت من طرف اليمين (أبعد من 70% من الشاشة) → خليه يفتح ناحية الشمال
-if (pointX > pageWidth * 0.7) {
-  el.style.left = (pointX - tooltipWidth - 20) + 'px';
-} else {
-  el.style.left = (pointX + 10) + 'px';
-}
-
-el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
-  };
-
-  const ctx = document.getElementById("priceChart")?.getContext("2d");
-  if (ctx) {
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: dates,
-        datasets: [{
-          label: "السعر (ر.س)",
-          data: finalData.map(d => d.price),
-          borderColor: "#2c3e50",
-          backgroundColor: "rgba(44,62,80,0.1)",
-          borderWidth: 3,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: true,
-          tension: 0.2
-        }]
-      },
-      options: {
-        responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
-        plugins: {
-          tooltip: {
-            enabled: false,
-            external: externalTooltipHandler
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "التاريخ",
-              color: "#333",
-              font: { size: 14 }
-            },
-            ticks: { color: "#333" },
-            grid: { color: "rgba(0, 0, 0, 0.05)" }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "السعر (ر.س)",
-              color: "#333",
-              font: { size: 14 }
-            },
-            ticks: { color: "#333" },
-            grid: { color: "rgba(0, 0, 0, 0.05)" }
-          }
-        }
+        return `
+          <b>التاريخ:</b> ${pointDate}<br/>
+          <b>السعر:</b> ${pointPrice} ر.س<br/>
+          <b>الفرق عن المتوسط:</b> ${avgDiff > 0 ? "+" : ""}${avgDiff.toFixed(2)} ر.س<br/>
+          <b>الفرق عن الأقل:</b> ${minDiff > 0 ? "+" : ""}${minDiff.toFixed(2)} ر.س<br/>
+          <b>الفرق عن الأعلى:</b> ${maxDiff > 0 ? "+" : ""}${maxDiff.toFixed(2)} ر.س
+        `;
       }
-    });
-  }
+    },
+    series: [{
+      name: 'السعر',
+      data: prices,
+      color: '#007bff',
+      fillOpacity: 0.3
+    }],
+    credits: { enabled: false }
+  });
 });
-
-  // ==============================
-  // ✅ نهاية الإسكربت
-  // ==============================
-
-
-
