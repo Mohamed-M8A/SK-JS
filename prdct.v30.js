@@ -170,22 +170,34 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
-// ==============================
-// إضافة نجوم التقييم
-// ==============================
+  // ==============================
+  // ✅ إضافة نجوم التقييم
+  // ==============================
+
 function renderStarsFromValue() {
-  const rating = parseFloat(document.getElementById("ratingValue").textContent) || 0;
-  const fullStars = Math.floor(rating);
-  const hasHalf = rating % 1 !== 0 ? 1 : 0;
-  const emptyStars = 5 - fullStars - hasHalf;
+  let rating = parseFloat(document.getElementById("ratingValue").textContent);
 
-  let starsHTML = "★".repeat(fullStars)
-    + (hasHalf ? `<span class="star half">★</span>` : "")
-    + "★".repeat(emptyStars);
+  let fullStars = Math.floor(rating);          
+  let hasHalf = (rating % 1 !== 0) ? 1 : 0;    
+  let emptyStars = 5 - fullStars - hasHalf;   
 
-  document.getElementById("stars").innerHTML = starsHTML
-    .replace(/★/g, m => `<span class="star">${m}</span>`);
+  let starsHTML = "";
+
+  for (let i = 0; i < fullStars; i++) {
+    starsHTML += `<span class="star">★</span>`; 
+  }
+
+  if (hasHalf) {
+    starsHTML += `<span class="star half">★</span>`; 
+  }
+
+  for (let i = 0; i < emptyStars; i++) {
+    starsHTML += `<span class="star empty">★</span>`; 
+  }
+
+  document.getElementById("stars").innerHTML = starsHTML;
 }
+
 renderStarsFromValue();
 
   // ==============================
@@ -727,6 +739,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
 
