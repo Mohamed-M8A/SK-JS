@@ -1,4 +1,6 @@
-// ==============================
+document.addEventListener("DOMContentLoaded", function () {
+
+  // ==============================
   // ✅ إضافة نجوم التقييم
   // ==============================
 
@@ -500,3 +502,4 @@ document.addEventListener('DOMContentLoaded', function () {
     credits: { enabled: false }
   });
 });
+
