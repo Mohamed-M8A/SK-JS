@@ -25,6 +25,22 @@ document.querySelectorAll(".add-to-cart").forEach(btn => {
 });
 
 // ==============================
+// ✅ نسخ الكوبون
+// ==============================
+
+window.copyCoupon = function () {
+  const code = document.getElementById("couponCode")?.innerText;
+  if (!code) return;
+
+  navigator.clipboard.writeText(code)
+    .then(() => showToast("تم نسخ الكوبون: " + code, "success"))
+    .catch(err => {
+      console.error("فشل النسخ: ", err);
+      showToast("فشل نسخ الكوبون!", "error");
+    });
+};
+
+// ==============================
 // ✅ إشعارات Toast 
 // ==============================
 function showToast(message, type = "success") {
