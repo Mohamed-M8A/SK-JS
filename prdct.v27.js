@@ -170,141 +170,79 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
-  // ==============================
-  // ✅ إضافة نجوم التقييم
-  // ==============================
-
+// ==============================
+// إضافة نجوم التقييم
+// ==============================
 function renderStarsFromValue() {
-  let rating = parseFloat(document.getElementById("ratingValue").textContent);
+  const rating = parseFloat(document.getElementById("ratingValue").textContent) || 0;
+  const fullStars = Math.floor(rating);
+  const hasHalf = rating % 1 !== 0 ? 1 : 0;
+  const emptyStars = 5 - fullStars - hasHalf;
 
-  let fullStars = Math.floor(rating);          
-  let hasHalf = (rating % 1 !== 0) ? 1 : 0;    
-  let emptyStars = 5 - fullStars - hasHalf;   
+  let starsHTML = "★".repeat(fullStars)
+    + (hasHalf ? `<span class="star half">★</span>` : "")
+    + "★".repeat(emptyStars);
 
-  let starsHTML = "";
-
-  for (let i = 0; i < fullStars; i++) {
-    starsHTML += `<span class="star">★</span>`; 
-  }
-
-  if (hasHalf) {
-    starsHTML += `<span class="star half">★</span>`; 
-  }
-
-  for (let i = 0; i < emptyStars; i++) {
-    starsHTML += `<span class="star empty">★</span>`; 
-  }
-
-  document.getElementById("stars").innerHTML = starsHTML;
+  document.getElementById("stars").innerHTML = starsHTML
+    .replace(/★/g, m => `<span class="star">${m}</span>`);
 }
-
 renderStarsFromValue();
-  
-  // ==============================
-  // ✅ التبويبات الذكية
-  // ==============================
 
-let enableInitialScroll = false; 
-
-function showTab(id, btn) {
+// ==============================
+// التبويبات الذكية
+// ==============================
+function showTab(id, btn, doScroll = false) {
   document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
   document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
 
   const target = document.getElementById(id);
   if (target) {
     target.style.display = 'block';
-
-    // Scroll لأعلى التاب تلقائيًا (الكود موجود لكن بيتحكم فيه المتغير)
-    const targetTop = target.getBoundingClientRect().top + window.scrollY;
-    const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
-
-    setTimeout(() => {
-      if (enableInitialScroll) { // ✅ الشرط هنا
-        window.scrollTo({
-          top: targetTop - stickyHeight - 10,
-          behavior: 'smooth'
-        });
-      }
-    }, 100);
+    if (doScroll) {
+      const targetTop = target.getBoundingClientRect().top + window.scrollY;
+      const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+      setTimeout(() => {
+        window.scrollTo({ top: targetTop - stickyHeight - 10, behavior: 'smooth' });
+      }, 100);
+    }
   }
-
   if (btn) btn.classList.add('active');
 }
 
+// أول تحميل للتبويبات
 let tabCheck = setInterval(() => {
   const firstBtn = document.querySelector('.tab-buttons button');
-  const firstTab = document.getElementById('tab1');
-
-  if (firstBtn && firstTab) {
-    showTab('tab1', firstBtn);
-
+  if (firstBtn) {
+    showTab('tab1', firstBtn, false);
     document.querySelectorAll('.tab-buttons button').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
-        if (id) showTab(id, btn);
+        if (id) showTab(id, btn, true);
       });
     });
-
     clearInterval(tabCheck);
   }
 }, 100);
-
 setTimeout(() => clearInterval(tabCheck), 5000);
 
-});
-
-  // ==================================
-  // ✅ التوجيه لتاب التقييمات رقم (5)
-  // =============================
-
-  function showTab(id, btn) {
-    document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
-    
-    document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
-
-    const target = document.getElementById(id);
-    if (target) {
-      target.style.display = 'block';
-
-      const targetTop = target.getBoundingClientRect().top + window.scrollY;
-      const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
-
-      setTimeout(() => {
-        window.scrollTo({
-          top: targetTop - stickyHeight - 10,
-          behavior: 'smooth'
-        });
-      }, 100);
-    }
-
-    if (btn) btn.classList.add('active');
+// ==============================
+// التوجيه لتاب التقييمات رقم (5)
+// ==============================
+window.addEventListener("DOMContentLoaded", () => {
+  const goToReviewsBtn = document.getElementById("goToReviews");
+  if (goToReviewsBtn) {
+    goToReviewsBtn.addEventListener("click", e => {
+      e.preventDefault();
+      const tabButtons = document.querySelectorAll('.tab-buttons button');
+      const targetButton = Array.from(tabButtons).find(btn =>
+        btn.getAttribute('onclick')?.includes("'tab5'")
+      );
+      if (targetButton) {
+        showTab('tab5', targetButton, true);
+      }
+    });
   }
-
-  window.addEventListener("DOMContentLoaded", function () {
-    const goToReviewsBtn = document.getElementById("goToReviews");
-
-    if (goToReviewsBtn) {
-      goToReviewsBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        const tabButtons = document.querySelectorAll('.tab-buttons button');
-        const targetButton = Array.from(tabButtons).find(btn =>
-          btn.getAttribute('onclick')?.includes("'tab5'")
-        );
-
-        if (targetButton) {
-          showTab('tab5', targetButton);
-
-          setTimeout(() => {
-            const reviewsSection = document.getElementById('tab5');
-            if (reviewsSection) {
-              reviewsSection.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 300);
-        }
-      });
-    }
-  });
+});
 
   // ==============================
   // ✅ إضافة صور افتراضية للعملاء 
@@ -739,4 +677,5 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
