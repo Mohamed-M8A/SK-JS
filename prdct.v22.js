@@ -445,7 +445,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-<script>
 // ===================================================
 // ✅ خريطة العملات
 // ===================================================
@@ -618,7 +617,6 @@ window.updateDiscount = function () {
     if (savingEl) savingEl.textContent = "";
   }
 };
-</script>
 
   // ==============================
   // ✅ الرسم البياني
@@ -779,5 +777,6 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
