@@ -188,10 +188,13 @@ function renderStarsFromValue() {
 }
 renderStarsFromValue();
 
-// ==============================
-// التبويبات الذكية
-// ==============================
-function showTab(id, btn, forceScroll = false) {
+  // ==============================
+  // ✅ التبويبات الذكية
+  // ==============================
+
+let enableInitialScroll = false; 
+
+function showTab(id, btn) {
   document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
   document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
 
@@ -199,10 +202,61 @@ function showTab(id, btn, forceScroll = false) {
   if (target) {
     target.style.display = 'block';
 
+    // Scroll لأعلى التاب تلقائيًا (الكود موجود لكن بيتحكم فيه المتغير)
     const targetTop = target.getBoundingClientRect().top + window.scrollY;
     const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
 
-    if (forceScroll) {
+    setTimeout(() => {
+      if (enableInitialScroll) { // ✅ الشرط هنا
+        window.scrollTo({
+          top: targetTop - stickyHeight - 10,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  }
+
+  if (btn) btn.classList.add('active');
+}
+
+let tabCheck = setInterval(() => {
+  const firstBtn = document.querySelector('.tab-buttons button');
+  const firstTab = document.getElementById('tab1');
+
+  if (firstBtn && firstTab) {
+    showTab('tab1', firstBtn);
+
+    document.querySelectorAll('.tab-buttons button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
+        if (id) showTab(id, btn);
+      });
+    });
+
+    clearInterval(tabCheck);
+  }
+}, 100);
+
+setTimeout(() => clearInterval(tabCheck), 5000);
+
+});
+
+  // ==================================
+  // ✅ التوجيه لتاب التقييمات رقم (5)
+  // =============================
+
+  function showTab(id, btn) {
+    document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
+    
+    document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
+
+    const target = document.getElementById(id);
+    if (target) {
+      target.style.display = 'block';
+
+      const targetTop = target.getBoundingClientRect().top + window.scrollY;
+      const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+
       setTimeout(() => {
         window.scrollTo({
           top: targetTop - stickyHeight - 10,
@@ -210,48 +264,35 @@ function showTab(id, btn, forceScroll = false) {
         });
       }, 100);
     }
+
+    if (btn) btn.classList.add('active');
   }
-  if (btn) btn.classList.add('active');
-}
 
-// ==============================
-// تفعيل أول تبويب
-// ==============================
-let tabCheck = setInterval(() => {
-  const firstBtn = document.querySelector('.tab-buttons button');
-  if (firstBtn) {
-    showTab('tab1', firstBtn, false);
+  window.addEventListener("DOMContentLoaded", function () {
+    const goToReviewsBtn = document.getElementById("goToReviews");
 
-    document.querySelectorAll('.tab-buttons button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
-        if (id) showTab(id, btn, true);
+    if (goToReviewsBtn) {
+      goToReviewsBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const tabButtons = document.querySelectorAll('.tab-buttons button');
+        const targetButton = Array.from(tabButtons).find(btn =>
+          btn.getAttribute('onclick')?.includes("'tab5'")
+        );
+
+        if (targetButton) {
+          showTab('tab5', targetButton);
+
+          setTimeout(() => {
+            const reviewsSection = document.getElementById('tab5');
+            if (reviewsSection) {
+              reviewsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 300);
+        }
       });
-    });
-
-    clearInterval(tabCheck);
-  }
-}, 100);
-setTimeout(() => clearInterval(tabCheck), 5000);
-
-// ==============================
-// التوجيه لتبويب التقييمات (رقم 5)
-// ==============================
-window.addEventListener("DOMContentLoaded", () => {
-  const goToReviewsBtn = document.getElementById("goToReviews");
-  if (goToReviewsBtn) {
-    goToReviewsBtn.addEventListener("click", e => {
-      e.preventDefault();
-      const tabButtons = document.querySelectorAll('.tab-buttons button');
-      const targetButton = Array.from(tabButtons).find(btn =>
-        btn.getAttribute('onclick')?.includes("'tab5'")
-      );
-      if (targetButton) {
-        showTab('tab5', targetButton, true);
-      }
-    });
-  }
-});
+    }
+  });
 
   // ==============================
   // ✅ إضافة صور افتراضية للعملاء 
@@ -686,6 +727,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
 
