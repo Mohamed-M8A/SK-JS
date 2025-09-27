@@ -1,7 +1,7 @@
 // ==============================
 // ✅ إعداد السلايدر الرئيسي
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector('.main-image-container');
   const thumbnails = [...document.querySelectorAll('.thumbnail-container img')];
   const thumbContainer = document.querySelector('.thumbnail-container');
@@ -20,9 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
       width: '100%',
       height: '100%'
     });
-    thumbnails.forEach(img =>
-      img.classList.toggle('active-thumb', img === thumbnails[index])
-    );
+    thumbnails.forEach(img => img.classList.toggle('active-thumb', img === thumbnails[index]));
     scrollThumbnailIntoView(index);
   }
 
@@ -53,12 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('thumbsLeft')?.addEventListener('click', () => thumbContainer.scrollLeft -= scrollAmount);
 
   // ✅ الأسهم الكبيرة
-  document.getElementById('mainImageRightArrow')?.addEventListener('click', () =>
-    changeImage((currentIndex - 1 + thumbnails.length) % thumbnails.length)
-  );
-  document.getElementById('mainImageLeftArrow')?.addEventListener('click', () =>
-    changeImage((currentIndex + 1) % thumbnails.length)
-  );
+  document.getElementById('mainImageRightArrow')?.addEventListener('click', () => changeImage((currentIndex - 1 + thumbnails.length) % thumbnails.length));
+  document.getElementById('mainImageLeftArrow')?.addEventListener('click', () => changeImage((currentIndex + 1) % thumbnails.length));
 
   // ✅ المصغّرات
   thumbnails.forEach((img, i) => img.addEventListener('click', () => changeImage(i)));
@@ -92,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.style.display = "flex";
     modalImage.src = thumbnails[index].src;
 
-    // ✅ ضبط الصورة داخل الـ Modal بنفس طريقة 1:1
+    // ✅ ضبط الصورة داخل الـ Modal
     modalImage.style.objectFit = 'contain';
     modalImage.style.backgroundColor = 'black';
     modalImage.style.width = '100%';
