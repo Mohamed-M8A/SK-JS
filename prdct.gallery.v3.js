@@ -32,17 +32,9 @@ function scrollThumbnailIntoView(index) {
   const isRTL = getComputedStyle(thumbContainer).direction === 'rtl';
 
   if (isRTL) {
-    thumbContainer.scrollLeft += (tRect.left < cRect.left)
-      ? tRect.left - cRect.left - 10
-      : (tRect.right > cRect.right)
-        ? tRect.right - cRect.right + 10
-        : 0;
+    thumbContainer.scrollLeft += (tRect.left < cRect.left) ? tRect.left - cRect.left - 10 : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
   } else {
-    thumbContainer.scrollLeft += (tRect.left < cRect.left)
-      ? -(cRect.left - tRect.left + 10)
-      : (tRect.right > cRect.right)
-        ? tRect.right - cRect.right + 10
-        : 0;
+    thumbContainer.scrollLeft += (tRect.left < cRect.left) ? -(cRect.left - tRect.left + 10) : (tRect.right > cRect.right) ? tRect.right - cRect.right + 10 : 0;
   }
 }
 
@@ -66,14 +58,7 @@ changeImage(0);
 
 function createModal() {
   if (document.getElementById("imageModal")) return;
-  const modalHTML = `
-    <div id="imageModal" class="modal">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <img class="modal-content" id="modalImage" />
-      <span class="arrow left" onclick="navigateModal('prev')"></span>
-      <span class="arrow right" onclick="navigateModal('next')"></span>
-    </div>
-  `;
+  const modalHTML = <div id="imageModal" class="modal"> <span class="close" onclick="closeModal()">&times;</span> <img class="modal-content" id="modalImage" /> <span class="arrow left" onclick="navigateModal('prev')"></span> <span class="arrow right" onclick="navigateModal('next')"></span> </div> ;
   document.body.insertAdjacentHTML("beforeend", modalHTML);
 }
 
@@ -102,10 +87,7 @@ window.closeModal = function () {
 
 window.navigateModal = function (direction) {
   if (!thumbnails.length || !modalImage) return;
-  currentIndex = direction === "next"
-    ? (currentIndex + 1) % thumbnails.length
-    : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-
+  currentIndex = direction === "next" ? (currentIndex + 1) % thumbnails.length : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
   modalImage.src = thumbnails[currentIndex].src;
 
   // ✅ نفس ضبط 1:1 داخل المودال
