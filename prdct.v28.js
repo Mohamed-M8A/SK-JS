@@ -191,42 +191,51 @@ renderStarsFromValue();
 // ==============================
 // التبويبات الذكية
 // ==============================
-function showTab(id, btn, doScroll = false) {
+function showTab(id, btn, forceScroll = false) {
   document.querySelectorAll('[id^="tab"]').forEach(t => t.style.display = 'none');
   document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
 
   const target = document.getElementById(id);
   if (target) {
     target.style.display = 'block';
-    if (doScroll) {
-      const targetTop = target.getBoundingClientRect().top + window.scrollY;
-      const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    const stickyHeight = document.querySelector('.tab-buttons')?.offsetHeight || 0;
+
+    if (forceScroll) {
       setTimeout(() => {
-        window.scrollTo({ top: targetTop - stickyHeight - 10, behavior: 'smooth' });
+        window.scrollTo({
+          top: targetTop - stickyHeight - 10,
+          behavior: 'smooth'
+        });
       }, 100);
     }
   }
   if (btn) btn.classList.add('active');
 }
 
-// أول تحميل للتبويبات
+// ==============================
+// تفعيل أول تبويب
+// ==============================
 let tabCheck = setInterval(() => {
   const firstBtn = document.querySelector('.tab-buttons button');
   if (firstBtn) {
     showTab('tab1', firstBtn, false);
+
     document.querySelectorAll('.tab-buttons button').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('onclick')?.match(/'(.*?)'/)?.[1];
         if (id) showTab(id, btn, true);
       });
     });
+
     clearInterval(tabCheck);
   }
 }, 100);
 setTimeout(() => clearInterval(tabCheck), 5000);
 
 // ==============================
-// التوجيه لتاب التقييمات رقم (5)
+// التوجيه لتبويب التقييمات (رقم 5)
 // ==============================
 window.addEventListener("DOMContentLoaded", () => {
   const goToReviewsBtn = document.getElementById("goToReviews");
@@ -677,5 +686,6 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
