@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentIndex = 0;
   const scrollAmount = 240;
 
+  // ✅ ستايل للصورة الرئيسية + المودال فقط
   function applyImageStyle(img) {
     Object.assign(img.style, {
       objectFit: 'contain',
@@ -19,6 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ✅ ستايل للثومبنيلز (حجم صغير مناسب للموبايل)
+  function applyThumbStyle(img) {
+    Object.assign(img.style, {
+      width: '60px',
+      height: '60px',
+      objectFit: 'cover',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '2px'
+    });
+  }
+
+  // ✅ تغيير الصورة الرئيسية
   function changeImage(index) {
     if (index === currentIndex) return;
     currentIndex = index;
@@ -30,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollThumbnailIntoView(index);
   }
 
+  // ✅ تمرير الثمبنيلز عند اختيار صورة
   function scrollThumbnailIntoView(index) {
     const thumb = thumbnails[index];
     const cRect = thumbContainer.getBoundingClientRect();
@@ -57,7 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     changeImage((currentIndex + 1) % thumbnails.length)
   );
 
-  thumbnails.forEach((img, i) => img.addEventListener('click', () => changeImage(i)));
+  thumbnails.forEach((img, i) => {
+    applyThumbStyle(img); // ✅ نطبق ستايل الثمبنيلز هنا
+    img.addEventListener('click', () => changeImage(i));
+  });
 
   changeImage(0);
 
@@ -80,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById("imageModal");
   const modalImage = document.getElementById("modalImage");
 
+  // ✅ فتح المودال
   window.openModal = function (index) {
     modal.style.display = "flex";
     modalImage.src = thumbnails[index].src;
@@ -87,10 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
     currentIndex = index;
   };
 
+  // ✅ غلق المودال
   window.closeModal = function () {
     modal.style.display = "none";
   };
 
+  // ✅ التنقل بين الصور داخل المودال
   window.navigateModal = function (direction) {
     currentIndex = direction === "next"
       ? (currentIndex + 1) % thumbnails.length
