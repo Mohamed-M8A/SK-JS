@@ -6,15 +6,12 @@ function showCartToast(message, type = "success") {
   toast.className = "cart-toast";
   toast.textContent = message;
 
-  if (type === "error") {
-    toast.style.background = "#e74c3c"; // أحمر
-  } else {
-    toast.style.background = "#2ecc71"; // أخضر
-  }
+  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
 
   document.body.appendChild(toast);
 
-  setTimeout(() => toast.classList.add("show"), 100);
+  // 🔹 نستخدم requestAnimationFrame لضمان تشغيل الـ transition
+  requestAnimationFrame(() => toast.classList.add("show"));
 
   setTimeout(() => {
     toast.classList.remove("show");
@@ -96,6 +93,11 @@ window.copyCoupon = function () {
   }
 
   navigator.clipboard.writeText(code)
-    .then(() => showCartToast("تم نسخ الكوبون: " + code, "success"))
-    .catch(() => showCartToast("فشل نسخ الكوبون!", "error"));
+    .then(() => {
+      // نأخر التنفيذ tick صغير عشان التوست يظهر مظبوط
+      setTimeout(() => showCartToast("تم نسخ الكوبون: " + code, "success"), 0);
+    })
+    .catch(() => {
+      showCartToast("فشل نسخ الكوبون!", "error");
+    });
 };
