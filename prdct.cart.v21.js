@@ -87,49 +87,29 @@ document.addEventListener("click", function (e) {
  ***********************/
 window.copyCoupon = function () {
   const codeEl = document.getElementById("couponCode");
+  console.log("📌 العنصر:", codeEl);
+
   if (!codeEl) {
+    console.log("❌ لا يوجد عنصر couponCode في الصفحة");
     showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   const code = codeEl.innerText.trim();
+  console.log("📌 الكوبون:", code);
 
   if (!code) {
     showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code)
-      .then(() => {
-        showCartToast("✅ تم نسخ الكوبون: " + code, "success");
-      })
-      .catch(err => {
-        console.error("فشل نسخ الكوبون:", err);
-        showCartToast("فشل نسخ الكوبون!", "error");
-      });
-  } else {
-    // fallback للمتصفحات اللي ما تدعم clipboard API
-    const textarea = document.createElement("textarea");
-    textarea.value = code;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "absolute";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-
-    try {
-      const ok = document.execCommand("copy");
-      if (ok) {
-        showCartToast("✅ تم نسخ الكوبون: " + code, "success");
-      } else {
-        showCartToast("فشل نسخ الكوبون!", "error");
-      }
-    } catch (err) {
-      console.error("فشل نسخ الكوبون:", err);
+  navigator.clipboard.writeText(code)
+    .then(() => {
+      console.log("✅ الكوبون اتنسخ:", code);
+      showCartToast("✅ تم نسخ الكوبون: " + code, "success");
+    })
+    .catch(err => {
+      console.error("❌ فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
-    }
-
-    textarea.remove();
-  }
+    });
 };
