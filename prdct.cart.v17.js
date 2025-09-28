@@ -83,7 +83,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون
+ * ✅ نسخ الكوبون مع Toast
  ***********************/
 window.copyCoupon = function () {
   const codeEl = document.getElementById("couponCode");
@@ -96,10 +96,11 @@ window.copyCoupon = function () {
 
   navigator.clipboard.writeText(code)
     .then(() => {
-      console.log("🎉 كوبون منسوخ:", code);
       showCartToast("تم نسخ الكوبون: " + code, "success");
     })
-    .catch(() => {
+    .catch(err => {
+      console.error("فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
     });
 };
+
