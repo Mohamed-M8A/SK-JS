@@ -2,11 +2,16 @@
 // ✅ تنظيف الرابط (يشيل أي باراميتر)
 // ==============================
 function cleanUrl(url) {
-  return url.split("?")[0]; // يشيل أي query مثل ?m=1 أو ?country=SA
+  try {
+    const u = new URL(url, window.location.origin);
+    return u.origin + u.pathname; // نحتفظ فقط بالمسار بدون query
+  } catch (e) {
+    return url.split("?")[0]; // fallback لو فيه خطأ
+  }
 }
 
 // ==============================
-// ✅ إشعارات Toast للعربة
+// ✅ إشعارات Toast عامة
 // ==============================
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
@@ -19,11 +24,22 @@ function showCartToast(message, type = "success") {
     toast.style.background = "#2ecc71"; // أخضر
   }
 
+  toast.style.color = "#fff";
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.padding = "10px 20px";
+  toast.style.borderRadius = "6px";
+  toast.style.zIndex = "999999";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.3s ease";
+
   document.body.appendChild(toast);
 
-  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => (toast.style.opacity = "1"), 100);
   setTimeout(() => {
-    toast.classList.remove("show");
+    toast.style.opacity = "0";
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
@@ -76,3 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// ==============================
+// ✅ نسخ الكوبون مع Toast
+// ==============================
+window.copyCoupon = function () {
+  const code = document.getElementById("couponCode")?.innerText;
+  if (!code) return;
+
+  navigator.clipboard
+    .writeText(code)
+    .then(() => showCartToast("تم نسخ الكوبون: " + code, "success"))
+    .catch(err => {
+      console.error("فشل النسخ: ", err);
+      showCartToast("فشل نسخ الكوبون!", "error");
+    });
+};
