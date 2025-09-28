@@ -1,11 +1,12 @@
 // ==============================
-// ✅ إشعارات Toast عامة (شغالة زي ما هي)
+// ✅ إشعارات Toast (شغالة زي الأصل بالظبط)
 // ==============================
 function showToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = "toast";
   toast.textContent = message;
 
+  // ألوان حسب النوع
   if (type === "error") {
     toast.style.background = "#e74c3c"; // أحمر
   } else if (type === "success") {
@@ -17,7 +18,10 @@ function showToast(message, type = "success") {
   toast.style.color = "#fff";
   document.body.appendChild(toast);
 
+  // إظهار
   setTimeout(() => toast.classList.add("show"), 100);
+
+  // إخفاء
   setTimeout(() => {
     toast.classList.remove("show");
     setTimeout(() => toast.remove(), 400);
@@ -41,7 +45,7 @@ function addToCart(productUrl) {
 }
 
 // ==============================
-// ✅ أحداث العربة (الويدجت) — زي ما هو
+// ✅ أحداث العربة (الويدجت)
 // ==============================
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
@@ -50,25 +54,21 @@ document.addEventListener("click", function (e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     e.preventDefault();
-    const productUrl = postCard.getAttribute("data-product-url"); // 🔥 يفضل المصدر الأساسي
+    const productUrl = postCard.getAttribute("data-product-url");
     addToCart(productUrl);
   }
 });
 
 // ==============================
-// ✅ زر في صفحة المنتج (هنا التعديل الأساسي)
+// ✅ زر في صفحة المنتج (هنا بيتنضف الرابط)
 // ==============================
 function handleAddToCart(event) {
   event.preventDefault();
 
-  // 🔥 بدل window.location.href → نخزن من data-product-url
-  const productUrl = document.querySelector(".add-to-cart")?.getAttribute("data-product-url");
-  if (productUrl) {
-    addToCart(productUrl);
-  } else {
-    console.error("⚠️ مفيش data-product-url على الزر!");
-    showToast("لا يمكن إضافة المنتج: رابط مفقود", "error");
-  }
+  // 🔥 ناخد الرابط بدون أي باراميتر
+  const cleanUrl = window.location.origin + window.location.pathname;
+
+  addToCart(cleanUrl);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
