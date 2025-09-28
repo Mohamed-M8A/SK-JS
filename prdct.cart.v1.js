@@ -3,7 +3,7 @@
 // ==============================
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
-  toast.className = "cart-toast"; // 👈 كلاس مختلف عن البلد
+  toast.className = "cart-toast"; // 
   toast.textContent = message;
 
   if (type === "error") {
