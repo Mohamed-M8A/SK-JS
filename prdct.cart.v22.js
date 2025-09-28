@@ -83,21 +83,16 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون مع Toast 
+ * ✅ نسخ الكوبون مع Toast (نفس نظام العربة)
  ***********************/
-window.copyCoupon = function () {
+function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
-  console.log("📌 العنصر:", codeEl);
-
   if (!codeEl) {
-    console.log("❌ لا يوجد عنصر couponCode في الصفحة");
     showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   const code = codeEl.innerText.trim();
-  console.log("📌 الكوبون:", code);
-
   if (!code) {
     showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
@@ -105,11 +100,19 @@ window.copyCoupon = function () {
 
   navigator.clipboard.writeText(code)
     .then(() => {
-      console.log("✅ الكوبون اتنسخ:", code);
       showCartToast("✅ تم نسخ الكوبون: " + code, "success");
     })
     .catch(err => {
-      console.error("❌ فشل نسخ الكوبون:", err);
+      console.error("فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
     });
-};
+}
+
+// 🔗 ربط الزر بعد تحميل الصفحة
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("copyCouponBtn");
+  if (btn) {
+    btn.addEventListener("click", copyCoupon);
+  }
+});
+
