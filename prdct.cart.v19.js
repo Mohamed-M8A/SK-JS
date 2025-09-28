@@ -87,19 +87,49 @@ document.addEventListener("click", function (e) {
  ***********************/
 window.copyCoupon = function () {
   const codeEl = document.getElementById("couponCode");
-  const code = codeEl ? codeEl.innerText.trim() : "";
+  if (!codeEl) {
+    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    return;
+  }
+
+  // هنا الكوبون جاي من innerText عشان العنصر div
+  const code = codeEl.innerText.trim();
 
   if (!code) {
     showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
-  navigator.clipboard.writeText(code)
-    .then(() => {
-      showCartToast("✅ تم نسخ الكوبون: " + code, "success");
-    })
-    .catch(err => {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code)
+      .then(() => {
+        showCartToast("✅ تم نسخ الكوبون: " + code, "success");
+      })
+      .catch(err => {
+        console.error("فشل نسخ الكوبون:", err);
+        showCartToast("فشل نسخ الكوبون!", "error");
+      });
+  } else {
+    // fallback للمتصفحات القديمة
+    const textarea = document.createElement("textarea");
+    textarea.value = code;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "absolute";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      const ok = document.execCommand("copy");
+      if (ok) {
+        showCartToast("✅ تم نسخ الكوبون: " + code, "success");
+      } else {
+        showCartToast("فشل نسخ الكوبون!", "error");
+      }
+    } catch (err) {
       console.error("فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
-    });
+    }
+    textarea.remove();
+  }
 };
+
