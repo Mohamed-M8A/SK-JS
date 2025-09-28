@@ -6,10 +6,18 @@ function showCartToast(message, type = "success") {
   toast.className = "cart-toast";
   toast.textContent = message;
 
-  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
+  if (type === "error") {
+    toast.style.background = "#e74c3c"; // أحمر
+  } else {
+    toast.style.background = "#2ecc71"; // أخضر
+  }
 
   document.body.appendChild(toast);
+
+  // إظهار
   setTimeout(() => toast.classList.add("show"), 100);
+
+  // إخفاء
   setTimeout(() => {
     toast.classList.remove("show");
     setTimeout(() => toast.remove(), 400);
@@ -83,14 +91,14 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون مع Toast
+ * ✅ نسخ كوبون الخصم
  ***********************/
 window.copyCoupon = function () {
   const codeEl = document.getElementById("couponCode");
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    showCartToast("لا يوجد كوبون!", "error");
     return;
   }
 
@@ -98,8 +106,8 @@ window.copyCoupon = function () {
     .then(() => {
       showCartToast("✅ تم نسخ الكوبون: " + code, "success");
     })
-    .catch(err => {
-      console.error("فشل نسخ الكوبون:", err);
+    .catch(() => {
       showCartToast("فشل نسخ الكوبون!", "error");
     });
 };
+
