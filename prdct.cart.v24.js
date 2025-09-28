@@ -82,40 +82,32 @@ document.addEventListener("click", function (e) {
   }
 });
 
-/***********************
- * ✅ نسخ الكوبون مع Toast (نفس نظام العربة)
- ***********************/
-function copyCoupon() {
-  const codeEl = document.getElementById("couponCode");
-  if (!codeEl) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
-    return;
-  }
+// ==============================
+// ✅ نسخ الكوبون
+// ==============================
 
-  const code = codeEl.innerText.trim();
+function copyCoupon() {
+  const code = document.getElementById("couponCode")?.innerText?.trim();
   if (!code) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    showToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   navigator.clipboard.writeText(code)
-    .then(() => {
-      showCartToast("✅ تم نسخ الكوبون: " + code, "success");
-    })
+    .then(() => showToast("✅ تم نسخ الكوبون: " + code, "success"))
     .catch(err => {
       console.error("فشل نسخ الكوبون:", err);
-      showCartToast("فشل نسخ الكوبون!", "error");
+      showToast("فشل نسخ الكوبون!", "error");
     });
 }
 
-// 🔗 ربط الزر بعد تحميل الصفحة (يدعم onclick أو id)
 document.addEventListener("DOMContentLoaded", () => {
-  // زر بالـ id
-  const btn = document.getElementById("copyCouponBtn");
-  if (btn) {
-    btn.addEventListener("click", copyCoupon);
+  const couponBtn = document.getElementById("copyCouponBtn");
+  if (couponBtn) {
+    couponBtn.removeEventListener("click", copyCoupon);
+    couponBtn.addEventListener("click", copyCoupon);
   }
 
-  // لو فيه زر onclick في الـ HTML
+  // في حالة الزر مكتوب فيه onclick="copyCoupon()"
   window.copyCoupon = copyCoupon;
 });
