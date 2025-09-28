@@ -1,18 +1,18 @@
-// ==============================
-// ✅ تنظيف الرابط (يشيل أي باراميتر)
-// ==============================
+/***********************
+ * تنظيف الرابط (إزالة أي باراميتر)
+ ***********************/
 function cleanUrl(url) {
   try {
     const u = new URL(url, window.location.origin);
-    return u.origin + u.pathname; // نحتفظ فقط بالمسار بدون query
+    return u.origin + u.pathname; // فقط الدومين + المسار
   } catch (e) {
-    return url.split("?")[0]; // fallback لو فيه خطأ
+    return url.split("?")[0]; // fallback
   }
 }
 
-// ==============================
-// ✅ إشعارات Toast عامة
-// ==============================
+/***********************
+ * إشعارات Toast للعربة والكوبون
+ ***********************/
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = "toast cart-toast";
@@ -24,29 +24,18 @@ function showCartToast(message, type = "success") {
     toast.style.background = "#2ecc71"; // أخضر
   }
 
-  toast.style.color = "#fff";
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-  toast.style.padding = "10px 20px";
-  toast.style.borderRadius = "6px";
-  toast.style.zIndex = "999999";
-  toast.style.opacity = "0";
-  toast.style.transition = "opacity 0.3s ease";
-
   document.body.appendChild(toast);
 
-  setTimeout(() => (toast.style.opacity = "1"), 100);
+  setTimeout(() => toast.classList.add("show"), 100);
   setTimeout(() => {
-    toast.style.opacity = "0";
+    toast.classList.remove("show");
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
 
-// ==============================
-// ✅ إضافة المنتج إلى العربة
-// ==============================
+/***********************
+ * إدارة العربة
+ ***********************/
 function addToCart(productUrl) {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const clean = cleanUrl(productUrl);
@@ -61,17 +50,17 @@ function addToCart(productUrl) {
   }
 }
 
-// ==============================
-// ✅ زر في صفحة المنتج
-// ==============================
+/***********************
+ * زر في صفحة المنتج
+ ***********************/
 function handleAddToCart(event) {
   const productUrl = cleanUrl(window.location.href);
   addToCart(productUrl);
 }
 
-// ==============================
-// ✅ ربط الأزرار في أي صفحة
-// ==============================
+/***********************
+ * ربط الأزرار
+ ***********************/
 document.addEventListener("DOMContentLoaded", () => {
   // أزرار صفحة المنتج
   document.querySelectorAll(".add-to-cart").forEach(btn => {
@@ -79,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", handleAddToCart);
   });
 
-  // أزرار من الرئيسية / القوائم
+  // أزرار القائمة / الرئيسية
   document.addEventListener("click", function (e) {
     const postCard = e.target.closest(".post-card");
     if (!postCard) return;
@@ -93,9 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ==============================
-// ✅ نسخ الكوبون مع Toast
-// ==============================
+/***********************
+ * نسخ الكوبون
+ ***********************/
 window.copyCoupon = function () {
   const code = document.getElementById("couponCode")?.innerText;
   if (!code) return;
