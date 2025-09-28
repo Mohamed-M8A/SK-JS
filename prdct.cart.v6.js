@@ -1,18 +1,18 @@
-/***********************
- * تنظيف الرابط (إزالة أي باراميتر)
- ***********************/
-function cleanUrl(url) {
+// ==============================
+// ✅ دالة لإزالة البراميترات من الرابط
+// ==============================
+function normalizeUrl(url) {
   try {
-    const u = new URL(url, window.location.origin);
-    return u.origin + u.pathname; // فقط الدومين + المسار
-  } catch (e) {
-    return url.split("?")[0]; // fallback
+    const u = new URL(url);
+    return u.origin + u.pathname; // بدون أي باراميتر
+  } catch (err) {
+    return url;
   }
 }
 
-/***********************
- * إشعارات Toast للعربة والكوبون
- ***********************/
+// ==============================
+// ✅ إشعارات Toast للعربة والكوبون
+// ==============================
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = "toast cart-toast";
@@ -33,64 +33,45 @@ function showCartToast(message, type = "success") {
   }, 3000);
 }
 
-/***********************
- * إدارة العربة
- ***********************/
+// ==============================
+// ✅ إضافة المنتج إلى العربة
+// ==============================
 function addToCart(productUrl) {
+  const cleanUrl = normalizeUrl(productUrl);
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const clean = cleanUrl(productUrl);
+  const exists = cart.some(item => item.productUrl === cleanUrl);
 
-  const exists = cart.some(item => item.productUrl === clean);
   if (exists) {
     showCartToast("المنتج موجود بالفعل في العربة!", "error");
   } else {
-    cart.push({ productUrl: clean });
+    cart.push({ productUrl: cleanUrl });
     localStorage.setItem("cart", JSON.stringify(cart));
     showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
   }
 }
 
-/***********************
- * زر في صفحة المنتج
- ***********************/
+// زر في صفحة المنتج
 function handleAddToCart(event) {
-  const productUrl = cleanUrl(window.location.href);
+  const productUrl = window.location.href;
   addToCart(productUrl);
 }
 
-/***********************
- * ربط الأزرار
- ***********************/
+// ربط الأزرار في أي صفحة (قائمة أو منتج)
 document.addEventListener("DOMContentLoaded", () => {
-  // أزرار صفحة المنتج
   document.querySelectorAll(".add-to-cart").forEach(btn => {
     btn.removeEventListener("click", handleAddToCart);
     btn.addEventListener("click", handleAddToCart);
   });
-
-  // أزرار القائمة / الرئيسية
-  document.addEventListener("click", function (e) {
-    const postCard = e.target.closest(".post-card");
-    if (!postCard) return;
-
-    const cartButton = e.target.closest(".external-cart-button");
-    if (cartButton) {
-      e.preventDefault();
-      const productUrl = cleanUrl(postCard.getAttribute("data-product-url"));
-      addToCart(productUrl);
-    }
-  });
 });
 
-/***********************
- * نسخ الكوبون
- ***********************/
+// ==============================
+// ✅ نسخ الكوبون مع توست
+// ==============================
 window.copyCoupon = function () {
   const code = document.getElementById("couponCode")?.innerText;
   if (!code) return;
 
-  navigator.clipboard
-    .writeText(code)
+  navigator.clipboard.writeText(code)
     .then(() => showCartToast("تم نسخ الكوبون: " + code, "success"))
     .catch(err => {
       console.error("فشل النسخ: ", err);
