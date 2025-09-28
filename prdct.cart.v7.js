@@ -1,10 +1,10 @@
 // ==============================
-// ✅ دالة لإزالة البراميترات من الرابط
+// ✅ دالة لتطبيع الرابط (إزالة البراميترات)
 // ==============================
 function normalizeUrl(url) {
   try {
     const u = new URL(url);
-    return u.origin + u.pathname; // بدون أي باراميتر
+    return u.origin + u.pathname; // يرجع الرابط بدون باراميترات
   } catch (err) {
     return url;
   }
@@ -37,7 +37,7 @@ function showCartToast(message, type = "success") {
 // ✅ إضافة المنتج إلى العربة
 // ==============================
 function addToCart(productUrl) {
-  const cleanUrl = normalizeUrl(productUrl);
+  const cleanUrl = normalizeUrl(productUrl); // 🔥 رابط نظيف
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const exists = cart.some(item => item.productUrl === cleanUrl);
 
@@ -50,13 +50,17 @@ function addToCart(productUrl) {
   }
 }
 
-// زر في صفحة المنتج
+// ==============================
+// ✅ زر في صفحة المنتج
+// ==============================
 function handleAddToCart(event) {
   const productUrl = window.location.href;
   addToCart(productUrl);
 }
 
-// ربط الأزرار في أي صفحة (قائمة أو منتج)
+// ==============================
+// ✅ ربط الأزرار في أي صفحة (قائمة أو منتج)
+// ==============================
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
     btn.removeEventListener("click", handleAddToCart);
