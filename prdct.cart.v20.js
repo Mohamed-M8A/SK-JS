@@ -83,7 +83,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون مع Toast
+ * ✅ نسخ الكوبون مع Toast 
  ***********************/
 window.copyCoupon = function () {
   const codeEl = document.getElementById("couponCode");
@@ -92,7 +92,6 @@ window.copyCoupon = function () {
     return;
   }
 
-  // هنا الكوبون جاي من innerText عشان العنصر div
   const code = codeEl.innerText.trim();
 
   if (!code) {
@@ -110,7 +109,7 @@ window.copyCoupon = function () {
         showCartToast("فشل نسخ الكوبون!", "error");
       });
   } else {
-    // fallback للمتصفحات القديمة
+    // fallback للمتصفحات اللي ما تدعم clipboard API
     const textarea = document.createElement("textarea");
     textarea.value = code;
     textarea.setAttribute("readonly", "");
@@ -118,6 +117,7 @@ window.copyCoupon = function () {
     textarea.style.left = "-9999px";
     document.body.appendChild(textarea);
     textarea.select();
+
     try {
       const ok = document.execCommand("copy");
       if (ok) {
@@ -129,7 +129,7 @@ window.copyCoupon = function () {
       console.error("فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
     }
+
     textarea.remove();
   }
 };
-
