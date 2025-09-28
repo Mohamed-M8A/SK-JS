@@ -28,9 +28,9 @@ function addToCart(productUrl, clean = false) {
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // 🛑 منع التكرار بأي شكل
+  // منع التكرار بأي شكل
   const exists = cart.some(item => item.productUrl === productUrl);
-  console.log("🔍 محاولة إضافة:", productUrl, " - موجود بالفعل؟", exists);
+  console.log("محاولة إضافة:", productUrl, " - موجود بالفعل؟", exists);
 
   if (exists) {
     showCartToast("المنتج موجود بالفعل في العربة!", "error");
@@ -50,14 +50,14 @@ function handleAddToCart(event) {
   event.stopPropagation();
 
   const productUrl = window.location.href;
-  console.log("🟢 زر صفحة المنتج - URL:", productUrl);
+  console.log("زر صفحة المنتج - URL:", productUrl);
 
   addToCart(productUrl, true); // تنظيف الرابط
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.replaceWith(btn.cloneNode(true)); // 🛑 إزالة أي event handlers قديمة
+    btn.replaceWith(btn.cloneNode(true)); // إزالة أي event handlers قديمة
   });
 
   document.querySelectorAll(".add-to-cart").forEach(btn => {
@@ -75,7 +75,7 @@ document.addEventListener("click", function (e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     const productUrl = postCard.getAttribute("data-product-url");
-    console.log("🟠 زر الويدجت - URL:", productUrl);
+    console.log("زر الويدجت - URL:", productUrl);
 
     addToCart(productUrl, false);
     e.preventDefault();
@@ -96,11 +96,10 @@ window.copyCoupon = function () {
 
   navigator.clipboard.writeText(code)
     .then(() => {
-      showCartToast("تم نسخ الكوبون: " + code, "success");
+      showCartToast("✅ تم نسخ الكوبون: " + code, "success");
     })
     .catch(err => {
       console.error("فشل نسخ الكوبون:", err);
       showCartToast("فشل نسخ الكوبون!", "error");
     });
 };
-
