@@ -6,7 +6,6 @@ function showToast(message, type = "success") {
   toast.className = "toast";
   toast.textContent = message;
 
-  // ألوان حسب النوع
   if (type === "error") {
     toast.style.background = "#e74c3c"; // أحمر
   } else if (type === "success") {
@@ -18,10 +17,7 @@ function showToast(message, type = "success") {
   toast.style.color = "#fff";
   document.body.appendChild(toast);
 
-  // إظهار
   setTimeout(() => toast.classList.add("show"), 100);
-
-  // إخفاء
   setTimeout(() => {
     toast.classList.remove("show");
     setTimeout(() => toast.remove(), 400);
@@ -32,8 +28,9 @@ function showToast(message, type = "success") {
 // ✅ إدارة العربة
 // ==============================
 function addToCart(productUrl) {
+  // 🔥 تنظيف أي باراميتر من الرابط
   const cleanUrl = new URL(productUrl);
-  cleanUrl.search = ""; // 🔥 شيل أي باراميتر (زي country=SA)
+  cleanUrl.search = "";
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const exists = cart.some(item => item.productUrl === cleanUrl.toString());
@@ -48,7 +45,7 @@ function addToCart(productUrl) {
 }
 
 // ==============================
-// ✅ أحداث العربة (قائمة المنتجات)
+// ✅ أحداث العربة (الويدجت)
 // ==============================
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
@@ -67,11 +64,10 @@ document.addEventListener("click", function (e) {
 // ==============================
 function handleAddToCart(event) {
   event.preventDefault();
-  event.stopPropagation(); // 🔥 يمنع تداخل الحدث مع كود القائمة
+  event.stopPropagation(); // 🔥 يمنع تداخل مع أي كود تاني
 
-  const btn = event.currentTarget;
-  const productUrl = btn.getAttribute("data-product-url") || window.location.href;
-
+  // ناخد رابط المنتج الحالي من الـ URL
+  const productUrl = window.location.href;
   addToCart(productUrl);
 }
 
