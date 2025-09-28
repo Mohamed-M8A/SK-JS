@@ -108,11 +108,14 @@ function copyCoupon() {
     });
 }
 
-// 🔗 ربط الزر بعد تحميل الصفحة
+// 🔗 ربط الزر بعد تحميل الصفحة (يدعم onclick أو id)
 document.addEventListener("DOMContentLoaded", () => {
+  // زر بالـ id
   const btn = document.getElementById("copyCouponBtn");
   if (btn) {
     btn.addEventListener("click", copyCoupon);
   }
-});
 
+  // لو فيه زر onclick في الـ HTML
+  window.copyCoupon = copyCoupon;
+});
