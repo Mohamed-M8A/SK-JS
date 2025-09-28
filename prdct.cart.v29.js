@@ -6,16 +6,16 @@ function showCartToast(message, type = "success") {
   toast.className = "cart-toast";
   toast.textContent = message;
 
-  if (type === "error") {
-    toast.style.background = "#e74c3c"; // أحمر
-  } else {
-    toast.style.background = "#2ecc71"; // أخضر
-  }
+  // ألوان
+  toast.style.background = type === "error" ? "#e74c3c" : "#2ecc71";
 
   document.body.appendChild(toast);
 
+  // Force reflow علشان الـ transition يشتغل
+  void toast.offsetWidth;
+
   // إظهار
-  setTimeout(() => toast.classList.add("show"), 100);
+  toast.classList.add("show");
 
   // إخفاء
   setTimeout(() => {
