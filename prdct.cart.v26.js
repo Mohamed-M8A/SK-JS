@@ -1,5 +1,5 @@
 // ==============================
-// ✅ إضافة المنتج إلى العربة (بدون تعديل)
+// ✅ إضافة المنتج إلى العربة
 // ==============================
 
 function addToCart(productUrl) {
@@ -16,13 +16,33 @@ function addToCart(productUrl) {
 }
 
 function handleAddToCart(event) {
+  event.preventDefault();
   const productUrl = window.location.href;
   addToCart(productUrl);
 }
 
-document.querySelectorAll(".add-to-cart").forEach(btn => {
-  btn.removeEventListener("click", handleAddToCart);
-  btn.addEventListener("click", handleAddToCart);
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".add-to-cart").forEach(btn => {
+    btn.removeEventListener("click", handleAddToCart);
+    btn.addEventListener("click", handleAddToCart);
+  });
+});
+
+// ==============================
+// ✅ زر الويدجت (external-cart-button)
+// ==============================
+document.addEventListener("click", function (e) {
+  const postCard = e.target.closest(".post-card");
+  if (!postCard) return;
+
+  const cartButton = e.target.closest(".external-cart-button");
+  if (cartButton) {
+    e.preventDefault(); // منع فتح الرابط
+    const productUrl = postCard.getAttribute("data-product-url");
+    if (productUrl) {
+      addToCart(productUrl);
+    }
+  }
 });
 
 // ==============================
@@ -45,17 +65,17 @@ function copyCoupon() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // يدعم الزر بالـ id
+  // زر بالـ id
   const couponBtn = document.getElementById("copyCouponBtn");
   if (couponBtn) {
     couponBtn.removeEventListener("click", copyCoupon);
     couponBtn.addEventListener("click", copyCoupon);
   }
 
-  // يدعم onclick="copyCoupon()" في HTML
+  // لو مكتوب في HTML onclick="copyCoupon()"
   window.copyCoupon = copyCoupon;
 
-  // يدعم أي زر class="copy-button"
+  // أي زر class="copy-button"
   document.querySelectorAll(".copy-button").forEach(btn => {
     btn.removeEventListener("click", copyCoupon);
     btn.addEventListener("click", copyCoupon);
@@ -80,7 +100,7 @@ function showToast(message, type = "success") {
     toast.style.background = "#555"; // رمادي افتراضي
   }
 
-  // شكل التوست
+  // ستايل التوست
   toast.style.color = "#fff";
   toast.style.position = "fixed";
   toast.style.bottom = "20px";
@@ -89,6 +109,7 @@ function showToast(message, type = "success") {
   toast.style.borderRadius = "5px";
   toast.style.opacity = "0";
   toast.style.transition = "opacity 0.4s ease";
+  toast.style.zIndex = "9999";
 
   document.body.appendChild(toast);
 
