@@ -1,9 +1,9 @@
 /***********************
- * إشعارات Toast
+ * إشعارات Toast للعربة
  ***********************/
-function showToast(message, type = "success") {
+function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
-  toast.className = "toast";
+  toast.className = "toast cart-toast";
   toast.textContent = message;
 
   if (type === "error") {
@@ -36,15 +36,15 @@ document.addEventListener("click", function (e) {
 
       const exists = cart.some(item => item.productUrl === productUrl);
       if (exists) {
-        showToast("المنتج موجود بالفعل في العربة!", "error");
+        showCartToast("المنتج موجود بالفعل في العربة!", "error");
       } else {
         cart.push({ productUrl: productUrl });
         localStorage.setItem("cart", JSON.stringify(cart));
-        showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
+        showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
       }
     } catch (err) {
       console.error("خطأ في إضافة المنتج للعربة:", err);
-      showToast("حدث خطأ أثناء الإضافة!", "error");
+      showCartToast("حدث خطأ أثناء الإضافة!", "error");
     }
     e.preventDefault();
   }
