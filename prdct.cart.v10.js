@@ -1,5 +1,5 @@
 // ==============================
-// ✅ إشعارات Toast عامة
+// ✅ إشعارات Toast عامة (بدون أي تعديل)
 // ==============================
 function showToast(message, type = "success") {
   const toast = document.createElement("div");
@@ -28,9 +28,8 @@ function showToast(message, type = "success") {
 // ✅ إدارة العربة
 // ==============================
 function addToCart(productUrl) {
-  // 🔥 تنظيف أي باراميتر من الرابط
   const cleanUrl = new URL(productUrl);
-  cleanUrl.search = "";
+  cleanUrl.search = ""; // 🔥 شيل أي براميتر زي ?country=SA
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const exists = cart.some(item => item.productUrl === cleanUrl.toString());
@@ -45,7 +44,7 @@ function addToCart(productUrl) {
 }
 
 // ==============================
-// ✅ أحداث العربة (الويدجت)
+// ✅ أحداث العربة (الويدجت) — بدون أي تغيير
 // ==============================
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
@@ -54,21 +53,21 @@ document.addEventListener("click", function (e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     e.preventDefault();
-    const productUrl = postCard.getAttribute("data-product-url");
+    const productUrl = postCard.getAttribute("data-product-url"); // 🔥 زي ما هو
     addToCart(productUrl);
   }
 });
 
 // ==============================
-// ✅ زر في صفحة المنتج
+// ✅ زر في صفحة المنتج (المشكلة كانت هنا)
 // ==============================
 function handleAddToCart(event) {
   event.preventDefault();
-  event.stopPropagation(); // 🔥 يمنع تداخل مع أي كود تاني
 
-  // ناخد رابط المنتج الحالي من الـ URL
-  const productUrl = window.location.href;
-  addToCart(productUrl);
+  // ناخد رابط الصفحة الحالي وننضفه من أي باراميتر
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.search = ""; // 🔥 شيل البراميترات
+  addToCart(cleanUrl.toString());
 }
 
 document.addEventListener("DOMContentLoaded", () => {
