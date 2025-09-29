@@ -1,46 +1,56 @@
 /***********************
- * ✅ إشعارات Toast موحدة
+ * ✅ تجهيز container للتوست (مرة واحدة)
  ***********************/
-function showCartToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.className = "cart-toast";
-
-  // ✅ الرسالة كنص داخل span (يحافظ على نفس استايل العربة)
-  toast.innerHTML = `<span>${message}</span>`;
-
-  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
-
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add("show"), 100);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
+function getToastContainer() {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.style.position = "fixed";
+    container.style.top = "20px";
+    container.style.right = "20px";
+    container.style.zIndex = "9999";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.gap = "10px";
+    document.body.appendChild(container);
+  }
+  return container;
 }
 
 /***********************
- * ✅ تخزين العربة (مع منع التكرار)
+ * ✅ إشعارات Toast موحدة
  ***********************/
-function addToCart(productUrl, clean = false) {
-  if (clean) {
-    const urlObj = new URL(productUrl);
-    urlObj.search = ""; // نحذف كل الباراميترات
-    productUrl = urlObj.toString();
-  }
+function showCartToast(message, type = "success") {
+  const container = getToastContainer();
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const toast = document.createElement("div");
+  toast.className = "cart-toast";
+  toast.textContent = message;
+  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
+  toast.style.color = "#fff";
+  toast.style.padding = "12px 20px";
+  toast.style.borderRadius = "10px";
+  toast.style.fontSize = "14px";
+  toast.style.fontWeight = "500";
+  toast.style.opacity = "0";
+  toast.style.transform = "translateX(120%)";
+  toast.style.transition = "all 0.4s ease";
 
-  // 🛑 منع التكرار
-  const exists = cart.some(item => item.productUrl === productUrl);
+  container.appendChild(toast);
 
-  if (exists) {
-    showCartToast("المنتج موجود بالفعل في العربة!", "error");
-    return;
-  }
+  // trigger show
+  setTimeout(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateX(0)";
+  }, 50);
 
-  cart.push({ productUrl });
-  localStorage.setItem("cart", JSON.stringify(cart));
-  showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
+  // auto hide
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(120%)";
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
 }
 
 /***********************
@@ -97,20 +107,20 @@ function copyCoupon() {
         showCartToast("تم نسخ الكوبون: " + code, "success");
       })
       .catch(() => {
-        showCartToast("فشل نسخ الكوبون!", "error");
+        fallbackCopy(code);
       });
   } else {
-    // ✅ fallback للمتصفحات القديمة
-    const textarea = document.createElement("textarea");
-    textarea.value = code;
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand("copy");
-      showCartToast("تم نسخ الكوبون: " + code, "success");
-    } catch (err) {
-      showCartToast("فشل نسخ الكوبون!", "error");
-    }
-    document.body.removeChild(textarea);
+    fallbackCopy(code);
   }
+}
+
+function fallbackCopy(code) {
+  const textarea = document.createElement("textarea");
+  textarea.value = code;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  showCartToast("تم نسخ الكوبون: " + code, "success");
 }
