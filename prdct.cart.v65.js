@@ -159,6 +159,6 @@ function showFeedback(btnEl, msg) {
   btnEl.textContent = msg;
   setTimeout(() => {
     btnEl.textContent = original;
-  }, 1500);
+  }, 4000);
 }
 
