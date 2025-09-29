@@ -1,12 +1,12 @@
 // ================================
-// 📌 الجزء الأول: كود صفحة المنتج
+// ✅ الجزء الأول: كود صفحة المنتج
 // ✅ إظهار شريط البائع ديناميكيًا
 // ================================
-document.addEventListener("DOMContentLoaded", async function () {
+async function loadSellerBar() {
   const sellerBarContainer = document.getElementById("seller-bar");
   if (!sellerBarContainer) return;
 
-  // 🔹 البحث عن أي تصنيف يحتوي "store-"
+  // ✅ البحث عن أي تصنيف يحتوي "store-"
   const labels = Array.from(document.querySelectorAll(".post-labels a"));
   const storeLabel = labels.map(el => el.textContent.trim()).find(l => l.startsWith("store-"));
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-    // 🔹 استخراج شريط البائع
+    // ✅ استخراج شريط البائع
     const parser = new DOMParser();
     const doc = parser.parseFromString(entry.content.$t, "text/html");
     const sellerBar = doc.querySelector(".bar");
@@ -45,14 +45,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       buttons.innerHTML = `<a class="button" href="${sellerLink}">اكتشف المتجر</a>`;
     }
   } catch (err) {
-    console.error("❌ خطأ:", err);
-    sellerBarContainer.innerHTML = "<p>⚠ تعذر تحميل بيانات البائع.</p>";
+    console.error("خطأ:", err);
+    sellerBarContainer.innerHTML = "<p>تعذر تحميل بيانات البائع.</p>";
   }
-});
+}
+loadSellerBar();
 
 
 // =====================================
-// 📌 الجزء الثاني: كود صفحة المتجر
+// ✅ الجزء الثاني: كود صفحة المتجر
 // ✅ عرض منتجات البائع ديناميكيًا
 // =====================================
 async function loadSellerProducts() {
@@ -61,12 +62,12 @@ async function loadSellerProducts() {
   const loader = document.getElementById("loader");
   if (!container || !pagination || !loader) return;
 
-  // 🔹 البحث عن أي تصنيف يحتوي "store-"
+  // ✅ البحث عن أي تصنيف يحتوي "store-"
   const labels = Array.from(document.querySelectorAll(".post-labels a"));
   const storeLabel = labels.map(el => el.textContent.trim()).find(l => l.startsWith("store-"));
 
   if (!storeLabel) {
-    container.innerHTML = "<p>⚠ لم يتم العثور على تصنيف المتجر.</p>";
+    container.innerHTML = "<p>لم يتم العثور على تصنيف المتجر.</p>";
     return;
   }
 
@@ -81,11 +82,11 @@ async function loadSellerProducts() {
     loader.style.display = "none";
 
     if (!entries.length) {
-      container.innerHTML = "<p>⚠ لا توجد منتجات لهذا البائع</p>";
+      container.innerHTML = "<p>لا توجد منتجات لهذا البائع</p>";
       return;
     }
 
-    // 🔹 إعداد الصفحات
+    // ✅ إعداد الصفحات
     const perPage = 60;
     let currentPage = 1;
     const totalPages = Math.ceil(entries.length / perPage);
@@ -114,11 +115,9 @@ async function loadSellerProducts() {
 
     renderPage(1);
   } catch (err) {
-    console.error("❌ خطأ في تحميل المنتجات:", err);
+    console.error("خطأ في تحميل المنتجات:", err);
     loader.style.display = "none";
-    container.innerHTML = "<p>⚠ حدث خطأ أثناء تحميل المنتجات</p>";
+    container.innerHTML = "<p>حدث خطأ أثناء تحميل المنتجات</p>";
   }
 }
-
-// ✅ تحميل منتجات البائع عند فتح صفحة المتجر
-document.addEventListener("DOMContentLoaded", loadSellerProducts);
+loadSellerProducts();
