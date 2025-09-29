@@ -144,31 +144,27 @@ if (form) {
 
 // =================== ✅ تدوير الـ placeholder ===================
 if (input) {
-  const placeholders = [
-    "ماكينة قهوة ديلونجي",
-    "سماعات بلوتوث جالكسي بودز",
-    "مكنسة روبوت ذكية",
-    "شاحن مغناطيسي للآيفون",
-    "ستاند لابتوب قابل للطي",
-    "مكواة بخار محمولة",
-    "عصارة فواكه كهربائية",
-    "كاميرا مراقبة واي فاي",
-    "ماوس لاسلكي لابتوب",
-    "منظف وجه كهربائي",
-    "لوح مفاتيح ميكانيكي RGB",
-    "فرامة خضار يدوية",
-    "ميزان ذكي للحمية",
-    "سماعات رأس للألعاب"
-  ];
-
-  let currentIndex = 0;
-  function rotatePlaceholder() {
-    input.setAttribute("placeholder", placeholders[currentIndex]);
-    currentIndex = (currentIndex + 1) % placeholders.length;
+  const placeholders=[
+  "ماكينة قهوة ديلونجي","سماعات بلوتوث جالكسي بودز","مكنسة روبوت ذكية","شاحن مغناطيسي للآيفون","ستاند لابتوب قابل للطي",
+  "مكواة بخار محمولة","عصارة فواكه كهربائية","كاميرا مراقبة واي فاي","ماوس لاسلكي لابتوب","منظف وجه كهربائي",
+  "لوح مفاتيح ميكانيكي RGB","فرامة خضار يدوية","ميزان ذكي للحمية","سماعات رأس للألعاب","ساعة ذكية شاومي",
+  "ترايبود كاميرا احترافي","كشاف LED قابل للشحن","دفاية كهربائية صغيرة","مروحة USB مكتبية","عطر عربي فاخر",
+  "شاحن متنقل باور بانك","شنطة لابتوب ضد الماء","كرسي ألعاب مريح","سماعات نويس كانسل","خلاط يدوي متعدد الاستخدام",
+  "مقص مطبخ ستانلس ستيل","مظلة أوتوماتيكية","فلاش ميموري سريع","مقلاة هوائية صحية","كاميرا فورية بولارويد"
+];
+  
+  // وظيفة لاختيار عنصر عشوائي
+  function getRandomPlaceholder() {
+    const randomIndex = Math.floor(Math.random() * placeholders.length);
+    return placeholders[randomIndex];
   }
 
-  rotatePlaceholder();
-  setInterval(rotatePlaceholder, 45000);
+  function rotatePlaceholder() {
+    input.setAttribute("placeholder", getRandomPlaceholder());
+  }
+
+  rotatePlaceholder(); // أول تشغيل
+  setInterval(rotatePlaceholder, 25000); // كل 25 ثانية
 }
 
 // =================== ✅ Dark Mode Toggle ===================
