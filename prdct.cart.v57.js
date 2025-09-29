@@ -1,55 +1,54 @@
 /***********************
- * ✅ إشعارات Toast موحدة (جذرية)
+ * ✅ إشعارات Toast موحدة (مع Shadow DOM)
  ***********************/
 function showCartToast(message, type = "success") {
-  // لو مفيش كونتينر للتوست، نعمل واحد
-  let container = document.getElementById("toast-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "toast-container";
-    Object.assign(container.style, {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "10px",
-      zIndex: "9999"
-    });
-    document.body.appendChild(container);
-  }
+  // إنشاء عنصر Host للتوست
+  const host = document.createElement("div");
+  document.body.prepend(host);
 
-  // نعمل التوست
+  // عمل Shadow Root
+  const shadow = host.attachShadow({ mode: "open" });
+
+  // عنصر التوست
   const toast = document.createElement("div");
   toast.textContent = message;
-  Object.assign(toast.style, {
-    background: type === "error" ? "#e74c3c" : "#2ecc71",
-    color: "#fff",
-    padding: "12px 18px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-    opacity: "0",
-    transform: "translateX(100%)",
-    transition: "all 0.4s ease",
-    fontFamily: "sans-serif",
-    fontSize: "14px",
-    minWidth: "200px",
-    textAlign: "center"
-  });
+  shadow.appendChild(toast);
 
-  container.appendChild(toast);
+  // ستايل داخلي معزول
+  const style = document.createElement("style");
+  style.textContent = `
+    div {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      min-width: 220px;
+      max-width: 320px;
+      background: ${type === "error" ? "#e74c3c" : "#2ecc71"};
+      color: white;
+      font-family: sans-serif;
+      font-size: 14px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateX(120%);
+      transition: all 0.4s ease;
+      z-index: 1000000;
+    }
+    div.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  `;
+  shadow.appendChild(style);
 
-  // تشغيل الأنيميشن
+  // تشغيل الحركة
+  setTimeout(() => toast.classList.add("show"), 50);
+
+  // إزالة بعد 3 ثواني
   setTimeout(() => {
-    toast.style.opacity = "1";
-    toast.style.transform = "translateX(0)";
-  }, 50);
-
-  // إخفاء التوست
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateX(100%)";
-    setTimeout(() => toast.remove(), 400);
+    toast.classList.remove("show");
+    setTimeout(() => host.remove(), 400);
   }, 3000);
 }
 
@@ -98,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", handleAddToCart);
   });
 
-  // ✅ ربط زر الكوبون
+  // ربط زر الكوبون
   const couponBtn = document.querySelector(".copy-button");
   if (couponBtn) {
     couponBtn.addEventListener("click", (e) => {
@@ -144,7 +143,6 @@ function copyCoupon() {
         showCartToast("فشل نسخ الكوبون!", "error");
       });
   } else {
-    // ✅ fallback للمتصفحات القديمة
     const textarea = document.createElement("textarea");
     textarea.value = code;
     document.body.appendChild(textarea);
