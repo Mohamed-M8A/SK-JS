@@ -1,5 +1,5 @@
 /***********************
- * ✅ إنشاء الحاوية للتوستات مرة واحدة
+ * ✅ إنشاء حاوية التوستات
  ***********************/
 function getToastContainer() {
   let container = document.getElementById("toast-container");
@@ -8,22 +8,22 @@ function getToastContainer() {
     container.id = "toast-container";
     document.body.appendChild(container);
 
-    // ستايل الحاوية
     Object.assign(container.style, {
       position: "fixed",
       top: "20px",
       right: "20px",
-      zIndex: "9999",
+      zIndex: "99999",
       display: "flex",
       flexDirection: "column",
-      gap: "10px"
+      gap: "10px",
+      pointerEvents: "none" // علشان ما يغطيش على الكلكات
     });
   }
   return container;
 }
 
 /***********************
- * ✅ إشعارات Toast موحدة (عربة + كوبون)
+ * ✅ إشعار موحد (عربة + كوبون)
  ***********************/
 function showToast(message, type = "success") {
   const container = getToastContainer();
@@ -31,10 +31,10 @@ function showToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.textContent = message;
 
-  // ستايل التوست
   Object.assign(toast.style, {
     minWidth: "220px",
-    background: (type === "error") ? "#e74c3c" : "#2ecc71",
+    maxWidth: "300px",
+    background: type === "error" ? "#e74c3c" : "#2ecc71",
     color: "#fff",
     padding: "12px 20px",
     borderRadius: "10px",
@@ -43,18 +43,19 @@ function showToast(message, type = "success") {
     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
     opacity: "0",
     transform: "translateX(120%)",
-    transition: "all 0.4s ease"
+    transition: "all 0.4s ease",
+    pointerEvents: "auto" // يخلي الكلوز يشتغل لو ضفت زر ×
   });
 
   container.appendChild(toast);
 
   // إظهار
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(0)";
-  }, 50);
+  });
 
-  // إخفاء
+  // إخفاء بعد 3 ثواني
   setTimeout(() => {
     toast.style.opacity = "0";
     toast.style.transform = "translateX(120%)";
@@ -120,7 +121,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (مضمون)
+ * ✅ نسخ الكوبون
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
