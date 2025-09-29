@@ -113,3 +113,52 @@ document.addEventListener("click", function (e) {
     e.preventDefault();
   }
 });
+
+
+/******************************************************
+ * Coupon Copy Script
+ * - ينسخ الكود من العنصر .coupon-code
+ * - يغير نص الزر مؤقتًا ("تم النسخ") ثم يرجع للنص الأصلي
+ * - يدعم وجود أكثر من كوبون في نفس الصفحة
+ ******************************************************/
+
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("copy-button")) {
+    const btnEl = e.target;
+    const container = btnEl.closest(".coupon-container");
+    const codeEl = container.querySelector(".coupon-code");
+    const code = codeEl ? codeEl.textContent.trim() : "";
+
+    if (!code) return;
+
+    // محاولة النسخ باستخدام Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code)
+        .then(() => showFeedback(btnEl, "تم النسخ"))
+        .catch(() => showFeedback(btnEl, "فشل النسخ!"));
+    } else {
+      // fallback للمتصفحات القديمة
+      const textarea = document.createElement("textarea");
+      textarea.value = code;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        showFeedback(btnEl, "تم النسخ");
+      } catch {
+        showFeedback(btnEl, "فشل النسخ!");
+      }
+      document.body.removeChild(textarea);
+    }
+  }
+});
+
+// دالة لتغيير نص الزر مؤقتًا
+function showFeedback(btnEl, msg) {
+  const original = "نسخ كوبون الخصم";
+  btnEl.textContent = msg;
+  setTimeout(() => {
+    btnEl.textContent = original;
+  }, 1500);
+}
+
