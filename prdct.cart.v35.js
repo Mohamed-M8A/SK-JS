@@ -1,5 +1,5 @@
 /***********************
- * ✅ إشعارات Toast
+ * ✅ إشعارات Toast للعربة
  ***********************/
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
@@ -28,9 +28,8 @@ function addToCart(productUrl, clean = false) {
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // 🛑 منع التكرار بأي شكل
+  // 🛑 منع التكرار
   const exists = cart.some(item => item.productUrl === productUrl);
-  console.log("🔍 محاولة إضافة:", productUrl, " - موجود بالفعل؟", exists);
 
   if (exists) {
     showCartToast("المنتج موجود بالفعل في العربة!", "error");
@@ -39,7 +38,7 @@ function addToCart(productUrl, clean = false) {
 
   cart.push({ productUrl });
   localStorage.setItem("cart", JSON.stringify(cart));
-  showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
+  showCartToast("✅ تمت إضافة المنتج إلى العربة بنجاح!", "success");
 }
 
 /***********************
@@ -50,8 +49,6 @@ function handleAddToCart(event) {
   event.stopPropagation();
 
   const productUrl = window.location.href;
-  console.log("🟢 زر صفحة المنتج - URL:", productUrl);
-
   addToCart(productUrl, true); // تنظيف الرابط
 }
 
@@ -75,12 +72,28 @@ document.addEventListener("click", function (e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     const productUrl = postCard.getAttribute("data-product-url");
-    console.log("🟠 زر الويدجت - URL:", productUrl);
-
     addToCart(productUrl, false);
     e.preventDefault();
   }
 });
+
+/***********************
+ * ✅ إشعارات Toast للكوبون
+ ***********************/
+function showCouponToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "cart-toast"; // نفس التصميم
+  toast.textContent = message;
+
+  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
+
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
 
 /***********************
  * ✅ نسخ الكوبون
@@ -90,16 +103,15 @@ window.copyCoupon = function () {
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    showCouponToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   navigator.clipboard.writeText(code)
     .then(() => {
-      console.log("🎉 كوبون منسوخ:", code);
-      showCartToast("تم نسخ الكوبون: " + code, "success");
+      showCouponToast("✅ تم نسخ الكوبون: " + code, "success");
     })
     .catch(() => {
-      showCartToast("فشل نسخ الكوبون!", "error");
+      showCouponToast("فشل نسخ الكوبون!", "error");
     });
 };
