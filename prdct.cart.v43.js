@@ -78,7 +78,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (نسخة مضمونة)
+ * ✅ نسخ الكوبون (مضمون)
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
@@ -89,9 +89,15 @@ function copyCoupon() {
     return;
   }
 
-  // نحاول النسخ بالطريقة الحديثة
+  let copied = false;
+
+  // الطريقة الحديثة
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code)
+      .then(() => {
+        copied = true;
+        showCartToast("تم نسخ الكوبون: " + code, "success");
+      })
       .catch(() => {
         // fallback لو فشل
         const textarea = document.createElement("textarea");
@@ -100,9 +106,8 @@ function copyCoupon() {
         textarea.select();
         document.execCommand("copy");
         document.body.removeChild(textarea);
-      })
-      .finally(() => {
-        // ✅ نعرض التوست بأي حال
+
+        copied = true;
         showCartToast("تم نسخ الكوبون: " + code, "success");
       });
   } else {
@@ -114,6 +119,14 @@ function copyCoupon() {
     document.execCommand("copy");
     document.body.removeChild(textarea);
 
+    copied = true;
     showCartToast("تم نسخ الكوبون: " + code, "success");
   }
+
+  // ✅ ضمان ظهور التوست حتى لو الـ Promise اتصرف غريب
+  setTimeout(() => {
+    if (!copied) {
+      showCartToast("تم نسخ الكوبون: " + code, "success");
+    }
+  }, 200);
 }
