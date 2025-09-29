@@ -1,11 +1,12 @@
 /******************************************************
- * Coupon Copy Script
- * ينسخ كود الكوبون من العنصر الثابت (#couponCode)
- * ويغير نص الزر مؤقتًا
+ * Coupon Copy Script (نسخة محسنة)
+ * ينسخ كود الكوبون ويعدل نص الزر مؤقتًا
  ******************************************************/
-function copyCoupon() {
+function copyCoupon(event) {
+  // الزر اللي اتضغط
+  const btnEl = event.currentTarget;
+  // عنصر الكوبون
   const codeEl = document.getElementById("couponCode");
-  const btnEl = document.querySelector(".copy-button");
 
   if (!codeEl || !btnEl) return;
 
@@ -28,7 +29,7 @@ function copyCoupon() {
       .then(() => setButtonState("تم النسخ"))
       .catch(() => setButtonState("فشل النسخ!"));
   } else {
-    // fallback للمتصفحات القديمة
+    // fallback
     const textarea = document.createElement("textarea");
     textarea.value = code;
     document.body.appendChild(textarea);
