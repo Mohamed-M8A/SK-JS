@@ -1,114 +1,116 @@
 /***********************
- * ✅ إنشاء طبقة التوست العالمية
+ * ✅ إشعارات Toast موحدة (جذرية)
  ***********************/
-function initToastLayer() {
-  let layer = document.getElementById("global-toast-layer");
-  if (!layer) {
-    layer = document.createElement("div");
-    layer.id = "global-toast-layer";
-    document.body.prepend(layer); // نحطها في أول الـ body
-
-    Object.assign(layer.style, {
+function showCartToast(message, type = "success") {
+  // لو مفيش كونتينر للتوست، نعمل واحد
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    Object.assign(container.style, {
       position: "fixed",
       top: "20px",
       right: "20px",
-      width: "auto",
-      zIndex: "9999999",
       display: "flex",
       flexDirection: "column",
       gap: "10px",
-      pointerEvents: "none"
+      zIndex: "9999"
     });
+    document.body.appendChild(container);
   }
-  return layer;
-}
 
-/***********************
- * ✅ دالة التوست الموحد
- ***********************/
-function showToast(message, type = "success") {
-  const layer = initToastLayer();
-
+  // نعمل التوست
   const toast = document.createElement("div");
   toast.textContent = message;
-
   Object.assign(toast.style, {
-    minWidth: "220px",
-    maxWidth: "300px",
     background: type === "error" ? "#e74c3c" : "#2ecc71",
     color: "#fff",
-    padding: "12px 20px",
-    borderRadius: "10px",
-    fontSize: "14px",
-    fontWeight: "500",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+    padding: "12px 18px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
     opacity: "0",
-    transform: "translateX(120%)",
+    transform: "translateX(100%)",
     transition: "all 0.4s ease",
-    pointerEvents: "auto"
+    fontFamily: "sans-serif",
+    fontSize: "14px",
+    minWidth: "200px",
+    textAlign: "center"
   });
 
-  layer.appendChild(toast);
+  container.appendChild(toast);
 
-  // إظهار التوست
-  requestAnimationFrame(() => {
+  // تشغيل الأنيميشن
+  setTimeout(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(0)";
-  });
+  }, 50);
 
-  // إخفاء بعد 3 ثواني
+  // إخفاء التوست
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transform = "translateX(120%)";
+    toast.style.transform = "translateX(100%)";
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
 
 /***********************
- * ✅ دالة العربة
+ * ✅ تخزين العربة (مع منع التكرار)
  ***********************/
 function addToCart(productUrl, clean = false) {
   if (clean) {
     const urlObj = new URL(productUrl);
-    urlObj.search = ""; // نحذف الباراميترات
+    urlObj.search = ""; // نحذف كل الباراميترات
     productUrl = urlObj.toString();
   }
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // منع التكرار
+  // 🛑 منع التكرار
   const exists = cart.some(item => item.productUrl === productUrl);
 
   if (exists) {
-    showToast("المنتج موجود بالفعل في العربة!", "error");
+    showCartToast("المنتج موجود بالفعل في العربة!", "error");
     return;
   }
 
   cart.push({ productUrl });
   localStorage.setItem("cart", JSON.stringify(cart));
-  showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
+  showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
 }
 
-// زر إضافة للعربة
+/***********************
+ * ✅ زر صفحة المنتج
+ ***********************/
 function handleAddToCart(event) {
   event.preventDefault();
   event.stopPropagation();
 
   const productUrl = window.location.href;
-  addToCart(productUrl, true);
+  addToCart(productUrl, true); // تنظيف الرابط
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.replaceWith(btn.cloneNode(true)); // إزالة الهاندلرز القديمة
+    btn.replaceWith(btn.cloneNode(true)); // 🛑 إزالة أي event handlers قديمة
   });
 
   document.querySelectorAll(".add-to-cart").forEach(btn => {
     btn.addEventListener("click", handleAddToCart);
   });
+
+  // ✅ ربط زر الكوبون
+  const couponBtn = document.querySelector(".copy-button");
+  if (couponBtn) {
+    couponBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      copyCoupon();
+    });
+  }
 });
 
-// زر الويدجت (الرئيسية)
+/***********************
+ * ✅ زر الويدجت (الرئيسية)
+ ***********************/
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
   if (!postCard) return;
@@ -122,36 +124,36 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ زر نسخ الكوبون
+ * ✅ نسخ الكوبون
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code) {
-    showToast("لا يوجد كوبون للنسخ!", "error");
+    showCartToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code)
       .then(() => {
-        showToast("تم نسخ الكوبون: " + code, "success");
+        showCartToast("تم نسخ الكوبون: " + code, "success");
       })
       .catch(() => {
-        showToast("فشل نسخ الكوبون!", "error");
+        showCartToast("فشل نسخ الكوبون!", "error");
       });
   } else {
-    // fallback للمتصفحات القديمة
+    // ✅ fallback للمتصفحات القديمة
     const textarea = document.createElement("textarea");
     textarea.value = code;
     document.body.appendChild(textarea);
     textarea.select();
     try {
       document.execCommand("copy");
-      showToast("تم نسخ الكوبون: " + code, "success");
+      showCartToast("تم نسخ الكوبون: " + code, "success");
     } catch (err) {
-      showToast("فشل نسخ الكوبون!", "error");
+      showCartToast("فشل نسخ الكوبون!", "error");
     }
     document.body.removeChild(textarea);
   }
