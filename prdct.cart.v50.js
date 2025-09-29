@@ -1,14 +1,14 @@
 /***********************
- * ✅ إنشاء الحاوية للتوستات مرة واحدة
+ * ✅ دالة Toast موحدة (عربة + كوبون)
  ***********************/
-function getToastContainer() {
+function showToast(message, type = "success") {
+  // إنشاء الحاوية لو مش موجودة
   let container = document.getElementById("toast-container");
   if (!container) {
     container = document.createElement("div");
     container.id = "toast-container";
     document.body.appendChild(container);
 
-    // ستايل الحاوية
     Object.assign(container.style, {
       position: "fixed",
       top: "20px",
@@ -19,19 +19,11 @@ function getToastContainer() {
       gap: "10px"
     });
   }
-  return container;
-}
 
-/***********************
- * ✅ إشعارات Toast موحدة (عربة + كوبون)
- ***********************/
-function showCartToast(message, type = "success") {
-  const container = getToastContainer();
-
+  // إنشاء التوست
   const toast = document.createElement("div");
   toast.textContent = message;
 
-  // ستايل التوست
   Object.assign(toast.style, {
     minWidth: "220px",
     background: (type === "error") ? "#e74c3c" : "#2ecc71",
@@ -48,13 +40,13 @@ function showCartToast(message, type = "success") {
 
   container.appendChild(toast);
 
-  // ✅ trigger show
+  // إظهار
   setTimeout(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(0)";
   }, 50);
 
-  // ✅ auto hide
+  // إخفاء
   setTimeout(() => {
     toast.style.opacity = "0";
     toast.style.transform = "translateX(120%)";
@@ -63,28 +55,26 @@ function showCartToast(message, type = "success") {
 }
 
 /***********************
- * ✅ تخزين العربة (مع منع التكرار)
+ * ✅ تخزين العربة
  ***********************/
 function addToCart(productUrl, clean = false) {
   if (clean) {
     const urlObj = new URL(productUrl);
-    urlObj.search = ""; // نحذف كل الباراميترات
+    urlObj.search = "";
     productUrl = urlObj.toString();
   }
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  // 🛑 منع التكرار
   const exists = cart.some(item => item.productUrl === productUrl);
 
   if (exists) {
-    showCartToast("المنتج موجود بالفعل في العربة!", "error");
+    showToast("المنتج موجود بالفعل في العربة!", "error");
     return;
   }
 
   cart.push({ productUrl });
   localStorage.setItem("cart", JSON.stringify(cart));
-  showCartToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
+  showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
 }
 
 /***********************
@@ -93,16 +83,14 @@ function addToCart(productUrl, clean = false) {
 function handleAddToCart(event) {
   event.preventDefault();
   event.stopPropagation();
-
   const productUrl = window.location.href;
-  addToCart(productUrl, true); // تنظيف الرابط
+  addToCart(productUrl, true);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.replaceWith(btn.cloneNode(true)); // 🛑 إزالة أي event handlers قديمة
+    btn.replaceWith(btn.cloneNode(true));
   });
-
   document.querySelectorAll(".add-to-cart").forEach(btn => {
     btn.addEventListener("click", handleAddToCart);
   });
@@ -124,21 +112,21 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (مضمون)
+ * ✅ نسخ الكوبون
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    showToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code)
       .then(() => {
-        showCartToast("تم نسخ الكوبون: " + code, "success");
+        showToast("تم نسخ الكوبون: " + code, "success");
       })
       .catch(() => {
         fallbackCopy(code);
@@ -156,5 +144,5 @@ function fallbackCopy(code) {
   document.execCommand("copy");
   document.body.removeChild(textarea);
 
-  showCartToast("تم نسخ الكوبون: " + code, "success");
+  showToast("تم نسخ الكوبون: " + code, "success");
 }
