@@ -78,7 +78,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (إصدار مضمون 100%)
+ * ✅ نسخ الكوبون
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
@@ -89,37 +89,26 @@ function copyCoupon() {
     return;
   }
 
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(() => {
-        // ✅ أول ما يتم النسخ
-        setTimeout(() => {
-          showCartToast("تم نسخ الكوبون: " + code, "success");
-        }, 50);
-      }).catch(() => {
-        fallbackCopy(code);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code)
+      .then(() => {
+        showCartToast("تم نسخ الكوبون: " + code, "success");
+      })
+      .catch(() => {
+        showCartToast("فشل نسخ الكوبون!", "error");
       });
-    } else {
-      fallbackCopy(code);
+  } else {
+    // ✅ fallback للمتصفحات القديمة
+    const textarea = document.createElement("textarea");
+    textarea.value = code;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      showCartToast("تم نسخ الكوبون: " + code, "success");
+    } catch (err) {
+      showCartToast("فشل نسخ الكوبون!", "error");
     }
-  } catch (e) {
-    fallbackCopy(code);
+    document.body.removeChild(textarea);
   }
-}
-
-/***********************
- * ✅ fallback نسخ للكوبون
- ***********************/
-function fallbackCopy(code) {
-  const textarea = document.createElement("textarea");
-  textarea.value = code;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  document.body.removeChild(textarea);
-
-  // ✅ نعرض التوست بعد النسخ
-  setTimeout(() => {
-    showCartToast("تم نسخ الكوبون: " + code, "success");
-  }, 50);
 }
