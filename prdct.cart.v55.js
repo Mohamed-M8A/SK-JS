@@ -1,33 +1,33 @@
 /***********************
- * ✅ إنشاء حاوية التوست
+ * ✅ إنشاء طبقة التوست العالمية
  ***********************/
-function getToastContainer() {
-  let container = document.getElementById("toast-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "toast-container";
-    document.body.appendChild(container);
+function initToastLayer() {
+  let layer = document.getElementById("global-toast-layer");
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.id = "global-toast-layer";
+    document.body.prepend(layer); // نحطها في أول الـ body
 
-    // نجبره يبقى فوق وفوق أي عنصر تاني
-    Object.assign(container.style, {
+    Object.assign(layer.style, {
       position: "fixed",
       top: "20px",
       right: "20px",
-      zIndex: "999999",
+      width: "auto",
+      zIndex: "9999999",
       display: "flex",
       flexDirection: "column",
       gap: "10px",
       pointerEvents: "none"
     });
   }
-  return container;
+  return layer;
 }
 
 /***********************
- * ✅ دالة التوست الموحدة
+ * ✅ دالة التوست الموحد
  ***********************/
 function showToast(message, type = "success") {
-  const container = getToastContainer();
+  const layer = initToastLayer();
 
   const toast = document.createElement("div");
   toast.textContent = message;
@@ -41,13 +41,14 @@ function showToast(message, type = "success") {
     borderRadius: "10px",
     fontSize: "14px",
     fontWeight: "500",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
     opacity: "0",
     transform: "translateX(120%)",
-    transition: "all 0.4s ease"
+    transition: "all 0.4s ease",
+    pointerEvents: "auto"
   });
 
-  container.appendChild(toast);
+  layer.appendChild(toast);
 
   // إظهار التوست
   requestAnimationFrame(() => {
@@ -64,16 +65,18 @@ function showToast(message, type = "success") {
 }
 
 /***********************
- * ✅ تخزين العربة (مع منع التكرار)
+ * ✅ دالة العربة
  ***********************/
 function addToCart(productUrl, clean = false) {
   if (clean) {
     const urlObj = new URL(productUrl);
-    urlObj.search = "";
+    urlObj.search = ""; // نحذف الباراميترات
     productUrl = urlObj.toString();
   }
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // منع التكرار
   const exists = cart.some(item => item.productUrl === productUrl);
 
   if (exists) {
@@ -86,28 +89,26 @@ function addToCart(productUrl, clean = false) {
   showToast("تمت إضافة المنتج إلى العربة بنجاح!", "success");
 }
 
-/***********************
- * ✅ زر صفحة المنتج
- ***********************/
+// زر إضافة للعربة
 function handleAddToCart(event) {
   event.preventDefault();
   event.stopPropagation();
+
   const productUrl = window.location.href;
   addToCart(productUrl, true);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.replaceWith(btn.cloneNode(true));
+    btn.replaceWith(btn.cloneNode(true)); // إزالة الهاندلرز القديمة
   });
+
   document.querySelectorAll(".add-to-cart").forEach(btn => {
     btn.addEventListener("click", handleAddToCart);
   });
 });
 
-/***********************
- * ✅ زر الويدجت (الرئيسية)
- ***********************/
+// زر الويدجت (الرئيسية)
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
   if (!postCard) return;
@@ -121,7 +122,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون
+ * ✅ زر نسخ الكوبون
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
@@ -138,20 +139,20 @@ function copyCoupon() {
         showToast("تم نسخ الكوبون: " + code, "success");
       })
       .catch(() => {
-        fallbackCopy(code);
+        showToast("فشل نسخ الكوبون!", "error");
       });
   } else {
-    fallbackCopy(code);
+    // fallback للمتصفحات القديمة
+    const textarea = document.createElement("textarea");
+    textarea.value = code;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      showToast("تم نسخ الكوبون: " + code, "success");
+    } catch (err) {
+      showToast("فشل نسخ الكوبون!", "error");
+    }
+    document.body.removeChild(textarea);
   }
-}
-
-function fallbackCopy(code) {
-  const textarea = document.createElement("textarea");
-  textarea.value = code;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  document.body.removeChild(textarea);
-
-  showToast("تم نسخ الكوبون: " + code, "success");
 }
