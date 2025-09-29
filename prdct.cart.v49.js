@@ -1,51 +1,60 @@
 /***********************
- * ✅ إشعارات Toast موحدة
+ * ✅ إنشاء الحاوية للتوستات مرة واحدة
  ***********************/
-function showCartToast(message, type = "success") {
-  // إنشاء الحاوية لو مش موجودة
-  let container = document.getElementById("my-toast-container");
+function getToastContainer() {
+  let container = document.getElementById("toast-container");
   if (!container) {
     container = document.createElement("div");
-    container.id = "my-toast-container";
+    container.id = "toast-container";
     document.body.appendChild(container);
 
     // ستايل الحاوية
-    container.style.position = "fixed";
-    container.style.top = "20px";
-    container.style.right = "20px";
-    container.style.zIndex = "9999";
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    container.style.gap = "10px";
+    Object.assign(container.style, {
+      position: "fixed",
+      top: "20px",
+      right: "20px",
+      zIndex: "9999",
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px"
+    });
   }
+  return container;
+}
 
-  // إنشاء التوست
+/***********************
+ * ✅ إشعارات Toast موحدة (عربة + كوبون)
+ ***********************/
+function showCartToast(message, type = "success") {
+  const container = getToastContainer();
+
   const toast = document.createElement("div");
-  toast.className = "my-toast";
   toast.textContent = message;
-  toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
 
   // ستايل التوست
-  toast.style.minWidth = "220px";
-  toast.style.color = "#fff";
-  toast.style.padding = "12px 20px";
-  toast.style.borderRadius = "10px";
-  toast.style.fontSize = "14px";
-  toast.style.fontWeight = "500";
-  toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
-  toast.style.opacity = "0";
-  toast.style.transform = "translateX(120%)";
-  toast.style.transition = "all 0.4s ease";
+  Object.assign(toast.style, {
+    minWidth: "220px",
+    background: (type === "error") ? "#e74c3c" : "#2ecc71",
+    color: "#fff",
+    padding: "12px 20px",
+    borderRadius: "10px",
+    fontSize: "14px",
+    fontWeight: "500",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+    opacity: "0",
+    transform: "translateX(120%)",
+    transition: "all 0.4s ease"
+  });
 
   container.appendChild(toast);
 
-  // trigger show
+  // ✅ trigger show
   setTimeout(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(0)";
   }, 50);
 
-  // auto hide
+  // ✅ auto hide
   setTimeout(() => {
     toast.style.opacity = "0";
     toast.style.transform = "translateX(120%)";
@@ -115,7 +124,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون
+ * ✅ نسخ الكوبون (مضمون)
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
