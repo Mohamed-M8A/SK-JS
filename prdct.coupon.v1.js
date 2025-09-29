@@ -1,17 +1,19 @@
 /******************************************************
  * Coupon Copy Script
- * ينسخ كود الكوبون من العنصر المحدد ويغير نص الزر مؤقتًا
- * - يدعم Clipboard API (المتصفحات الحديثة)
- * - يحتوي على fallback للمتصفحات القديمة
+ * ينسخ كود الكوبون من العنصر الثابت (#couponCode)
+ * ويغير نص الزر مؤقتًا
  ******************************************************/
-function copyCoupon(btnEl, codeId = "couponCode") {
-  const codeEl = document.getElementById(codeId);
-  const code = codeEl ? codeEl.textContent.trim() : "";
+function copyCoupon() {
+  const codeEl = document.getElementById("couponCode");
+  const btnEl = document.querySelector(".copy-button");
 
-  if (!code || !btnEl) return;
+  if (!codeEl || !btnEl) return;
+
+  const code = codeEl.textContent.trim();
+  if (!code) return;
 
   // تغيير نص الزر مؤقتًا
-  const setButtonState = (msg, resetText = "نسخ الكود") => {
+  const setButtonState = (msg, resetText = "نسخ كوبون الخصم") => {
     btnEl.textContent = msg;
     if (resetText) {
       setTimeout(() => {
