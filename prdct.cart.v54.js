@@ -1,5 +1,5 @@
 /***********************
- * ✅ إنشاء حاوية التوستات
+ * ✅ إنشاء حاوية التوست
  ***********************/
 function getToastContainer() {
   let container = document.getElementById("toast-container");
@@ -8,22 +8,23 @@ function getToastContainer() {
     container.id = "toast-container";
     document.body.appendChild(container);
 
+    // نجبره يبقى فوق وفوق أي عنصر تاني
     Object.assign(container.style, {
       position: "fixed",
       top: "20px",
       right: "20px",
-      zIndex: "99999",
+      zIndex: "999999",
       display: "flex",
       flexDirection: "column",
       gap: "10px",
-      pointerEvents: "none" // علشان ما يغطيش على الكلكات
+      pointerEvents: "none"
     });
   }
   return container;
 }
 
 /***********************
- * ✅ إشعار موحد (عربة + كوبون)
+ * ✅ دالة التوست الموحدة
  ***********************/
 function showToast(message, type = "success") {
   const container = getToastContainer();
@@ -43,13 +44,12 @@ function showToast(message, type = "success") {
     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
     opacity: "0",
     transform: "translateX(120%)",
-    transition: "all 0.4s ease",
-    pointerEvents: "auto" // يخلي الكلوز يشتغل لو ضفت زر ×
+    transition: "all 0.4s ease"
   });
 
   container.appendChild(toast);
 
-  // إظهار
+  // إظهار التوست
   requestAnimationFrame(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(0)";
