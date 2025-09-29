@@ -1,5 +1,5 @@
 /***********************
- * ✅ إشعارات Toast موحدة (للعربة فقط)
+ * ✅ إشعارات Toast
  ***********************/
 function showCartToast(message, type = "success") {
   const host = document.createElement("div");
@@ -115,26 +115,27 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (تغيير نص الزر فقط)
+ * ✅ نسخ الكوبون (بنفس أسلوب صفحة الكوبونات)
  ***********************/
-function copyCoupon() {
+function copyCoupon(btnEl) {
   const codeEl = document.getElementById("couponCode");
-  const btnEl = document.querySelector(".copy-button");
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code || !btnEl) return;
 
   const copyAction = () => {
-    btnEl.textContent = "✅ تم نسخ الكوبون بنجاح";
+    btnEl.textContent = "تم النسخ";
     setTimeout(() => {
-      btnEl.textContent = "نسخ كوبون الخصم";
-    }, 2500);
+      btnEl.textContent = "نسخ الكود";
+    }, 1500);
   };
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code)
       .then(copyAction)
-      .catch(() => { btnEl.textContent = "فشل النسخ!"; });
+      .catch(() => {
+        btnEl.textContent = "فشل النسخ!";
+      });
   } else {
     const textarea = document.createElement("textarea");
     textarea.value = code;
