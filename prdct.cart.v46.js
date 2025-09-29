@@ -4,7 +4,9 @@
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = "cart-toast";
-  toast.textContent = message;
+
+  // ✅ الرسالة كنص داخل span (يحافظ على نفس استايل العربة)
+  toast.innerHTML = `<span>${message}</span>`;
 
   toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
 
