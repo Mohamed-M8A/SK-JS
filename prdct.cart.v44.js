@@ -78,7 +78,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون (مضمون)
+ * ✅ نسخ الكوبون (إصدار مضمون 100%)
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
@@ -89,44 +89,37 @@ function copyCoupon() {
     return;
   }
 
-  let copied = false;
-
-  // الطريقة الحديثة
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code)
-      .then(() => {
-        copied = true;
-        showCartToast("تم نسخ الكوبون: " + code, "success");
-      })
-      .catch(() => {
-        // fallback لو فشل
-        const textarea = document.createElement("textarea");
-        textarea.value = code;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-
-        copied = true;
-        showCartToast("تم نسخ الكوبون: " + code, "success");
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(() => {
+        // ✅ أول ما يتم النسخ
+        setTimeout(() => {
+          showCartToast("تم نسخ الكوبون: " + code, "success");
+        }, 50);
+      }).catch(() => {
+        fallbackCopy(code);
       });
-  } else {
-    // fallback للمتصفحات القديمة
-    const textarea = document.createElement("textarea");
-    textarea.value = code;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textarea);
-
-    copied = true;
-    showCartToast("تم نسخ الكوبون: " + code, "success");
-  }
-
-  // ✅ ضمان ظهور التوست حتى لو الـ Promise اتصرف غريب
-  setTimeout(() => {
-    if (!copied) {
-      showCartToast("تم نسخ الكوبون: " + code, "success");
+    } else {
+      fallbackCopy(code);
     }
-  }, 200);
+  } catch (e) {
+    fallbackCopy(code);
+  }
+}
+
+/***********************
+ * ✅ fallback نسخ للكوبون
+ ***********************/
+function fallbackCopy(code) {
+  const textarea = document.createElement("textarea");
+  textarea.value = code;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  // ✅ نعرض التوست بعد النسخ
+  setTimeout(() => {
+    showCartToast("تم نسخ الكوبون: " + code, "success");
+  }, 50);
 }
