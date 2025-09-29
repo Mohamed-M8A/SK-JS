@@ -1,5 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-
   // ==============================
   // ✅ التبويبات الذكية
   // ==============================
@@ -121,8 +119,7 @@ setTimeout(() => clearInterval(tabCheck), 5000);
   });
 
 // ===================================================
-// ✅ دالة لتنسيق الأرقام: تضيف الفاصلة لكل 3 أرقام
-//    وتعرض رقم عشري مكون من خانتين
+// ✅ دالة تنسيق الأسعار
 // ===================================================
 function formatPrice(num) {
   const number = parseFloat(num.toString().replace(/,/g, ''));
@@ -134,7 +131,7 @@ function formatPrice(num) {
 }
 
 // ===================================================
-// ✅ تغيير نصوص الأزرار (شراء + إضافة للعربة)
+// ✅ تغيير نصوص الأزرار
 // ===================================================
 const buyBtn = document.querySelector(".buy-button");
 if (buyBtn) buyBtn.textContent = "اطلب الآن";
@@ -151,6 +148,10 @@ if (ratingCount) {
   const count = ratingCount.getAttribute("data-count") || "0";
   ratingCount.textContent = `${count} تقييمات`;
 }
+  document.getElementById("stars").innerHTML = starsHTML;
+}
+
+renderStarsFromValue();
 
 // ===================================================
 // ✅ تنسيق مدة الشحن: إضافة كلمة "أيام" بعد الرقم
@@ -166,7 +167,6 @@ if (shippingTime) {
 
 // ===================================================
 // ✅ تلوين تكلفة الشحن إذا كانت "مجانا" باللون الأخضر
-//    وإذا لم تكن مجانية يتم استخدام اللون الافتراضي
 // ===================================================
 const shippingBox = document.querySelector(".shipping-fee .value");
 if (shippingBox) {
@@ -539,6 +539,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
+
 
 
 
