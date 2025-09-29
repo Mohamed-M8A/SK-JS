@@ -1,5 +1,5 @@
 /***********************
- * ✅ إشعارات Toast موحدة
+ * ✅ إشعارات Toast للعربة
  ***********************/
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
@@ -15,6 +15,25 @@ function showCartToast(message, type = "success") {
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
+
+/***********************
+ * ✅ إشعارات Toast للكوبون
+ ***********************/
+function showCouponToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = "cart-toast"; // نفس الستايل
+  toast.textContent = message;
+
+  toast.style.background = (type === "error") ? "#e74c3c" : "#3498db"; // أزرق للكوبون
+
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
 /***********************
  * ✅ تخزين العربة (مع منع التكرار)
  ***********************/
@@ -84,29 +103,29 @@ function copyCoupon() {
   const code = codeEl ? codeEl.innerText.trim() : "";
 
   if (!code) {
-    showCartToast("لا يوجد كوبون للنسخ!", "error");
+    showCouponToast("لا يوجد كوبون للنسخ!", "error");
     return;
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code)
       .then(() => {
-        showCartToast("تم نسخ الكوبون: " + code, "success");
+        showCouponToast("تم نسخ الكوبون: " + code, "success");
       })
       .catch(() => {
-        showCartToast("فشل نسخ الكوبون!", "error");
+        showCouponToast("فشل نسخ الكوبون!", "error");
       });
   } else {
-    // fallback للمتصفحات القديمة
+    // ✅ fallback للمتصفحات القديمة
     const textarea = document.createElement("textarea");
     textarea.value = code;
     document.body.appendChild(textarea);
     textarea.select();
     try {
       document.execCommand("copy");
-      showCartToast("تم نسخ الكوبون: " + code, "success");
+      showCouponToast("تم نسخ الكوبون: " + code, "success");
     } catch (err) {
-      showCartToast("فشل نسخ الكوبون!", "error");
+      showCouponToast("فشل نسخ الكوبون!", "error");
     }
     document.body.removeChild(textarea);
   }
