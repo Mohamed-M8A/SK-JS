@@ -105,7 +105,7 @@ document.addEventListener("click", function (e) {
 });
 
 /***********************
- * ✅ نسخ الكوبون
+ * ✅ نسخ الكوبون (نسخة مضمونة)
  ***********************/
 function copyCoupon() {
   const codeEl = document.getElementById("couponCode");
@@ -116,6 +116,31 @@ function copyCoupon() {
     return;
   }
 
-  // ✅ نعرض التوست مع زر نسخ
-  showCartToast("تم نسخ الكوبون: " + code, "success", code);
+  // نحاول النسخ بالطريقة الحديثة
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code)
+      .catch(() => {
+        // fallback لو فشل
+        const textarea = document.createElement("textarea");
+        textarea.value = code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      })
+      .finally(() => {
+        // ✅ نعرض التوست بأي حال
+        showCartToast("تم نسخ الكوبون: " + code, "success");
+      });
+  } else {
+    // fallback للمتصفحات القديمة
+    const textarea = document.createElement("textarea");
+    textarea.value = code;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+
+    showCartToast("تم نسخ الكوبون: " + code, "success");
+  }
 }
