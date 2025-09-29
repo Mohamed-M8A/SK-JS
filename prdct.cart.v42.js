@@ -1,39 +1,13 @@
 /***********************
- * ✅ إشعارات Toast موحدة (مع زر نسخ كوبون)
+ * ✅ إشعارات Toast موحدة
  ***********************/
-function showCartToast(message, type = "success", couponCode = null) {
+function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = "cart-toast";
+  toast.textContent = message;
+
   toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
 
-  // نضيف الرسالة الأساسية
-  const msgSpan = document.createElement("span");
-  msgSpan.textContent = message;
-  toast.appendChild(msgSpan);
-
-  // ✅ لو فيه كوبون، نضيف زر نسخ
-  if (couponCode) {
-    const copyBtn = document.createElement("button");
-    copyBtn.textContent = "📋 نسخ";
-    copyBtn.style.marginLeft = "10px";
-    copyBtn.style.padding = "4px 8px";
-    copyBtn.style.border = "none";
-    copyBtn.style.borderRadius = "6px";
-    copyBtn.style.cursor = "pointer";
-    copyBtn.style.fontSize = "12px";
-    copyBtn.style.background = "#fff";
-    copyBtn.style.color = "#333";
-    copyBtn.addEventListener("click", () => {
-      navigator.clipboard.writeText(couponCode).then(() => {
-        alert("تم نسخ الكوبون: " + couponCode);
-      }).catch(() => {
-        alert("فشل نسخ الكوبون!");
-      });
-    });
-    toast.appendChild(copyBtn);
-  }
-
-  // ✅ إظهار التوست
   document.body.appendChild(toast);
   setTimeout(() => toast.classList.add("show"), 100);
   setTimeout(() => {
@@ -41,7 +15,6 @@ function showCartToast(message, type = "success", couponCode = null) {
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
-
 
 /***********************
  * ✅ تخزين العربة (مع منع التكرار)
