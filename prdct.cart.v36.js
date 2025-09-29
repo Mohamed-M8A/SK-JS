@@ -1,5 +1,5 @@
 /***********************
- * ✅ إشعارات Toast للعربة
+ * ✅ إشعارات Toast عامة
  ***********************/
 function showCartToast(message, type = "success") {
   const toast = document.createElement("div");
@@ -17,12 +17,12 @@ function showCartToast(message, type = "success") {
 }
 
 /***********************
- * ✅ تخزين العربة (مع منع التكرار)
+ * ✅ تخزين العربة (مع تنظيف الروابط)
  ***********************/
 function addToCart(productUrl, clean = false) {
   if (clean) {
     const urlObj = new URL(productUrl);
-    urlObj.search = ""; // نحذف كل الباراميترات
+    urlObj.search = ""; // حذف أي باراميترات
     productUrl = urlObj.toString();
   }
 
@@ -30,7 +30,6 @@ function addToCart(productUrl, clean = false) {
 
   // 🛑 منع التكرار
   const exists = cart.some(item => item.productUrl === productUrl);
-
   if (exists) {
     showCartToast("المنتج موجود بالفعل في العربة!", "error");
     return;
@@ -42,19 +41,19 @@ function addToCart(productUrl, clean = false) {
 }
 
 /***********************
- * ✅ زر صفحة المنتج
+ * ✅ زر صفحة المنتج فقط
  ***********************/
 function handleAddToCart(event) {
   event.preventDefault();
   event.stopPropagation();
 
-  const productUrl = window.location.href;
-  addToCart(productUrl, true); // تنظيف الرابط
+  const cleanUrl = window.location.origin + window.location.pathname; 
+  addToCart(cleanUrl, false); // نضيف الرابط بدون باراميتر نهائيًا
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.replaceWith(btn.cloneNode(true)); // 🛑 إزالة أي event handlers قديمة
+    btn.replaceWith(btn.cloneNode(true)); // إزالة أي event handlers قديمة
   });
 
   document.querySelectorAll(".add-to-cart").forEach(btn => {
@@ -63,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /***********************
- * ✅ زر الويدجت (الرئيسية)
+ * ✅ زر الويدجت (الرئيسية) فقط
  ***********************/
 document.addEventListener("click", function (e) {
   const postCard = e.target.closest(".post-card");
@@ -72,7 +71,7 @@ document.addEventListener("click", function (e) {
   const cartButton = e.target.closest(".external-cart-button");
   if (cartButton) {
     const productUrl = postCard.getAttribute("data-product-url");
-    addToCart(productUrl, false);
+    addToCart(productUrl, false); // نخزن الرابط كما هو
     e.preventDefault();
   }
 });
@@ -82,7 +81,7 @@ document.addEventListener("click", function (e) {
  ***********************/
 function showCouponToast(message, type = "success") {
   const toast = document.createElement("div");
-  toast.className = "cart-toast"; // نفس التصميم
+  toast.className = "cart-toast";
   toast.textContent = message;
 
   toast.style.background = (type === "error") ? "#e74c3c" : "#2ecc71";
