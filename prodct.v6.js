@@ -1,30 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-// ==============================
-// ✅ إضافة نجوم التقييم
-// ==============================
+  // ==============================
+  // ✅ إضافة نجوم التقييم
+  // ==============================
+  function renderStarsFromValue() {
+    const ratingValueEl = document.getElementById("ratingValue");
+    const starsContainer = document.getElementById("stars");
+    if (!ratingValueEl || !starsContainer) return;
 
-function renderStarsFromValue() {
-  let rating = parseFloat(document.getElementById("ratingValue").textContent);
+    let rating = parseFloat(ratingValueEl.textContent);
+    let fullStars = Math.floor(rating);
+    let hasHalf = (rating % 1 !== 0) ? 1 : 0;
+    let emptyStars = 5 - fullStars - hasHalf;
 
-  let fullStars = Math.floor(rating);          
-  let hasHalf = (rating % 1 !== 0) ? 1 : 0;    
-  let emptyStars = 5 - fullStars - hasHalf;   
+    let starsHTML = "";
 
-  let starsHTML = "";
+    for (let i = 0; i < fullStars; i++) {
+      starsHTML += `<span class="star">★</span>`;
+    }
 
-  for (let i = 0; i < fullStars; i++) {
-    starsHTML += `<span class="star">★</span>`; 
+    if (hasHalf) {
+      starsHTML += `<span class="star half">★</span>`;
+    }
+
+    for (let i = 0; i < emptyStars; i++) {
+      starsHTML += `<span class="star empty">★</span>`;
+    }
+
+    starsContainer.innerHTML = starsHTML; // ✅ هنا إضافة النجوم
   }
 
-  if (hasHalf) {
-    starsHTML += `<span class="star half">★</span>`; 
-  }
-
-  for (let i = 0; i < emptyStars; i++) {
-    starsHTML += `<span class="star empty">★</span>`; 
-  }
-} 
+  // ✅ استدعاء الدالة
+  renderStarsFromValue();
+  
   // ==============================
   // ✅ التبويبات الذكية
   // ==============================
