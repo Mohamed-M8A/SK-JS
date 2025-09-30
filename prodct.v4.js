@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-
 // ==============================
 // ✅ إضافة نجوم التقييم
 // ==============================
@@ -25,8 +24,6 @@ function renderStarsFromValue() {
   for (let i = 0; i < emptyStars; i++) {
     starsHTML += `<span class="star empty">★</span>`; 
   }
-
-  document.addEventListener('DOMContentLoaded', () => {  
 
   // ==============================
   // ✅ التبويبات الذكية
