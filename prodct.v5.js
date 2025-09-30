@@ -24,7 +24,7 @@ function renderStarsFromValue() {
   for (let i = 0; i < emptyStars; i++) {
     starsHTML += `<span class="star empty">★</span>`; 
   }
-
+} 
   // ==============================
   // ✅ التبويبات الذكية
   // ==============================
