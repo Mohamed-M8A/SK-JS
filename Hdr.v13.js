@@ -1,16 +1,63 @@
 // =================== ✅ البحث ===================
 const searchPageURL = "https://souq-alkul.blogspot.com/p/search.html";
 const input = document.getElementById("searchInput");
+const form = document.querySelector(".search-box-form");
+const dropdown = document.getElementById("searchHistoryDropdown");
 
+let searches = JSON.parse(localStorage.getItem('searches')) || [];
+
+// تحديث الدروب داون
+function updateDropdown() {
+  dropdown.innerHTML = '';
+  let toShow = searches.slice(0, 5); // فقط آخر 5
+  if (toShow.length === 0) {
+    dropdown.style.display = 'none';
+    return;
+  }
+  toShow.forEach(term => {
+    let item = document.createElement('div');
+
+    let text = document.createElement('span');
+    text.textContent = term;
+    text.addEventListener('click', () => {
+      input.value = term;
+      dropdown.style.display = 'none';
+    });
+
+    let del = document.createElement('span');
+    del.textContent = '×';
+    del.classList.add('delete-btn');
+    del.addEventListener('click', (e) => {
+      e.stopPropagation();
+      searches = searches.filter(t => t !== term);
+      localStorage.setItem('searches', JSON.stringify(searches));
+      updateDropdown();
+    });
+
+    item.appendChild(text);
+    item.appendChild(del);
+    dropdown.appendChild(item);
+  });
+  dropdown.style.display = 'block';
+}
+
+// البحث + تخزين السجل
 function startSearch() {
   if (!input) return;
   const query = input.value.trim();
   if (query) {
+    // تحديث السجل
+    searches = searches.filter(t => t !== query);
+    searches.unshift(query);
+    if (searches.length > 10) searches = searches.slice(0, 10);
+    localStorage.setItem('searches', JSON.stringify(searches));
+
+    // الانتقال لصفحة البحث
     window.location.href = `${searchPageURL}?q=${encodeURIComponent(query)}`;
   }
 }
 
-const form = document.querySelector(".search-box-form");
+// ربط مع الفورم
 if (form) {
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -18,34 +65,47 @@ if (form) {
   });
 }
 
+// إظهار الدروب داون عند التركيز
+if (input) {
+  input.addEventListener('focus', updateDropdown);
+}
+
+// إغلاق عند الضغط برا
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-container')) {
+    dropdown.style.display = 'none';
+  }
+});
+
 // =================== ✅ تدوير الـ placeholder ===================
 if (input) {
-const placeholders=[
-  "ماكينة قهوة ديلونجي","سماعات بلوتوث جالكسي بودز","مكنسة روبوت ذكية","شاحن مغناطيسي للآيفون","ستاند لابتوب قابل للطي",
-  "مكواة بخار محمولة","عصارة فواكه كهربائية","كاميرا مراقبة واي فاي","ماوس لاسلكي لابتوب","منظف وجه كهربائي",
-  "لوح مفاتيح ميكانيكي RGB","فرامة خضار يدوية","ميزان ذكي للحمية","سماعات رأس للألعاب","ساعة ذكية شاومي",
-  "ترايبود كاميرا احترافي","كشاف LED قابل للشحن","دفاية كهربائية صغيرة","مروحة USB مكتبية","عطر عربي فاخر",
-  "شاحن متنقل باور بانك","شنطة لابتوب ضد الماء","كرسي ألعاب مريح","سماعات نويس كانسل","خلاط يدوي متعدد الاستخدام",
-  "مقص مطبخ ستانلس ستيل","مظلة أوتوماتيكية","فلاش ميموري سريع","مقلاة هوائية صحية","كاميرا فورية بولارويد",
-  "ميزان مطبخ رقمي","مبخرة منزلية كهربائية","ترموس حافظ للحرارة","زجاجة ماء ذكية","مصباح مكتب LED",
-  "مروحة محمولة باليد","شاحن جداري سريع","منظم أسلاك مكتب","صندوق تخزين بلاستيك","سماعة مكالمات بلوتوث",
-  "منقي هواء صغير","سخان ماء كهربائي","دفتر ملاحظات ذكي","قفل بصمة ذكي","موزع صابون أوتوماتيكي",
-  "منظم درج ملابس","مقعد أرضي مريح","كوب قهوة حراري","لوحة مفاتيح لاسلكية","مفرمة لحوم كهربائية",
-  "أداة تقطيع بطاطس","صانعة فشار منزلية","طقم ملاعق قياس","جهاز قياس حرارة رقمي","منبه مكتبي كلاسيكي",
-  "طابعة صور ملونة","لابتوب أسوس","جوال شاومي ريدمي","تابلت سامسونج جالكسي","حقيبة ظهر للطلاب",
-  "قرص صلب خارجي","كابل شحن تايب سي","ماوس جيمينج","مكواة شعر سيراميك","عصا سيلفي بلوتوث",
-  "آلة حاسبة علمية","سماعة رأس سلكية","دفاية زيت كهربائية","طقم مفكات متعدد","مقص أظافر ستانلس",
-  "ابحث في سوق الكل"
-];
+  const placeholders = [
+    "ماكينة قهوة ديلونجي","سماعات بلوتوث جالكسي بودز","مكنسة روبوت ذكية","شاحن مغناطيسي للآيفون","ستاند لابتوب قابل للطي",
+    "مكواة بخار محمولة","عصارة فواكه كهربائية","كاميرا مراقبة واي فاي","ماوس لاسلكي لابتوب","منظف وجه كهربائي",
+    "لوح مفاتيح ميكانيكي RGB","فرامة خضار يدوية","ميزان ذكي للحمية","سماعات رأس للألعاب","ساعة ذكية شاومي",
+    "ترايبود كاميرا احترافي","كشاف LED قابل للشحن","دفاية كهربائية صغيرة","مروحة USB مكتبية","عطر عربي فاخر",
+    "شاحن متنقل باور بانك","شنطة لابتوب ضد الماء","كرسي ألعاب مريح","سماعات نويس كانسل","خلاط يدوي متعدد الاستخدام",
+    "مقص مطبخ ستانلس ستيل","مظلة أوتوماتيكية","فلاش ميموري سريع","مقلاة هوائية صحية","كاميرا فورية بولارويد",
+    "ميزان مطبخ رقمي","مبخرة منزلية كهربائية","ترموس حافظ للحرارة","زجاجة ماء ذكية","مصباح مكتب LED",
+    "مروحة محمولة باليد","شاحن جداري سريع","منظم أسلاك مكتب","صندوق تخزين بلاستيك","سماعة مكالمات بلوتوث",
+    "منقي هواء صغير","سخان ماء كهربائي","دفتر ملاحظات ذكي","قفل بصمة ذكي","موزع صابون أوتوماتيكي",
+    "منظم درج ملابس","مقعد أرضي مريح","كوب قهوة حراري","لوحة مفاتيح لاسلكية","مفرمة لحوم كهربائية",
+    "أداة تقطيع بطاطس","صانعة فشار منزلية","طقم ملاعق قياس","جهاز قياس حرارة رقمي","منبه مكتبي كلاسيكي",
+    "طابعة صور ملونة","لابتوب أسوس","جوال شاومي ريدمي","تابلت سامسونج جالكسي","حقيبة ظهر للطلاب",
+    "قرص صلب خارجي","كابل شحن تايب سي","ماوس جيمينج","مكواة شعر سيراميك","عصا سيلفي بلوتوث",
+    "آلة حاسبة علمية","سماعة رأس سلكية","دفاية زيت كهربائية","طقم مفكات متعدد","مقص أظافر ستانلس",
+    "ابحث في سوق الكل"
+  ];
 
-  // وظيفة لاختيار عنصر عشوائي
   function getRandomPlaceholder() {
     const randomIndex = Math.floor(Math.random() * placeholders.length);
     return placeholders[randomIndex];
   }
 
   function rotatePlaceholder() {
-    input.setAttribute("placeholder", getRandomPlaceholder());
+    if (placeholders.length > 0) {
+      input.setAttribute("placeholder", getRandomPlaceholder());
+    }
   }
 
   rotatePlaceholder(); // أول تشغيل
