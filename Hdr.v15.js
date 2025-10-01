@@ -2,18 +2,19 @@
 const searchPageURL = "https://souq-alkul.blogspot.com/p/search.html";
 const input = document.getElementById("searchInput");
 const form = document.querySelector(".search-box-form");
-const dropdown = document.getElementById("searchHistoryDropdown");
+const historyDropdown = document.getElementById("searchHistoryDropdown");
 
 let searches = JSON.parse(localStorage.getItem('searches')) || [];
 
 // تحديث الدروب داون
 function updateDropdown() {
-  dropdown.innerHTML = '';
-  let toShow = searches.slice(0, 5); // فقط آخر 5
+  historyDropdown.innerHTML = '';
+  let toShow = searches.slice(0, 5); // آخر 5 بس
   if (toShow.length === 0) {
-    dropdown.style.display = 'none';
+    historyDropdown.style.display = 'none';
     return;
   }
+
   toShow.forEach(term => {
     let item = document.createElement('div');
 
@@ -21,7 +22,7 @@ function updateDropdown() {
     text.textContent = term;
     text.addEventListener('click', () => {
       input.value = term;
-      dropdown.style.display = 'none';
+      historyDropdown.style.display = 'none';
     });
 
     let del = document.createElement('span');
@@ -36,9 +37,10 @@ function updateDropdown() {
 
     item.appendChild(text);
     item.appendChild(del);
-    dropdown.appendChild(item);
+    historyDropdown.appendChild(item);
   });
-  dropdown.style.display = 'block';
+
+  historyDropdown.style.display = 'block';
 }
 
 // البحث + تخزين السجل
@@ -73,7 +75,7 @@ if (input) {
 // إغلاق عند الضغط برا
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-container')) {
-    dropdown.style.display = 'none';
+    historyDropdown.style.display = 'none';
   }
 });
 
