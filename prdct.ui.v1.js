@@ -144,18 +144,6 @@ document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
 });
 
 // ===================================================
-// ✅ دالة لتنسيق الأرقام
-// ===================================================
-function formatPrice(num) {
-  const number = parseFloat(num.toString().replace(/,/g, ''));
-  if (isNaN(number)) return num;
-  return number.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-// ===================================================
 // ✅ تغيير نصوص الأزرار (شراء + إضافة للعربة)
 // ===================================================
 const buyBtn = document.querySelector(".buy-button");
@@ -171,6 +159,18 @@ const ratingCount = document.getElementById("goToReviews");
 if (ratingCount) {
   const count = ratingCount.getAttribute("data-count") || "0";
   ratingCount.textContent = `${count} تقييمات`;
+}
+
+// ===================================================
+// ✅ دالة لتنسيق الأرقام
+// ===================================================
+function formatPrice(num) {
+  const number = parseFloat(num.toString().replace(/,/g, ''));
+  if (isNaN(number)) return num;
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 // ===================================================
