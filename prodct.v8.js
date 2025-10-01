@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 // ===================================================
-// ✅ خريطة العملات
+// ✅ خريطة العملات + فورمات الأسعار
 // ===================================================
 const currencySymbols = {
   "SA": "ر.س", // السعودية
@@ -11,10 +11,18 @@ const currencySymbols = {
   "TN": "د.ت"  // تونس
 };
 
-// ✅ دالة تجيب رمز العملة حسب الدولة المخزنة
 function getCurrencySymbol() {
   const country = localStorage.getItem("Cntry") || "SA";
   return currencySymbols[country] || "ر.س";
+}
+
+function formatPrice(num) {
+  const number = parseFloat(num.toString().replace(/,/g, ""));
+  if (isNaN(number)) return num;
+  return number.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 // ===================================================
@@ -30,9 +38,9 @@ if (shippingFee) {
   }
 }
 
-// ==============================
-// ✅ حساب نسبة الخصم والتوفير
-// ==============================
+// ===================================================
+// ✅ حساب نسبة الخصم + قيمة التوفير + تنسيق الأسعار
+// ===================================================
 window.updateDiscount = function () {
   const originalEl = document.querySelector(".price-original");
   const discountedEl = document.querySelector(".price-discounted");
@@ -41,8 +49,13 @@ window.updateDiscount = function () {
 
   if (!originalEl || !discountedEl) return;
 
-  const original = parseFloat(originalEl.textContent.trim()) || 0;
-  const discounted = parseFloat(discountedEl.textContent.trim()) || 0;
+  const original = parseFloat(originalEl.textContent.replace(/[^\d.]/g, "")) || 0;
+  const discounted = parseFloat(discountedEl.textContent.replace(/[^\d.]/g, "")) || 0;
+  const symbol = getCurrencySymbol();
+
+  // ✅ تنسيق السعرين بالعملة
+  if (originalEl) originalEl.textContent = `${formatPrice(original)} ${symbol}`;
+  if (discountedEl) discountedEl.textContent = `${formatPrice(discounted)} ${symbol}`;
 
   if (original > 0 && discounted > 0 && discounted < original) {
     // ✅ نسبة الخصم
@@ -53,65 +66,17 @@ window.updateDiscount = function () {
 
     // ✅ قيمة التوفير
     if (savingEl) {
-      const difference = (original - discounted).toFixed(2);
-      savingEl.textContent = `وفر: ${difference}`;
-    }
-  } else {
-    if (discountEl) discountEl.textContent = "";
-    if (savingEl) savingEl.textContent = "";
-  }
-};
-
-// ===================================================
-// ✅ تنسيق الأسعار (مع العملة حسب الدولة)
-// ===================================================
-document.querySelectorAll(".price-original, .price-discounted, .price-saving").forEach(el => {
-  const text = el.innerText.trim();
-
-  // ✅ حالة التوفير: "وفر: ..."
-  if (el.classList.contains("price-saving") && text.includes("وفر:")) {
-    const match = text.match(/وفر:\s*([\d.,]+)/);
-    if (match && match[1]) {
-      const formatted = formatPrice(match[1]);
-      el.innerText = `وفر: ${formatted} ${getCurrencySymbol()}`;
-    }
-    return;
-  }
-
-  // ✅ الأسعار العادية
-  const numberOnly = text.match(/[\d.,]+/);
-  if (numberOnly) {
-    const formatted = formatPrice(numberOnly[0]);
-    el.innerText = `${formatted} ${getCurrencySymbol()}`;
-  }
-});
-
-// ==============================
-// ✅ حساب التوفير
-// ==============================
-document.addEventListener("DOMContentLoaded", function () {
-  const oldPriceEl = document.querySelector(".price-original");
-  const newPriceEl = document.querySelector(".price-discounted");
-  const discountValueEl = document.querySelector(".price-saving");
-
-  if (oldPriceEl && newPriceEl && discountValueEl) {
-    const oldPrice = parseFloat(oldPriceEl.textContent.replace(/[^\d.]/g, ""));
-    const newPrice = parseFloat(newPriceEl.textContent.replace(/[^\d.]/g, ""));
-
-    if (!isNaN(oldPrice) && !isNaN(newPrice) && oldPrice > newPrice) {
-      const difference = oldPrice - newPrice;
-
+      const difference = original - discounted;
       if (difference < 50) {
-        discountValueEl.textContent = "";
+        savingEl.textContent = "";
       } else {
-        const formattedDiff = difference.toFixed(2);
-
-        // بدون أي مسافة أو margin جنب الجيف
-        discountValueEl.innerHTML = `
+        const formattedDiff = formatPrice(difference);
+        savingEl.innerHTML = `
           <span class="save-label">وفر: </span>
-          <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
+          <span class="save-amount">${formattedDiff} ${symbol}</span>
         `;
 
+        // 🎨 ألوان حسب قيمة التوفير
         let color = "#2c3e50";
         if (difference >= 100 && difference < 200) {
           color = "#1abc9c";
@@ -129,14 +94,15 @@ document.addEventListener("DOMContentLoaded", function () {
           color = "#f39c12";
         }
 
-        discountValueEl.style.fontWeight = "bold";
-        discountValueEl.style.color = color;
+        savingEl.style.fontWeight = "bold";
+        savingEl.style.color = color;
 
-        discountValueEl.setAttribute(
+        savingEl.setAttribute(
           "title",
-          `هذا المبلغ هو الفرق بين السعر القديم (${oldPrice.toFixed(2)}) والجديد (${newPrice.toFixed(2)})`
+          `هذا المبلغ هو الفرق بين السعر القديم (${formatPrice(original)}) والجديد (${formatPrice(discounted)})`
         );
 
+        // 🔥 إضافة الجيف لو التوفير كبير
         if (difference >= 500) {
           const fireGif = document.createElement("img");
           fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
@@ -144,25 +110,23 @@ document.addEventListener("DOMContentLoaded", function () {
           fireGif.style.width = "25px";
           fireGif.style.height = "25px";
           fireGif.style.verticalAlign = "middle";
-          fireGif.style.margin = "0"; 
+          fireGif.style.margin = "0";
 
-          const saveAmountEl = discountValueEl.querySelector(".save-amount");
+          const saveAmountEl = savingEl.querySelector(".save-amount");
           saveAmountEl.appendChild(fireGif);
         }
       }
-    } else {
-      discountValueEl.textContent = "";
     }
+  } else {
+    if (discountEl) discountEl.textContent = "";
+    if (savingEl) savingEl.textContent = "";
   }
-});
+};
 
-  // ==============================
-  // ✅ الرسم البياني
-  // ==============================
-
-document.addEventListener('DOMContentLoaded', function () {
-  if (typeof priceData === "undefined" || !Array.isArray(priceData)) return;
-
+// ===================================================
+// ✅ الرسم البياني
+// ===================================================
+if (typeof priceData !== "undefined" && Array.isArray(priceData)) {
   const merged = {};
   priceData.forEach(item => {
     if (!merged[item.date]) merged[item.date] = { total: 0, count: 0 };
@@ -182,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const avg = +(prices.reduce((a, b) => a + b, 0) / prices.length).toFixed(2);
   const endPrice = prices[prices.length - 1];
   const prevPrice = prices[prices.length - 2] || endPrice;
+  const symbol = getCurrencySymbol();
 
   const getArrow = (value, compare) => {
     if (value > compare) return `<span class="stat-arrow arrow-up">▲</span>`;
@@ -191,10 +156,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const stats = `
     <div class="price-stats">
-      <div class="stat-item current"><strong>السعر الحالي:</strong> ${endPrice} ر.س ${getArrow(endPrice, prevPrice)} <small style="font-size:12px;color:#666;">(${(endPrice - prevPrice).toFixed(2)} ر.س)</small></div>
-      <div class="stat-item"><strong>المتوسط:</strong> ${avg} ر.س ${getArrow(avg, endPrice)}</div>
-      <div class="stat-item"><strong>أقل سعر:</strong> ${min} ر.س ${getArrow(min, endPrice)}</div>
-      <div class="stat-item"><strong>أعلى سعر:</strong> ${max} ر.س ${getArrow(max, endPrice)}</div>
+      <div class="stat-item current"><strong>السعر الحالي:</strong> ${formatPrice(endPrice)} ${symbol} ${getArrow(endPrice, prevPrice)} <small style="font-size:12px;color:#666;">(${formatPrice(endPrice - prevPrice)} ${symbol})</small></div>
+      <div class="stat-item"><strong>المتوسط:</strong> ${formatPrice(avg)} ${symbol} ${getArrow(avg, endPrice)}</div>
+      <div class="stat-item"><strong>أقل سعر:</strong> ${formatPrice(min)} ${symbol} ${getArrow(min, endPrice)}</div>
+      <div class="stat-item"><strong>أعلى سعر:</strong> ${formatPrice(max)} ${symbol} ${getArrow(max, endPrice)}</div>
     </div>
   `;
   document.getElementById("priceChart")?.insertAdjacentHTML("afterend", stats);
@@ -208,14 +173,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const el = tooltipEl;
 
     if (tooltip.opacity === 0) {
-  el.style.opacity = 0;
-  el.style.display = "none";
-  return;
-}
+      el.style.opacity = 0;
+      el.style.display = "none";
+      return;
+    }
 
-el.style.display = "block";
-el.style.opacity = 1;
-
+    el.style.display = "block";
+    el.style.opacity = 1;
 
     const dataIndex = tooltip.dataPoints[0].dataIndex;
     const value = tooltip.dataPoints[0].raw;
@@ -231,28 +195,26 @@ el.style.opacity = 1;
 
     const date = finalData[dataIndex].date;
 
-el.innerHTML = `
-  <div class="tooltip-line" style="font-weight:bold;">${date}</div>
-  <div class="tooltip-line">السعر: ${value} ر.س</div>
-  <div class="tooltip-line">التغير: ${arrow} ${diff} ر.س</div>
-  <div class="tooltip-line">النسبة: ${percent}%</div>
-`;
+    el.innerHTML = `
+      <div class="tooltip-line" style="font-weight:bold;">${date}</div>
+      <div class="tooltip-line">السعر: ${formatPrice(value)} ${symbol}</div>
+      <div class="tooltip-line">التغير: ${arrow} ${formatPrice(diff)} ${symbol}</div>
+      <div class="tooltip-line">النسبة: ${percent}%</div>
+    `;
 
     const position = chart.canvas.getBoundingClientRect();
-    el.style.opacity = 1;
-    const tooltipWidth = 160; // تقديري – حسب تصميم التولتيب
-const pageWidth = window.innerWidth;
-const chartLeft = position.left + window.pageXOffset;
-const pointX = chartLeft + tooltip.caretX;
+    const tooltipWidth = 160;
+    const pageWidth = window.innerWidth;
+    const chartLeft = position.left + window.pageXOffset;
+    const pointX = chartLeft + tooltip.caretX;
 
-// لو النقطة قربت من طرف اليمين (أبعد من 70% من الشاشة) → خليه يفتح ناحية الشمال
-if (pointX > pageWidth * 0.7) {
-  el.style.left = (pointX - tooltipWidth - 20) + 'px';
-} else {
-  el.style.left = (pointX + 10) + 'px';
-}
+    if (pointX > pageWidth * 0.7) {
+      el.style.left = (pointX - tooltipWidth - 20) + 'px';
+    } else {
+      el.style.left = (pointX + 10) + 'px';
+    }
 
-el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
+    el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
   };
 
   const ctx = document.getElementById("priceChart")?.getContext("2d");
@@ -262,7 +224,7 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
       data: {
         labels: dates,
         datasets: [{
-          label: "السعر (ر.س)",
+          label: `السعر (${symbol})`,
           data: finalData.map(d => d.price),
           borderColor: "#2c3e50",
           backgroundColor: "rgba(44,62,80,0.1)",
@@ -275,34 +237,16 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
       },
       options: {
         responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
-        plugins: {
-          tooltip: {
-            enabled: false,
-            external: externalTooltipHandler
-          }
-        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { tooltip: { enabled: false, external: externalTooltipHandler } },
         scales: {
           x: {
-            title: {
-              display: true,
-              text: "التاريخ",
-              color: "#333",
-              font: { size: 14 }
-            },
+            title: { display: true, text: "التاريخ", color: "#333", font: { size: 14 } },
             ticks: { color: "#333" },
             grid: { color: "rgba(0, 0, 0, 0.05)" }
           },
           y: {
-            title: {
-              display: true,
-              text: "السعر (ر.س)",
-              color: "#333",
-              font: { size: 14 }
-            },
+            title: { display: true, text: `السعر (${symbol})`, color: "#333", font: { size: 14 } },
             ticks: { color: "#333" },
             grid: { color: "rgba(0, 0, 0, 0.05)" }
           }
@@ -310,12 +254,9 @@ el.style.top = position.top + window.pageYOffset + tooltip.caretY - 40 + 'px';
       }
     });
   }
-});
+}
 
   // ==============================
   // ✅ نهاية الإسكربت
   // ==============================
-
-
-
-
+});
