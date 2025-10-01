@@ -31,8 +31,30 @@ function renderStarsFromValue() {
 // ✅ استدعاء الدالة
 renderStarsFromValue();
 
+// ===================================================
+// ✅ عرض عدد التقييمات
+// ===================================================
+const ratingCount = document.getElementById("goToReviews");
+if (ratingCount) {
+  const count = ratingCount.getAttribute("data-count") || "0";
+  ratingCount.textContent = `${count} تقييمات`;
+}
+
 // ==============================
-// ✅ التبويبات الذكية (لا تعديل عليها)
+// ✅ إضافة صور افتراضية للعملاء 
+// ==============================
+const avatarURL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwYjQ3P3sS7yC15Dqs4gAPU3sEGpftVMbqMLwaUbIk5lgxsDIxG5LseYewSYgx9ugKh5wI8ZvMZL_Oh2qZd6FD6lvHbSenXP148Iy3AHvflDx8cO6ysEGc3_nOjv4wbs9USnFA2qdgIvy-WX_ybSngrHNRqpuMSACdhRX19hoQztPYC70WNNpU8zEd/w200-h200/6VBx3io.png";
+
+document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
+  const img = document.createElement("img");
+  img.src = avatarURL;
+  img.alt = "أفاتار";
+  img.className = "reviewer-img";
+  placeholder.appendChild(img);
+});
+
+// ==============================
+// ✅ التبويبات الذكية 
 // ==============================
 
 let enableInitialScroll = false; 
@@ -130,19 +152,6 @@ if (goToReviewsBtn) {
   });
 }
 
-// ==============================
-// ✅ إضافة صور افتراضية للعملاء 
-// ==============================
-const avatarURL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwYjQ3P3sS7yC15Dqs4gAPU3sEGpftVMbqMLwaUbIk5lgxsDIxG5LseYewSYgx9ugKh5wI8ZvMZL_Oh2qZd6FD6lvHbSenXP148Iy3AHvflDx8cO6ysEGc3_nOjv4wbs9USnFA2qdgIvy-WX_ybSngrHNRqpuMSACdhRX19hoQztPYC70WNNpU8zEd/w200-h200/6VBx3io.png";
-
-document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
-  const img = document.createElement("img");
-  img.src = avatarURL;
-  img.alt = "أفاتار";
-  img.className = "reviewer-img";
-  placeholder.appendChild(img);
-});
-
 // ===================================================
 // ✅ تغيير نصوص الأزرار (شراء + إضافة للعربة)
 // ===================================================
@@ -151,15 +160,6 @@ if (buyBtn) buyBtn.textContent = "اطلب الآن";
 
 const cartBtn = document.querySelector(".add-to-cart");
 if (cartBtn) cartBtn.textContent = "أضف للعربة";
-
-// ===================================================
-// ✅ عرض عدد التقييمات
-// ===================================================
-const ratingCount = document.getElementById("goToReviews");
-if (ratingCount) {
-  const count = ratingCount.getAttribute("data-count") || "0";
-  ratingCount.textContent = `${count} تقييمات`;
-}
 
 // ===================================================
 // ✅ دالة لتنسيق الأرقام
