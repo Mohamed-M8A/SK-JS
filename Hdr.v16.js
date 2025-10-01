@@ -283,17 +283,6 @@ if (paramCountry) {
   document.head.appendChild(robots);
 }
 
-// =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
-function rmurl(e,t){
-  var r=new RegExp(/\?m=0|&m=0|\?m=1|&m=1/g);
-  if(r.test(e)){
-    e = e.replace(r,"");
-    if(t) window.history.replaceState({},document.title,e);
-  }
-  return e;
-}
-const currentUrl = rmurl(location.toString(),!0);
-
 // =================== ✅ Back To Top ===================
 var backTop = document.getElementById("back-to-top");
 window.addEventListener("scroll",function(){
@@ -304,3 +293,14 @@ window.addEventListener("scroll",function(){
     backTop.classList.add("d-none");
   }
 },false);
+
+// =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
+function rmurl(e,t){
+  var r=new RegExp(/\?m=0|&m=0|\?m=1|&m=1/g);
+  if(r.test(e)){
+    e = e.replace(r,"");
+    if(t) window.history.replaceState({},document.title,e);
+  }
+  return e;
+}
+const currentUrl = rmurl(location.toString(),!0);
