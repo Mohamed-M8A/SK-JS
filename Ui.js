@@ -133,7 +133,7 @@ if (goToReviewsBtn) {
 // ==============================
 // ✅ إضافة صور افتراضية للعملاء 
 // ==============================
-const avatarURL = "https://blogger.googleusercontent.com/img/.../6VBx3io.png";
+const avatarURL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwYjQ3P3sS7yC15Dqs4gAPU3sEGpftVMbqMLwaUbIk5lgxsDIxG5LseYewSYgx9ugKh5wI8ZvMZL_Oh2qZd6FD6lvHbSenXP148Iy3AHvflDx8cO6ysEGc3_nOjv4wbs9USnFA2qdgIvy-WX_ybSngrHNRqpuMSACdhRX19hoQztPYC70WNNpU8zEd/w200-h200/6VBx3io.png";
 document.querySelectorAll(".avatar-placeholder").forEach(placeholder => {
   const img = document.createElement("img");
   img.src = avatarURL;
