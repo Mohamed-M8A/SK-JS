@@ -51,7 +51,7 @@ document.querySelectorAll(".price-original, .price-discounted, .price-saving").f
 });
 
 // ==============================
-// ✅ حساب التوفير + ألوان + الجيف
+// ✅ حساب التوفير
 // ==============================
 const oldPriceEl = document.querySelector(".price-original");
 const newPriceEl = document.querySelector(".price-discounted");
@@ -74,6 +74,7 @@ if (oldPriceEl && newPriceEl && discountValueEl) {
         <span class="save-amount">${formattedDiff} ${getCurrencySymbol()}</span>
       `;
 
+      // ✅ الألوان حسب الفرق
       let color = "#2c3e50";
       if (difference >= 100 && difference < 200) color = "#1abc9c";
       else if (difference < 400) color = "#2ecc71";
@@ -86,19 +87,29 @@ if (oldPriceEl && newPriceEl && discountValueEl) {
       discountValueEl.style.fontWeight = "bold";
       discountValueEl.style.color = color;
 
+      // ✅ Tooltip
       discountValueEl.setAttribute(
         "title",
         `الفرق بين السعر القديم (${oldPrice.toFixed(2)}) والجديد (${newPrice.toFixed(2)})`
       );
 
+      // ✅ إضافة الجيف لو التوفير كبير
       if (difference >= 500) {
         const fireGif = document.createElement("img");
         fireGif.src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5J9EL4a9cV3VWmcK1ZYD6OYEB-1APv9gggocpaa7jAJXdgvX8Q7QiaAZC9NxcN25f8MTRSYD6SKwT1LSjL0SB1ovJH1SSkRmqH2y3f1NzWGkC0BE-gpj5bTc1OKi3Rfzh44sAAJSvOS5uq7Ut9ETN-V9LgKim0dkmEVmqUWa-2ZGA7FvMAYrVaJgn/w199-h200/fire%20(1).gif";
         fireGif.alt = "🔥🔥🔥";
-        fireGif.style.width = "25px";
-        fireGif.style.height = "25px";
-        fireGif.style.verticalAlign = "middle";
-        fireGif.style.margin = "0"; 
+
+        // ✅ ستايل inline يمنع أي CSS خارجي يكبر الصورة
+        fireGif.style.cssText = `
+          width: 25px !important;
+          height: 25px !important;
+          max-width: none !important;
+          max-height: none !important;
+          vertical-align: middle;
+          margin: 0;
+          display: inline !important;
+        `;
+
         discountValueEl.querySelector(".save-amount").appendChild(fireGif);
       }
     }
