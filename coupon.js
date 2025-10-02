@@ -1,5 +1,5 @@
 /******************
- ✅ الكوبونات الكاملة (مع صور + إظهار الكود)
+ ✅ الكوبونات الكاملة 
 *******************/
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -74,7 +74,7 @@ if(wrapper){
 
 
 /******************
- ✅ الكوبونات البسيطة (div + زر نسخ)
+ ✅ الكوبونات البسيطة
 *******************/
 document.addEventListener("click", function (e) {
   if (e.target.classList.contains("copy-button")) {
