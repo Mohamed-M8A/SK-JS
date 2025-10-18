@@ -1,45 +1,10 @@
 /***********************
- * ⚙️ إعدادات أساسية
+ * إعدادات أساسية
  ***********************/
 const bannedCategories = ["مقالات", "إعلانات"];
 
 /***********************
- * 💱 بيانات العملات + التحويل
- ***********************/
-const countryInfo = {
-  SA: { symbol: "ر.س", name: "السعودية" },
-  AE: { symbol: "د.إ", name: "الإمارات" },
-  OM: { symbol: "ر.ع", name: "عُمان" },
-  MA: { symbol: "د.م", name: "المغرب" },
-  DZ: { symbol: "د.ج", name: "الجزائر" },
-  TN: { symbol: "د.ت", name: "تونس" }
-};
-
-const exchangeRates = {
-  SA: 1,
-  AE: 1.02,
-  OM: 9.74,
-  MA: 0.38,
-  DZ: 0.028,
-  TN: 1.21
-};
-
-/***********************
- * 🧩 دوال مساعدة
- ***********************/
-function getCurrencySymbol() {
-  const country = localStorage.getItem("Cntry") || "SA";
-  return countryInfo[country]?.symbol || "ر.س";
-}
-
-function formatPrice(num) {
-  const n = parseFloat(num);
-  if (isNaN(n)) return "";
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2 });
-}
-
-/***********************
- * 🔍 دوال استخراج البيانات
+ * دوال استخراج البيانات
  ***********************/
 function getPostCategories(post) {
   return (post.category && post.category.length > 0)
@@ -115,12 +80,13 @@ function getExtraProductData(post) {
 }
 
 /***********************
- * 🧱 بناء بطاقة المنتج
+ * بناء بطاقة المنتج
  ***********************/
 function generatePostHTML(post, lazy = false) {
   const url = getPostUrl(post);
   if (!url) return "";
 
+  // تجاهل التصنيفات الممنوعة
   if (getPostCategories(post).some(cat => bannedCategories.includes(cat))) {
     return "";
   }
@@ -131,33 +97,26 @@ function generatePostHTML(post, lazy = false) {
   const extraData = getExtraProductData(post);
   const categories = getPostCategories(post).join(",");
 
-  const symbol = getCurrencySymbol();
-  const country = localStorage.getItem("Cntry") || "SA";
-  const rate = exchangeRates[country] || 1;
-
   let priceHtml = "";
   let discountBadge = "";
 
   if (priceData) {
-    const discountedConverted = priceData.discountedPrice * rate;
-    const originalConverted = priceData.originalPrice
-      ? priceData.originalPrice * rate
-      : null;
-
-    const originalPrice = originalConverted
-      ? `<span class="original-price">${formatPrice(originalConverted)} ${symbol}</span>`
+    const originalPrice = priceData.originalPrice
+      ? `<span class="original-price">${priceData.originalPrice.toFixed(2)} ر.س</span>`
       : "";
 
     priceHtml = `
       <div class="price-display">
-        <span class="discounted-price">${formatPrice(discountedConverted)} ${symbol}</span>
+        <span class="discounted-price">${priceData.discountedPrice.toFixed(2)} ر.س</span>
         ${originalPrice}
       </div>
     `;
 
     if (priceData.originalPrice) {
-      const discountPercentage = priceData.originalPrice > 0
-        ? ((priceData.originalPrice - priceData.discountedPrice) / priceData.originalPrice) * 100
+      const discountedValue = priceData.discountedPrice;
+      const originalValue = priceData.originalPrice;
+      const discountPercentage = originalValue > 0
+        ? ((originalValue - discountedValue) / originalValue) * 100
         : 0;
 
       discountBadge = `<div class="discount-badge">خصم ${discountPercentage.toFixed(0)}%</div>`;
@@ -215,7 +174,7 @@ function generatePostHTML(post, lazy = false) {
 }
 
 /***********************
- * 💤 Lazy Loading للصور
+ * Lazy Loading للصور
  ***********************/
 function lazyLoadImages() {
   const lazyImages = document.querySelectorAll("img.lazy-img[data-src]");
