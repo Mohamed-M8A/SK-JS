@@ -4,6 +4,22 @@
 const bannedCategories = ["مقالات", "إعلانات"];
 
 /***********************
+ * دوال المساعدة (عملة الدولة)
+ ***********************/
+function getCurrencySymbol() {
+  const countrySymbols = {
+    SA: "ر.س",
+    AE: "د.إ",
+    OM: "ر.ع",
+    MA: "د.م",
+    DZ: "د.ج",
+    TN: "د.ت"
+  };
+  const country = localStorage.getItem("Cntry") || "SA";
+  return countrySymbols[country] || "ر.س";
+}
+
+/***********************
  * دوال استخراج البيانات
  ***********************/
 function getPostCategories(post) {
@@ -22,6 +38,9 @@ function getPostTitle(post) {
   return titleMatch ? titleMatch[1] : post.title?.$t || "بدون عنوان";
 }
 
+/***********************
+ * 💰 السعر + 🛍️ بيانات إضافية من JSON
+ ***********************/
 function getPostPrice(post) {
   const content = post.content?.$t || "";
 
@@ -42,7 +61,9 @@ function getPostPrice(post) {
     return {
       hasDiscount: !!(original && discounted < original),
       discountedPrice: discounted,
-      originalPrice: original
+      originalPrice: original,
+      shippingMin: +countryData["shipping-min-days"] || 0,
+      shippingMax: +countryData["shipping-max-days"] || 0
     };
   } catch (err) {
     console.warn("⚠️ خطأ في قراءة JSON داخل المنتج:", err);
@@ -50,6 +71,29 @@ function getPostPrice(post) {
   }
 }
 
+function getExtraProductData(post) {
+  const content = post.content?.$t || "";
+
+  // ⭐ التقييم والطلبات من الدوم كما هو
+  const ratingMatch = content.match(/<span class="rating-value"[^>]*>([^<]+)<\/span>/);
+  const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
+
+  const ordersMatch = content.match(/<div class="info-box orders-info">[\s\S]*?<span class="value">([^<]+)<\/span>/);
+  const orders = ordersMatch ? ordersMatch[1] : null;
+
+  // 🚚 أيام الشحن من JSON (الدالة السابقة)
+  const priceData = getPostPrice(post);
+  const shipping =
+    priceData && (priceData.shippingMin || priceData.shippingMax)
+      ? `${priceData.shippingMin}-${priceData.shippingMax}`
+      : null;
+
+  return { rating, orders, shipping };
+}
+
+/***********************
+ * 🖼️ الصورة
+ ***********************/
 function getPostImage(post, size = 320) {
   const defaultImage = `https://via.placeholder.com/${size}x${size}/ffffff/ffffff.png`;
   const content = post.content?.$t || "";
@@ -71,23 +115,8 @@ function getPostImage(post, size = 320) {
   return imgUrl;
 }
 
-function getExtraProductData(post) {
-  const content = post.content?.$t || "";
-
-  const ratingMatch = content.match(/<span class="rating-value"[^>]*>([^<]+)<\/span>/);
-  const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
-
-  const ordersMatch = content.match(/<div class="info-box orders-info">[\s\S]*?<span class="value">([^<]+)<\/span>/);
-  const orders = ordersMatch ? ordersMatch[1] : null;
-
-  const shippingMatch = content.match(/<div class="info-box shipping-time">[\s\S]*?<span class="value">([^<]+)<\/span>/);
-  const shipping = shippingMatch ? shippingMatch[1] : null;
-
-  return { rating, orders, shipping };
-}
-
 /***********************
- * بناء بطاقة المنتج
+ * 🧩 بناء بطاقة المنتج
  ***********************/
 function generatePostHTML(post, lazy = false) {
   const url = getPostUrl(post);
@@ -103,29 +132,27 @@ function generatePostHTML(post, lazy = false) {
   const priceData = getPostPrice(post);
   const extraData = getExtraProductData(post);
   const categories = getPostCategories(post).join(",");
+  const currency = getCurrencySymbol();
 
   let priceHtml = "";
   let discountBadge = "";
 
   if (priceData) {
     const originalPrice = priceData.originalPrice
-      ? `<span class="original-price">${priceData.originalPrice.toFixed(2)} ر.س</span>`
+      ? `<span class="original-price">${priceData.originalPrice.toFixed(2)} ${currency}</span>`
       : "";
 
     priceHtml = `
       <div class="price-display">
-        <span class="discounted-price">${priceData.discountedPrice.toFixed(2)} ر.س</span>
+        <span class="discounted-price">${priceData.discountedPrice.toFixed(2)} ${currency}</span>
         ${originalPrice}
       </div>
     `;
 
-    if (priceData.originalPrice) {
+    if (priceData.originalPrice && priceData.discountedPrice < priceData.originalPrice) {
       const discountedValue = priceData.discountedPrice;
       const originalValue = priceData.originalPrice;
-      const discountPercentage = originalValue > 0
-        ? ((originalValue - discountedValue) / originalValue) * 100
-        : 0;
-
+      const discountPercentage = ((originalValue - discountedValue) / originalValue) * 100;
       discountBadge = `<div class="discount-badge">خصم ${discountPercentage.toFixed(0)}%</div>`;
     }
   }
@@ -148,7 +175,7 @@ function generatePostHTML(post, lazy = false) {
     }
 
     if (extraData.shipping) {
-      extraHtml += `<div class="meta-item">شحن في <span class="meta-shipping">${extraData.shipping}</span> أيام</div>`;
+      extraHtml += `<div class="meta-item">شحن خلال <span class="meta-shipping">${extraData.shipping}</span> أيام</div>`;
     }
 
     extraHtml += `</div>`;
@@ -203,4 +230,3 @@ function lazyLoadImages() {
 
   lazyImages.forEach(img => observer.observe(img));
 }
-
