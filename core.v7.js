@@ -25,22 +25,29 @@ function getPostTitle(post) {
 function getPostPrice(post) {
   const content = post.content?.$t || "";
 
-  const discounted = content.match(/<span class="price-discounted">([^<]+)<\/span>/);
-  const original = content.match(/<span class="price-original">([^<]+)<\/span>/);
+  // 🔍 نبحث عن JSON داخل <script id="product-data">
+  const jsonMatch = content.match(/<script[^>]+id=["']product-data["'][^>]*>([\s\S]*?)<\/script>/);
+  if (!jsonMatch) return null;
 
-  if (original && discounted) {
+  try {
+    const data = JSON.parse(jsonMatch[1]);
+    const country = localStorage.getItem("Cntry") || "SA";
+    const countryData = data.countries?.[country];
+
+    if (!countryData) return null;
+
+    const discounted = parseFloat(countryData["price-discounted"]);
+    const original = parseFloat(countryData["price-original"]);
+
     return {
-      hasDiscount: true,
-      discountedPrice: parseFloat(discounted[1]),
-      originalPrice: parseFloat(original[1])
+      hasDiscount: !!(original && discounted < original),
+      discountedPrice: discounted,
+      originalPrice: original
     };
-  } else if (discounted) {
-    return {
-      hasDiscount: false,
-      discountedPrice: parseFloat(discounted[1])
-    };
+  } catch (err) {
+    console.warn("⚠️ خطأ في قراءة JSON داخل المنتج:", err);
+    return null;
   }
-  return null;
 }
 
 function getPostImage(post, size = 320) {
@@ -196,3 +203,4 @@ function lazyLoadImages() {
 
   lazyImages.forEach(img => observer.observe(img));
 }
+
