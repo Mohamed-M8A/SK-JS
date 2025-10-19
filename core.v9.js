@@ -84,9 +84,9 @@ function getExtraProductData(post) {
   // 🚚 أيام الشحن من JSON (الدالة السابقة)
   const priceData = getPostPrice(post);
   const shipping =
-    priceData && (priceData.shippingMin || priceData.shippingMax)
-      ? `${priceData.shippingMin}-${priceData.shippingMax}`
-      : null;
+  priceData && (priceData.shippingMin || priceData.shippingMax)
+    ? `${priceData.shippingMax}-${priceData.shippingMin}`
+    : null;
 
   return { rating, orders, shipping };
 }
@@ -230,3 +230,4 @@ function lazyLoadImages() {
 
   lazyImages.forEach(img => observer.observe(img));
 }
+
