@@ -9,7 +9,7 @@ let searches = JSON.parse(localStorage.getItem('searches')) || [];
 // تحديث الدروب داون
 function updateDropdown() {
   historyDropdown.innerHTML = '';
-  let toShow = searches.slice(0, 5); // آخر 5 بس
+  let toShow = searches.slice(0, 5);
   if (toShow.length === 0) {
     historyDropdown.style.display = 'none';
     return;
