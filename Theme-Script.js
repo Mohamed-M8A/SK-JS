@@ -283,17 +283,6 @@ if (paramCountry) {
   document.head.appendChild(robots);
 }
 
-// =================== ✅ Back To Top ===================
-var backTop = document.getElementById("back-to-top");
-window.addEventListener("scroll",function(){
-  if(!backTop) return;
-  if(this.pageYOffset >= 1000){
-    backTop.classList.remove("d-none");
-  } else {
-    backTop.classList.add("d-none");
-  }
-},false);
-
 // =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
 function rmurl(e,t){
   var r=new RegExp(/\?m=0|&m=0|\?m=1|&m=1/g);
@@ -304,3 +293,14 @@ function rmurl(e,t){
   return e;
 }
 const currentUrl = rmurl(location.toString(),!0);
+
+// =================== ✅ Back To Top ===================
+var backTop = document.getElementById("back-to-top");
+window.addEventListener("scroll",function(){
+  if(!backTop) return;
+  if(this.pageYOffset >= 1000){
+    backTop.classList.remove("d-none");
+  } else {
+    backTop.classList.add("d-none");
+  }
+},false);
