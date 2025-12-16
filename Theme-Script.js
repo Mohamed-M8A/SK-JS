@@ -1,4 +1,4 @@
-// =================== ✅ البحث ===================
+// =================== ✅ Search ===================
 const searchPageURL = "https://souq-alkul.blogspot.com/p/search.html";
 const input = document.getElementById("searchInput");
 const form = document.querySelector(".search-box-form");
@@ -6,7 +6,6 @@ const historyDropdown = document.getElementById("searchHistoryDropdown");
 
 let searches = JSON.parse(localStorage.getItem('searches')) || [];
 
-// تحديث الدروب داون
 function updateDropdown() {
   historyDropdown.innerHTML = '';
   let toShow = searches.slice(0, 5);
@@ -43,23 +42,19 @@ function updateDropdown() {
   historyDropdown.style.display = 'block';
 }
 
-// البحث + تخزين السجل
 function startSearch() {
   if (!input) return;
   const query = input.value.trim();
   if (query) {
-    // تحديث السجل
     searches = searches.filter(t => t !== query);
     searches.unshift(query);
     if (searches.length > 10) searches = searches.slice(0, 10);
     localStorage.setItem('searches', JSON.stringify(searches));
 
-    // الانتقال لصفحة البحث
     window.location.href = `${searchPageURL}?q=${encodeURIComponent(query)}`;
   }
 }
 
-// ربط مع الفورم
 if (form) {
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -67,19 +62,17 @@ if (form) {
   });
 }
 
-// إظهار الدروب داون عند التركيز
 if (input) {
   input.addEventListener('focus', updateDropdown);
 }
 
-// إغلاق عند الضغط برا
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-container')) {
     historyDropdown.style.display = 'none';
   }
 });
 
-// =================== ✅ تدوير الـ placeholder ===================
+// =================== ✅ placeholders ===================
 if (input) {
   const placeholders = [
     "ماكينة قهوة ديلونجي","سماعات بلوتوث جالكسي بودز","مكنسة روبوت ذكية","شاحن مغناطيسي للآيفون","ستاند لابتوب قابل للطي",
@@ -110,11 +103,11 @@ if (input) {
     }
   }
 
-  rotatePlaceholder(); // أول تشغيل
-  setInterval(rotatePlaceholder, 25000); // كل 25 ثانية
+  rotatePlaceholder();
+  setInterval(rotatePlaceholder, 25000); 
 }
 
-// =================== ✅ تحديث عربة التسوق ===================
+// =================== ✅ Cart Fun ===================
 function updateCartWidget() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const cartCountElement = document.getElementById("cart-count");
