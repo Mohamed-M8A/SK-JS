@@ -188,7 +188,7 @@ if(darkBtn){
   });
 }
 
-// =================== ✅ الدولة ===================
+// =================== ✅ Country ===================
 const dropdown = document.getElementById("countryDropdown");
 const selected = dropdown ? dropdown.querySelector(".selected") : null;
 const options = dropdown ? dropdown.querySelector(".options") : null;
@@ -282,6 +282,34 @@ if (paramCountry) {
   robots.content = "noindex";
   document.head.appendChild(robots);
 }
+
+// =================== ✅ Share ===================
+
+document.addEventListener('DOMContentLoaded', function() {
+  var modal = document.querySelector('.share-modal');
+  var openBtn = document.querySelector('.share-open-btn');
+  var closeBtn = document.querySelector('.modal-close-btn');
+
+  if (modal && openBtn && closeBtn) {
+    openBtn.onclick = function() {
+      modal.style.display = 'block';
+      // تعطيل التمرير في الخلفية (اختياري لتحسين التركيز)
+      document.body.style.overflow = 'hidden'; 
+    }
+
+    closeBtn.onclick = function() {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; 
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; 
+      }
+    }
+  }
+});
 
 // =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
 function rmurl(e,t){
