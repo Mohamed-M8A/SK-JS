@@ -127,7 +127,7 @@ window.addEventListener("storage", function (event) {
     updateCartWidget();
   }
 });
-setInterval(updateCartWidget, 1000);
+window.addEventListener("cartUpdated", updateCartWidget);
 
 const cartWidget = document.getElementById("cart-widget-header");
 if (cartWidget) {
