@@ -304,6 +304,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// =================== ✅ Users IDs ===================
+
+const UIDManager = {
+  generate() {
+    const now = new Date();
+    // تنسيق: السنةالشهراليومالساعةالدقيقةالثانية
+    const datePart = now.getFullYear().toString() +
+                     (now.getMonth() + 1).toString().padStart(2, '0') +
+                     now.getDate().toString().padStart(2, '0') +
+                     now.getHours().toString().padStart(2, '0') +
+                     now.getMinutes().toString().padStart(2, '0') +
+                     now.getSeconds().toString().padStart(2, '0');
+
+    // 8 رموز عشوائية Alphanumeric
+    const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    return `ID-${datePart}-${randomPart}`;
+  },
+
+  getPersistentId() {
+    let id = localStorage.getItem("user_fingerprint");
+    if (!id) {
+      id = this.generate();
+      localStorage.setItem("user_fingerprint", id);
+    }
+    return id;
+  }
+};
+
 // =================== ✅ Remove ?m=0 / ?m=1 from URL ===================
 function rmurl(e,t){
   var r=new RegExp(/\?m=0|&m=0|\?m=1|&m=1/g);
